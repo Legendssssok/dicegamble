@@ -3,8 +3,8 @@ import logging
 import re
 import sys
 
-from telethon.tl.types import InputMediaDice
 from telethon import Button, TelegramClient, events
+from telethon.tl.types import InputMediaDice
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
@@ -80,7 +80,6 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
         )
 
 
-
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
     if not event.sender_id in game_mode:
@@ -96,6 +95,7 @@ async def gameplay(event):
         await event.reply(
             f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
         )
+
 
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
@@ -120,7 +120,7 @@ Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
 Player 2: [{user.first_name}](tg://user?id={user.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
-        )
+    )
 
 
 # ==================== Start Client ==================#

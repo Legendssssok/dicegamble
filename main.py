@@ -88,7 +88,7 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if event.media.emoticon != "🎲":
+    if event.text:
         return
     gamemode, times = game_mode[event.sender_id]
     my_bot = await client.get_me()

@@ -88,6 +88,8 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
+    if event.text != "🎲":
+        return
     gamemode, times = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
@@ -95,10 +97,10 @@ async def gameplay(event):
     current_round = round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
         player1 = event.media.value
-        await asyncio.sleep(3)
+        await asyncio.sleep(4)
         await event.reply("Now it's my turn")
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
-        await asyncio.sleep(3)
+        await asyncio.sleep(4)
         player2 = bot_player.media.value
         if player1 > player2:
             score_player1 += 1
@@ -109,17 +111,22 @@ async def gameplay(event):
         else:
             current_round -= 1
         if times == current_round:
+            if score_player1 > score_player2:
+                winner = user.first_name
+            elif score_player1 < score_player2:
+                winner = my_bot.first_name
             await event.client.send_message(
                 event.chat_id,
-                f"""🏆 Game over!
+                f"""🏆 **Game over!**
 
-Score:
+**Score:**
 {user.first_name} • {score_player1}
 {my_bot.first_name} • {score_player2}
 
-🎉 Congratulations!""",
+🎉 Congratulations! {winner} You won""",
             )
             game_mode.pop(event.sender_id)
+            round.pop(event.sender_id)
             return
         await event.respond(
             f"""**Score**
@@ -142,6 +149,8 @@ async def dice(event):
 If you want to play with your friend, you can do it in our group - @.""",
             buttons=back_button,
         )
+    if event.sender_id in game_mode:
+        return await event.reply("Your previous game is yet not finished")
     text = event.text.split(" ")
     times = int(text[1])
     my_bot = await client.get_me()

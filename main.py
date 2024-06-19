@@ -50,6 +50,7 @@ Your balance: $0.00 (0.00000 LTC)""",
             buttons=game,
         )
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstf")))
 async def playagainstf(event):
     if event.is_private:
@@ -58,6 +59,7 @@ async def playagainstf(event):
             buttons=back_button,
         )
     await event
+
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

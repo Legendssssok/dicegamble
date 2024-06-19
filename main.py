@@ -117,8 +117,9 @@ async def gameplay(event):
         await event.reply("Now it's my turn")
         bot_player = await event.reply(file=InputMediaDice(emoticon=emoticon))
         player2 = bot_player.media.value
-        await event.reply(f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}")
-        
+        await event.reply(
+            f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
+        )
 
 
 # ==================== Start Client ==================#

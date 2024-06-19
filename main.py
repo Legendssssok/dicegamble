@@ -149,13 +149,14 @@ Score:
             game_mode.pop(event.sender_id)
             return
         await event.respond(
-            f"**Score**
+            f"""**Score**
 
 {user.first_name}: {score_player1}
 {my_bot.first_name}: {score_player2}
 
-**{user.first_name}**, it's your turn!",
+**{user.first_name}**, it's your turn!""",
         )
+        
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:
     with contextlib.suppress(ConnectionError):

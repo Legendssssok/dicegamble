@@ -108,9 +108,11 @@ Player 2: [{user.first_name}](tg://user?id={user.id})
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
     print("hello")
+    if not event.sender_id in game_mode:
+        return
     gamemode = game_mode[event.sender_id]
     if gamemode == "botwplayers":
-        message = await event.get_reply_message()
+        message = await event.text
         print(message)
 
 

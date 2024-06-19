@@ -41,6 +41,21 @@ game = [
 
 back_button = [[Button.inline("⬅️ Back", data="home")]]
 
+dice_button = [
+    [
+        Button.inline("Normal Mode", data="normalmode"),
+    ],
+    [
+        Button.inline("Double Roll", data="doubleroll"),
+    ],
+    [
+        Button.inline("Crazy Mode", data="crazymode"),
+    ],
+    [
+        Button.inline("ℹ️ Guide", data="diceguide"),
+        Button.inline("❌ Cancel", data="cancel"),
+    ],
+]
 
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
@@ -165,6 +180,17 @@ Examples:
         )
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
+    await event.cliet.send_message(
+        event.chat_id,
+        f"🎲 Choose the game mode",
+        buttons=dice_button,
+    )
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
+async def normalbkos(event):
+    
+
+    
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]
     await event.client.send_message(

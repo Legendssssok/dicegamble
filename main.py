@@ -152,7 +152,15 @@ If you want to play with your friend, you can do it in our group - @.""",
     if event.sender_id in game_mode:
         return await event.reply("Your previous game is yet not finished")
     text = event.text.split(" ")
-    times = int(text[1])
+    try:
+        times = int(text[1])
+    except:
+        await event.reply("""🎲 Play Dice
+
+To play, type the command /dice with the desired bet.
+
+Examples:
+/dice 5.50 - to play for $5.50""")        
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]

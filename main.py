@@ -86,26 +86,29 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    gamemode = game_mode[event.sender_id]
+    gamemode, times = game_mode[event.sender_id]
     if gamemode == "botwplayers":
-        my_bot = await client.get_me()
-        user = await client.get_entity(event.sender_id)
-        player1 = event.media.value
-        await asyncio.sleep(3)
-        await event.reply("Now it's my turn")
-        bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
-        await asyncio.sleep(3)
-        player2 = bot_player.media.value
-        score_player1, score_player2 = score[event.sender_id]
-        if player1 > player2:
-            score_player1 += 1
-            score[event.sender_id] = [score_player1, score_player2]
-        elif player1 < player2:
-            score_player2 += 1
-            score[event.sender_id] = [score_player1, score_player2]
-        await event.reply(
-            f"**Score**\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}"
-        )
+        for i in range (times):
+            my_bot = await client.get_me()
+            user = await client.get_entity(event.sender_id)
+            player1 = event.media.value
+            await asyncio.sleep(3)
+            await event.reply("Now it's my turn")
+            bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
+            await asyncio.sleep(3)
+            player2 = bot_player.media.value
+            score_player1, score_player2 = score[event.sender_id]
+            if player1 > player2:
+                score_player1 += 1
+                score[event.sender_id] = [score_player1, score_player2]
+            elif player1 < player2:
+                score_player2 += 1
+                score[event.sender_id] = [score_player1, score_player2]
+            else:
+                times = +1
+            await event.reply(
+                f"**Score**\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}"
+            )
         game_mode.pop(event.sender_id)
 
 
@@ -120,10 +123,10 @@ If you want to play with your friend, you can do it in our group - @.""",
             buttons=back_button,
         )
     text = event.text.split(" ")
-    text[1]
+    times = text[1]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    game_mode[user.id] = "botwplayers"
+    game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]
     await event.client.send_message(
         event.chat_id,

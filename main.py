@@ -126,6 +126,7 @@ Score:
 {my_bot.first_name} • {score_player2}
 
 🎉 Congratulations!"""
+        )
         game_mode.pop(event.sender_id)
 
 

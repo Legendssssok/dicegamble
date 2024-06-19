@@ -1,23 +1,8 @@
-import asyncio
-import base64
 import contextlib
-import ipaddress
 import logging
-import os
-import random
-import re
-import struct
 import sys
-from datetime import datetime
 
-import psutil
-from pyrogram import Client
-from pyrogram import errors as pyro_errors
-from pyrogram.storage.storage import Storage
-from telethon import Button, TelegramClient, errors, events
-from telethon.sessions import StringSession
-from telethon.sessions.string import _STRUCT_PREFORMAT, CURRENT_VERSION, StringSession
-from telethon.tl.functions.channels import JoinChannelRequest
+from telethon import Button, TelegramClient, events
 
 API_ID = 627272
 API_HASH = "Hhss7272"
@@ -45,6 +30,7 @@ game = [
     ],
 ]
 
+
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
     await event.client.send_message(
@@ -63,6 +49,7 @@ Rules are simple: first to reach needed points wins.""",
 Your balance: $0.00 (0.00000 LTC)""",
             buttons=game,
         )
+
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

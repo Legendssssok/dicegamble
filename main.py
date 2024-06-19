@@ -179,8 +179,6 @@ To play, type the command /dice with the desired bet.
 Examples:
 /dice 5.50 - to play for $5.50"""
         )
-    await client.get_me()
-    await client.get_entity(event.sender_id)
     await event.client.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
@@ -230,10 +228,42 @@ Game mode: Normal Mode""",
         buttons=five_confirm_button,
     )
 
+final_confirm_button = [
+    [
+        Button.inline("✅ Accept Match", data="playerwplayer"),
+        Button.inline("✅ Play against bot", data="botwplayer"),
+    ],
+    [
+        Button.inlinr("❌ Cancel", data="cancel"),
+    ],
+]
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"botwplayer")))
 async def fierus(event):
+    await event.delete()
+    my_bot = await client.get_me()
+    user = await client.get_entity(event.sender_id)
+    await event.client.send_message(
+        event.chat_id,
+        f"""{user.first_name} wants to play dice!
+
+Bet: $1.00
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to 3 points
+
+Normal Mode
+Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
+
+If you want to play, click the "Accept Match" button""",
+        buttons=final_confirm_button
+    )
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"botwplayer")))
+async def fierndus(event):    
     times = 5
+    bot = await client.get_me()
+    user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]
     await event.client.send_message(

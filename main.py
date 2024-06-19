@@ -107,12 +107,18 @@ Player 2: [{user.first_name}](tg://user?id={user.id})
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
-    print("hello")
     if not event.sender_id in game_mode:
         return
     gamemode = game_mode[event.sender_id]
     if gamemode == "botwplayers":
-        print(event)
+        my_bot = await client.get_me()
+        user = await client.get_entity(event.sender_id)
+        player1 = event.media.value
+        await event.reply("Now it's my turn")
+        bot_player = await event.reply(file=InputMediaDice(emoticon=emoticon))
+        player2 = bot_player.media.value
+        await event.reply(f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}")
+        
 
 
 # ==================== Start Client ==================#

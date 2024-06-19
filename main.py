@@ -81,6 +81,31 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
         )
 
+@client.on(events.NewMessage(pattern="/dice"))
+async def dice(event):
+    if event.is_private:
+        return await event.client.send_message(
+            event.chat_id,
+            """**🎲 Play against friend**
+
+If you want to play with your friend, you can do it in our group - @.""",
+            buttons=back_button,
+        )
+    text = event.text.split(" ")
+    times = int(text[1])
+    my_bot = await client.get_me()
+    user = await client.get_entity(event.sender_id)
+    game_mode[user.id] = ["botwplayers", times]
+    await event.client.send_message(
+        event.chat_id,
+        f"""**🎲 Play with Bot**
+        
+Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
+Player 2: [{user.first_name}](tg://user?id={user.id})
+
+**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
+    )
+
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
@@ -89,7 +114,7 @@ async def gameplay(event):
     gamemode, times = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    score_player1, score_player2 = score[event.sender_id]
+    score_player1, score_player2 = score.get(event.sender_id, [0,0])
     if gamemode == "botwplayers":
         for i in range(times):
             await event.client.send_message(
@@ -130,30 +155,7 @@ Score:
         game_mode.pop(event.sender_id)
 
 
-@client.on(events.NewMessage(pattern="/dice"))
-async def dice(event):
-    if event.is_private:
-        return await event.client.send_message(
-            event.chat_id,
-            """**🎲 Play against friend**
 
-If you want to play with your friend, you can do it in our group - @.""",
-            buttons=back_button,
-        )
-    text = event.text.split(" ")
-    times = int(text[1])
-    my_bot = await client.get_me()
-    user = await client.get_entity(event.sender_id)
-    game_mode[user.id] = ["botwplayers", times]
-    await event.client.send_message(
-        event.chat_id,
-        f"""**🎲 Play with Bot**
-        
-Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
-Player 2: [{user.first_name}](tg://user?id={user.id})
-
-**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
-    )
 
 
 # ==================== Start Client ==================#

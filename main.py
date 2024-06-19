@@ -126,7 +126,7 @@ async def gameplay(event):
                 # f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
                 # )
                 # response = await conv.get_response()
-                response = await conv.wait_for_event(
+                response = await conv.wait_event(
                     events.NewMessage(incoming=True, from_users=event.sender_id)
                 )
             player1 = response.media.value

@@ -112,7 +112,7 @@ async def gameplay(event):
         return
     gamemode = game_mode[event.sender_id]
     if gamemode == "botwplayers":
-        message = await event.text
+        message = event.text
         print(message)
 
 

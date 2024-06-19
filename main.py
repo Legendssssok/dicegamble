@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import sys
+import re
 
 from telethon import Button, TelegramClient, events
 
@@ -30,6 +31,12 @@ game = [
     ],
 ]
 
+back_button = [
+    [
+        Button.inline("⬅️ Back", data="home")
+    ]
+]
+
 
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
@@ -50,16 +57,39 @@ Your balance: $0.00 (0.00000 LTC)""",
             buttons=game,
         )
 
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
+async def home(event):
+    if event.is_private:
+        await event.edit(
+            """🏠 Menu
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstf")))
-async def playagainstf(event):
+Your balance: $0.00 (0.00000 LTC)""",
+            buttons=game,
+        )
+
+        
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstb")))
+async def playagainstb(event):
     if event.is_private:
         return await event.edit(
-            """hello""",
+            """🎲 Play against bot
+
+If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
         )
-    await event
 
+@client.on(events.NewMessage(pattern="/dice"))
+async def dice(event):
+    if event.is_private:
+        return await event.client.send_message(
+            event.chat_id,
+            """🎲 Play against friend
+
+If you want to play with your friend, you can do it in our group - @.""",
+            buttons=game,
+        )
+    
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

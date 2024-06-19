@@ -81,6 +81,7 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
         )
 
+
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
     if event.is_private:
@@ -114,7 +115,7 @@ async def gameplay(event):
     gamemode, times = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    score_player1, score_player2 = score.get(event.sender_id, [0,0])
+    score_player1, score_player2 = score.get(event.sender_id, [0, 0])
     if gamemode == "botwplayers":
         for i in range(times):
             await event.client.send_message(
@@ -153,9 +154,6 @@ Score:
 🎉 Congratulations!""",
         )
         game_mode.pop(event.sender_id)
-
-
-
 
 
 # ==================== Start Client ==================#

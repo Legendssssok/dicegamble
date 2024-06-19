@@ -20,6 +20,9 @@ LOGS = logging.getLogger("Dice bot")
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
 
+game_mode = {}
+
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -90,15 +93,28 @@ If you want to play with your friend, you can do it in our group - @.""",
     text[1]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
+    game_mode[user.id] = "botwplayers"
     await event.client.send_message(
         event.chat_id,
         f"""**🎲 Play with Bot**
-Player 1: f"[{my_bot.first_name}](tg://user?id={my_bot.id})"
-Player 2: f"[{user.first_name}](tg://user?id={user.id})"
+        
+Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
+Player 2: [{user.first_name}](tg://user?id={user.id})
 
-{user.first_name} , your turn! To start, send a dice emoji: 🎲""",
+**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
 
+@borg.on(
+    events.NewMessage(  # pylint:disable=E0602
+        incoming=True, func=lambda e: bool(e.mentioned)
+    )
+)
+async def gameplay (event):
+    print("hello")
+    gamemode = game_mode[event.sender_id]
+    if gamemode == "botwplayers":
+        message = await event.get_reply_message()
+        print(message)
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

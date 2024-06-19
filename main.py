@@ -124,7 +124,6 @@ async def gameplay(event):
             )
             async with client.conversation(event.sender_id) as conv:
                 await conv.send_message(
-                    event.chat_id,
                     f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
                 )
                 response = await conv.get_response()

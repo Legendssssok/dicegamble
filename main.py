@@ -3,6 +3,7 @@ import logging
 import re
 import sys
 
+from telethon.tl.types import InputMediaDice
 from telethon import Button, TelegramClient, events
 
 API_ID = 11573285
@@ -79,6 +80,23 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
         )
 
 
+
+@client.on(events.NewMessage(incoming=True))
+async def gameplay(event):
+    if not event.sender_id in game_mode:
+        return
+    gamemode = game_mode[event.sender_id]
+    if gamemode == "botwplayers":
+        my_bot = await client.get_me()
+        user = await client.get_entity(event.sender_id)
+        player1 = event.media.value
+        await event.reply("Now it's my turn")
+        bot_player = await event.reply(file=InputMediaDice(emoticon=emoticon))
+        player2 = bot_player.media.value
+        await event.reply(
+            f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
+        )
+
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
     if event.is_private:
@@ -102,23 +120,6 @@ Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
 Player 2: [{user.first_name}](tg://user?id={user.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
-    )
-
-
-@client.on(events.NewMessage(incoming=True))
-async def gameplay(event):
-    if not event.sender_id in game_mode:
-        return
-    gamemode = game_mode[event.sender_id]
-    if gamemode == "botwplayers":
-        my_bot = await client.get_me()
-        user = await client.get_entity(event.sender_id)
-        player1 = event.media.value
-        await event.reply("Now it's my turn")
-        bot_player = await event.reply(file=InputMediaDice(emoticon=emoticon))
-        player2 = bot_player.media.value
-        await event.reply(
-            f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
         )
 
 

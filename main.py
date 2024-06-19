@@ -104,17 +104,19 @@ Player 2: [{user.first_name}](tg://user?id={user.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
 
+
 @borg.on(
     events.NewMessage(  # pylint:disable=E0602
         incoming=True, func=lambda e: bool(e.mentioned)
     )
 )
-async def gameplay (event):
+async def gameplay(event):
     print("hello")
     gamemode = game_mode[event.sender_id]
     if gamemode == "botwplayers":
         message = await event.get_reply_message()
         print(message)
+
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

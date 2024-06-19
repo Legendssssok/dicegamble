@@ -57,6 +57,7 @@ dice_button = [
     ],
 ]
 
+
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
     await event.client.send_message(
@@ -168,7 +169,7 @@ If you want to play with your friend, you can do it in our group - @.""",
         return await event.reply("Your previous game is yet not finished")
     text = event.text.split(" ")
     try:
-        times = int(text[1])
+        int(text[1])
     except:
         await event.reply(
             """🎲 Play Dice
@@ -178,19 +179,18 @@ To play, type the command /dice with the desired bet.
 Examples:
 /dice 5.50 - to play for $5.50"""
         )
-    my_bot = await client.get_me()
-    user = await client.get_entity(event.sender_id)
+    await client.get_me()
+    await client.get_entity(event.sender_id)
     await event.cliet.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
         buttons=dice_button,
     )
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
 async def normalbkos(event):
-    
 
-    
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]
     await event.client.send_message(

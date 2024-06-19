@@ -129,6 +129,7 @@ async def gameplay(event):
             response = client.on(
                 events.NewMessage(incoming=True, from_users=event.sender_id)
             )
+            print(response)
             player1 = response.media.value
             await asyncio.sleep(3)
             await event.reply("Now it's my turn")

@@ -96,7 +96,7 @@ async def gameplay(event):
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
         await asyncio.sleep(3)
         player2 = bot_player.media.value
-        userid, (score_player1, score_player2) = score[event.sender_id]
+        score_player1, score_player2 = score[event.sender_id]
         if player1 > player2:
             score_player1 += 1
             score[event.sender_id] = [score_player1, score_player2]
@@ -104,7 +104,7 @@ async def gameplay(event):
             score_player2 += 1
             score[event.sender_id] = [score_player1, score_player2]
         await event.reply(
-            f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
+            f"**Score**\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}"
         )
         game_mode.pop(event.sender_id)
 

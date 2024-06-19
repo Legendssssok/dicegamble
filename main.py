@@ -1,8 +1,8 @@
+import asyncio
 import contextlib
 import logging
 import re
 import sys
-import asyncio
 
 from telethon import Button, TelegramClient, events
 from telethon.tl.types import InputMediaDice

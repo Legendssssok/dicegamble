@@ -187,6 +187,7 @@ Examples:
         buttons=dice_button,
     )
 
+
 points_button = [
     [
         Button.inline("5 Round", data="5_round"),
@@ -199,6 +200,7 @@ points_button = [
     ],
 ]
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
 async def normalbkos(event):
     await event.edit(
@@ -206,12 +208,14 @@ async def normalbkos(event):
         buttons=points_button,
     )
 
+
 five_confirm_button = [
     [
         Button.inline("✅ Confirm", data="fve_confirm_button"),
         Button.inline("❌ Cancel", data="cancel"),
     ]
 ]
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5_round")))
 async def fierus(event):
@@ -226,8 +230,9 @@ Game mode: Normal Mode""",
         buttons=five_confirm_button,
     )
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
-async def fierus(event):    
+async def fierus(event):
     times = 5
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]

@@ -26,6 +26,8 @@ game_mode = {}
 
 score = {}
 
+round = {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -116,41 +118,38 @@ async def gameplay(event):
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     score_player1, score_player2 = score.get(event.sender_id, [0, 0])
+    current_round = round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
-        for i in range(times):
-            await event.respond(
-                f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
-            )
-            async with client.conversation(event.sender_id) as conv:
-                response = await conv.wait_event(
-                    events.NewMessage(incoming=True, from_users=event.sender_id)
-                )
-            player1 = response.media.value
-            await asyncio.sleep(3)
-            await event.reply("Now it's my turn")
-            bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
-            await asyncio.sleep(3)
-            player2 = bot_player.media.value
-            if player1 > player2:
-                score_player1 += 1
-                score[event.sender_id] = [score_player1, score_player2]
-            elif player1 < player2:
-                score_player2 += 1
-                score[event.sender_id] = [score_player1, score_player2]
-            else:
-                times += 1
-        await event.client.send_message(
-            event.chat_id,
-            f"""🏆 Game over!
+        await event.respond(
+            f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
+        )
+        player1 = response.media.value
+        await asyncio.sleep(3)
+        await event.reply("Now it's my turn")
+        bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
+        await asyncio.sleep(3)
+        player2 = bot_player.media.value
+        if player1 > player2:
+            score_player1 += 1
+            score[event.sender_id] = [score_player1, score_player2]
+        elif player1 < player2:
+            score_player2 += 1
+            score[event.sender_id] = [score_player1, score_player2]
+        else:
+            times += 1
+        if times == current_round:
+            await event.client.send_message(
+                event.chat_id,
+                f"""🏆 Game over!
 
 Score:
 {user.first_name} • {score_player1}
 {my_bot.first_name} • {score_player2}
 
 🎉 Congratulations!""",
-        )
-        game_mode.pop(event.sender_id)
-
+            )
+            game_mode.pop(event.sender_id)
+    round[event.sender_id] = current_round + 1
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

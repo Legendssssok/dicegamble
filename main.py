@@ -97,7 +97,6 @@ Player 1: f"[{my_bot.first_name}](tg://user?id={my_bot.id})"
 Player 2: f"[{user.first_name}](tg://user?id={user.id})"
 
 {user.first_name} , your turn! To start, send a dice emoji: 🎲""",
-        """,
         )
 
 

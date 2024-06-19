@@ -120,9 +120,6 @@ async def gameplay(event):
     score_player1, score_player2 = score.get(event.sender_id, [0, 0])
     current_round = round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
-        await event.respond(
-            f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
-        )
         player1 = event.media.value
         await asyncio.sleep(3)
         await event.reply("Now it's my turn")
@@ -149,6 +146,10 @@ Score:
 🎉 Congratulations!""",
             )
             game_mode.pop(event.sender_id)
+            return 
+        await event.respond(
+            f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
+        )
     round[event.sender_id] = current_round + 1
 
 

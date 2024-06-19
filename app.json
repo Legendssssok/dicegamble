@@ -1,0 +1,16 @@
+{
+    "name":"DICE GAMBLE BOT",
+    "description":"A Simple Telegram Bot",
+    "repository":"https://github.com/TG-LEGEND",
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        }
+    ],
+    "env": {
+        "TOKEN":{
+            "description": "Write your Expiry Date Prize 80 dollar every 4 month + 10 dollar extra per month",
+            "value":""
+        }
+    }
+}

@@ -126,10 +126,8 @@ async def gameplay(event):
                 event.chat_id,
                 f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
             )
-            response = client.on(
-                events.NewMessage(incoming=True, from_users=event.sender_id)
-            )
-            print(response)
+            async with client.conversation(event.sender_id) as conv:
+                response = await conv.get_response()
             player1 = response.media.value
             await asyncio.sleep(3)
             await event.reply("Now it's my turn")

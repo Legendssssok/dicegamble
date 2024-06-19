@@ -99,6 +99,7 @@ If you want to play with your friend, you can do it in our group - @.""",
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]
+    score[event.sender_id] = [0, 0]
     await event.client.send_message(
         event.chat_id,
         f"""**🎲 Play with Bot**
@@ -117,7 +118,7 @@ async def gameplay(event):
     gamemode, times = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    score_player1, score_player2 = score.get(event.sender_id, [0, 0])
+    score_player1, score_player2 = score[event.sender_id]
     current_round = round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
         player1 = event.media.value
@@ -133,7 +134,7 @@ async def gameplay(event):
             score_player2 += 1
             score[event.sender_id] = [score_player1, score_player2]
         else:
-            times += 1
+            current_round -= 1
         if times == current_round:
             await event.client.send_message(
                 event.chat_id,
@@ -148,11 +149,13 @@ Score:
             game_mode.pop(event.sender_id)
             return
         await event.respond(
-            f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
+            f"**Score**
+
+{user.first_name}: {score_player1}
+{my_bot.first_name}: {score_player2}
+
+**{user.first_name}**, it's your turn!",
         )
-    round[event.sender_id] = current_round + 1
-
-
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:
     with contextlib.suppress(ConnectionError):

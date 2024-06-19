@@ -19,10 +19,9 @@ from telethon.sessions import StringSession
 from telethon.sessions.string import _STRUCT_PREFORMAT, CURRENT_VERSION, StringSession
 from telethon.tl.functions.channels import JoinChannelRequest
 
-from config import *
-
-api_id = API_ID
-api_hash = API_HASH
+API_ID = 
+API_HASH = 
+TOKEN = 
 
 logging.basicConfig(
     format="[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s",
@@ -30,7 +29,7 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-LOGS = logging.getLogger("ForwardBot")
+LOGS = logging.getLogger("Dice bot")
 
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
@@ -43,7 +42,7 @@ game = [
     [
         Button.inline("💳 Deposit", data="deposit"),
         Button.inline("💸 Withdraw", data="withdraw"),
-    ]
+    ],
 ]
 
 @client.on(events.NewMessage(pattern="/start"))
@@ -64,8 +63,6 @@ Rules are simple: first to reach needed points wins.""",
 Your balance: $0.00 (0.00000 LTC)""",
             buttons=game,
         )
-
-
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

@@ -100,9 +100,9 @@ If you want to play with your friend, you can do it in our group - @.""",
     await event.client.send_message(
         event.chat_id,
         f"""**🎲 Play with Bot**
-        
-Player 1: [{my_bot.first_name}](tg://user?id={my_bot.id})
-Player 2: [{user.first_name}](tg://user?id={user.id})
+
+Player 1: [{user.first_name}](tg://user?id={user.id})
+Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
@@ -119,13 +119,9 @@ async def gameplay(event):
     if gamemode == "botwplayers":
         for i in range(times):
             await event.respond(
-                f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}",
+                f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
             )
             async with client.conversation(event.sender_id) as conv:
-                # await conv.send_message(
-                # f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
-                # )
-                # response = await conv.get_response()
                 response = await conv.wait_event(
                     events.NewMessage(incoming=True, from_users=event.sender_id)
                 )
@@ -142,7 +138,7 @@ async def gameplay(event):
                 score_player2 += 1
                 score[event.sender_id] = [score_player1, score_player2]
             else:
-                times = +1
+                times += 1
         await event.client.send_message(
             event.chat_id,
             f"""🏆 Game over!

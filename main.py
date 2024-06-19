@@ -105,11 +105,7 @@ Player 2: [{user.first_name}](tg://user?id={user.id})
     )
 
 
-@borg.on(
-    events.NewMessage(  # pylint:disable=E0602
-        incoming=True, func=lambda e: bool(e.mentioned)
-    )
-)
+@client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
     print("hello")
     gamemode = game_mode[event.sender_id]

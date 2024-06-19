@@ -24,6 +24,7 @@ client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
 game_mode = {}
 
+score = {}
 
 game = [
     [
@@ -95,6 +96,13 @@ async def gameplay(event):
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
         await asyncio.sleep(3)
         player2 = bot_player.media.value
+        userid, (score_player1, score_player2) = score()
+        if player1 > player2:
+            score_player1 += 1
+            score[event.sender_id] = [score_player1, score_player2]
+        elif player1 < player2:
+            score_player2 += 1
+            score[event.sender_id] = [score_player1, score_player2]
         await event.reply(
             f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
         )
@@ -116,6 +124,7 @@ If you want to play with your friend, you can do it in our group - @.""",
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = "botwplayers"
+    score[event.sender_id] = [0, 0]
     await event.client.send_message(
         event.chat_id,
         f"""**🎲 Play with Bot**

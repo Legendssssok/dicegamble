@@ -88,7 +88,7 @@ async def gameplay(event):
         return
     gamemode, times = game_mode[event.sender_id]
     if gamemode == "botwplayers":
-        for i in range (times):
+        for i in range(times):
             my_bot = await client.get_me()
             user = await client.get_entity(event.sender_id)
             player1 = event.media.value

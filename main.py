@@ -122,11 +122,13 @@ async def gameplay(event):
                 f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}",
             )
             async with client.conversation(event.sender_id) as conv:
-                #await conv.send_message(
-                    #f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
-                #)
-                #response = await conv.get_response()
-                response = await conv.wait_for_event(events.NewMessage(incoming=True, from_users=event.sender_id))
+                # await conv.send_message(
+                # f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
+                # )
+                # response = await conv.get_response()
+                response = await conv.wait_for_event(
+                    events.NewMessage(incoming=True, from_users=event.sender_id)
+                )
             player1 = response.media.value
             await asyncio.sleep(3)
             await event.reply("Now it's my turn")

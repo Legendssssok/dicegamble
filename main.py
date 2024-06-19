@@ -69,7 +69,7 @@ Your balance: $0.00 (0.00000 LTC)""",
 async def playagainstb(event):
     if event.is_private:
         return await event.edit(
-            """🎲 Play against bot
+            """**🎲 Play against bot**
 
 If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
@@ -81,10 +81,23 @@ async def dice(event):
     if event.is_private:
         return await event.client.send_message(
             event.chat_id,
-            """🎲 Play against friend
+            """**🎲 Play against friend**
 
 If you want to play with your friend, you can do it in our group - @.""",
-            buttons=game,
+            buttons=back_button,
+        )
+    text = event.text.split(" ")
+    bet_amount = text[1]
+    my_bot = await client.get_me()
+    user = await client.get_entity(event.from_user.id)
+    await event.client.send_message(
+        event.chat_id,
+        f"""**🎲 Play with Bot**
+Player 1: f"[{my_bot.first_name}](tg://user?id={my_bot.id})"
+Player 2: f"[{user.first_name}](tg://user?id={user.id})"
+
+{user.first_name} , your turn! To start, send a dice emoji: 🎲""",
+        """,
         )
 
 

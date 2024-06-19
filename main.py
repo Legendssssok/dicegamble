@@ -146,7 +146,7 @@ Score:
 🎉 Congratulations!""",
             )
             game_mode.pop(event.sender_id)
-            return 
+            return
         await event.respond(
             f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
         )

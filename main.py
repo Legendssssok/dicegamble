@@ -181,7 +181,7 @@ Examples:
         )
     await client.get_me()
     await client.get_entity(event.sender_id)
-    await event.cliet.send_message(
+    await event.client.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
         buttons=dice_button,

@@ -156,7 +156,8 @@ Score:
 
 **{user.first_name}**, it's your turn!""",
         )
-        
+
+
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:
     with contextlib.suppress(ConnectionError):

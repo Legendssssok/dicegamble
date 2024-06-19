@@ -84,7 +84,6 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
         )
 
 
-
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
     if not event.sender_id in game_mode:
@@ -132,6 +131,7 @@ Score:
         )
         round[event.sender_id] = current_round + 1
 
+
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
     if event.is_private:
@@ -157,7 +157,6 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
-
 
 
 # ==================== Start Client ==================#

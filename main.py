@@ -35,25 +35,36 @@ LOGS = logging.getLogger("ForwardBot")
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
 
+game = [
+    [
+        Button.inline("🎲 Play against friend", data="playagainstf"),
+        Button.inline("🎲 Play against bot", data="playagainstb"),
+    ],
+    [
+        Button.inline("💳 Deposit", data="deposit"),
+        Button.inline("💸 Withdraw", data="withdraw"),
+    ]
+]
+
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
-    await event.reply(
-        "**Greetings!**\n\nPlay dice with yo",
+    await event.client.send_message(
+        event.chat_id,
+        """**👋 Greetings!**
+
+Play dice with your friend or just with the bot!
+
+Rules are simple: first to reach needed points wins.""",
     )
+    if event.is_private:
+        await event.client.send_message(
+            event.chat_id,
+            """🏠 Menu
 
+Your balance: $0.00 (0.00000 LTC)""",
+            buttons=game,
+        )
 
-
-async def startup_process():
-  try:
-    await client.send_message(
-      i,
-      f"#START\n\n**Version** :- α • 1.0\n**Developed By** : Legend [ Developer / Bot Maker ]\n\nYour Dice Gamble Bot Has Been Started Successfully",
-    )
-  except:
-    pass
-
-
-client.loop.run_until_complete(startup_process())
 
 
 # ==================== Start Client ==================#

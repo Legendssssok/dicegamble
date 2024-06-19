@@ -187,10 +187,48 @@ Examples:
         buttons=dice_button,
     )
 
+points_button = [
+    [
+        Button.inline("5 Round", data="5_round"),
+    ],
+    [
+        Button.inline("3 Round", data="3_round"),
+    ],
+    [
+        Button.inline("1 Round", data="1_round"),
+    ],
+]
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
 async def normalbkos(event):
+    await event.edit(
+        "🎲 Choose the number of rouns to win",
+        buttons=points_button,
+    )
 
+five_confirm_button = [
+    [
+        Button.inline("✅ Confirm", data="fve_confirm_button"),
+        Button.inline("❌ Cancel", data="cancel"),
+    ]
+]
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5_round")))
+async def fierus(event):
+    await event.edit(
+        """🎲** Game Confirmation**
+
+Your bet: $1.00
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to 3 points
+Game mode: Normal Mode""",
+        buttons=five_confirm_button,
+    )
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
+async def fierus(event):    
+    times = 5
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]
     await event.client.send_message(

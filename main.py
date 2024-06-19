@@ -89,7 +89,7 @@ If you want to play with your friend, you can do it in our group - @.""",
     text = event.text.split(" ")
     text[1]
     my_bot = await client.get_me()
-    user = await client.get_entity(event.from_user.id)
+    user = await client.get_entity(event.sender_id)
     await event.client.send_message(
         event.chat_id,
         f"""**🎲 Play with Bot**

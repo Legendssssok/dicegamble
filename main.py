@@ -156,6 +156,7 @@ Score:
 
 **{user.first_name}**, it's your turn!""",
         )
+        round[event.sender_id] = current_round + 1
 
 
 # ==================== Start Client ==================#

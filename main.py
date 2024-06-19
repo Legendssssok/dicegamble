@@ -123,7 +123,7 @@ async def gameplay(event):
         await event.respond(
             f"Round {current_round}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}\n\n**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
         )
-        player1 = response.media.value
+        player1 = event.media.value
         await asyncio.sleep(3)
         await event.reply("Now it's my turn")
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))

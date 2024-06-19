@@ -2,6 +2,7 @@ import contextlib
 import logging
 import re
 import sys
+import asyncio
 
 from telethon import Button, TelegramClient, events
 from telethon.tl.types import InputMediaDice
@@ -89,12 +90,15 @@ async def gameplay(event):
         my_bot = await client.get_me()
         user = await client.get_entity(event.sender_id)
         player1 = event.media.value
+        await asyncio.sleep(3)
         await event.reply("Now it's my turn")
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
+        await asyncio.sleep(3)
         player2 = bot_player.media.value
         await event.reply(
             f"**Score**\n\n{user.first_name}: {player1}\n{my_bot.first_name}: {player2}"
         )
+        game_mode.pop(event.sender_id)
 
 
 @client.on(events.NewMessage(pattern="/dice"))

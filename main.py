@@ -112,9 +112,9 @@ async def gameplay(event):
             current_round -= 1
         if times == current_round:
             if score_player1 > score_player2:
-                winner = user.first_name
+                winner = f"🎉 Congratulations! {user.first_name} You won"
             elif score_player1 < score_player2:
-                winner = my_bot.first_name
+                winner = f"🎉 Congratulations! {my_bot.first_name} I Won"
             await event.client.send_message(
                 event.chat_id,
                 f"""🏆 **Game over!**
@@ -123,7 +123,7 @@ async def gameplay(event):
 {user.first_name} • {score_player1}
 {my_bot.first_name} • {score_player2}
 
-🎉 Congratulations! {winner} You won""",
+{winner}""",
             )
             game_mode.pop(event.sender_id)
             round.pop(event.sender_id)

@@ -151,6 +151,7 @@ Score:
             game_mode.pop(event.sender_id)
     round[event.sender_id] = current_round + 1
 
+
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:
     with contextlib.suppress(ConnectionError):

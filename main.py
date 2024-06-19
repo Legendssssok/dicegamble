@@ -87,7 +87,7 @@ If you want to play with your friend, you can do it in our group - @.""",
             buttons=back_button,
         )
     text = event.text.split(" ")
-    bet_amount = text[1]
+    text[1]
     my_bot = await client.get_me()
     user = await client.get_entity(event.from_user.id)
     await event.client.send_message(
@@ -97,7 +97,7 @@ Player 1: f"[{my_bot.first_name}](tg://user?id={my_bot.id})"
 Player 2: f"[{user.first_name}](tg://user?id={user.id})"
 
 {user.first_name} , your turn! To start, send a dice emoji: 🎲""",
-        )
+    )
 
 
 # ==================== Start Client ==================#

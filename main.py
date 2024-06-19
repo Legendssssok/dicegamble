@@ -94,11 +94,11 @@ async def gameplay(event):
         for i in range(times):
             await event.client.send_message(
                 event.chat_id,
-                f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}"
+                f"Round {i + 1}/{times}\n\n{user.first_name}: {score_player1}\n{my_bot.first_name}: {score_player2}",
             )
             await event.client.send_message(
                 event.chat_id,
-                f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲"
+                f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
             )
             response = await client.wait_for_event(
                 events.NewMessage(incoming=True, from_users=event.sender_id)
@@ -125,7 +125,7 @@ Score:
 {user.first_name} • {score_player1}
 {my_bot.first_name} • {score_player2}
 
-🎉 Congratulations!"""
+🎉 Congratulations!""",
         )
         game_mode.pop(event.sender_id)
 
@@ -154,6 +154,7 @@ Player 2: [{user.first_name}](tg://user?id={user.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
+
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

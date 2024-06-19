@@ -4,9 +4,9 @@ import sys
 
 from telethon import Button, TelegramClient, events
 
-API_ID = 627272
-API_HASH = "Hhss7272"
-TOKEN = "ywhjssj"
+API_ID = 11573285
+API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
+TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"
 
 logging.basicConfig(
     format="[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s",

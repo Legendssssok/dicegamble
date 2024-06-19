@@ -123,7 +123,7 @@ If you want to play with your friend, you can do it in our group - @.""",
             buttons=back_button,
         )
     text = event.text.split(" ")
-    times = text[1]
+    times = int(text[1])
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]

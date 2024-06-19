@@ -126,7 +126,7 @@ async def gameplay(event):
                 event.chat_id,
                 f"**{user.first_name}**, it's your turn! Send a dice emoji: 🎲",
             )
-            response = await client.on(
+            response = client.on(
                 events.NewMessage(incoming=True, from_users=event.sender_id)
             )
             player1 = response.media.value

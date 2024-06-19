@@ -19,9 +19,9 @@ from telethon.sessions import StringSession
 from telethon.sessions.string import _STRUCT_PREFORMAT, CURRENT_VERSION, StringSession
 from telethon.tl.functions.channels import JoinChannelRequest
 
-API_ID = 
-API_HASH = 
-TOKEN = 
+API_ID = 627272
+API_HASH = "Hhss7272"
+TOKEN = "ywhjssj"
 
 logging.basicConfig(
     format="[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s",

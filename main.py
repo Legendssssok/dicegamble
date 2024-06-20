@@ -388,7 +388,8 @@ async def gameplay(event):
 player1: {player1_score}
 {player2.first_name}: {player2_score}
 
-**{player2.first_name}**, it's your turn!""")
+**{player2.first_name}**, it's your turn!"""
+            )
             count_round[player2.id] = current_round + 1
         else:
             old_score[player2.id] = [player1]
@@ -411,7 +412,6 @@ player1 • {score_player1}
 
 {winner}""",
             )
-        
 
 
 # ==================== Start Client ==================#

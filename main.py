@@ -381,10 +381,10 @@ async def gameplay(event):
             player2_score = player1
             if player1_score > player2_score:
                 score_player1 += 1
-                score[player2.id] = [player1_score, player2_score]
+                score[player2.id] = [score_player1, score_player2]
             elif player1_score < player2_score:
                 score_player2 += 1
-                score[player2.id] = [player1_score, player2_score]
+                score[player2.id] = [score_player1, score_player2]
             else:
                 current_round -= 1
             if round + round == current_round:

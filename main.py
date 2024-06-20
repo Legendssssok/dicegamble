@@ -62,8 +62,56 @@ Your balance: $0.00 (0.00000 LTC)""",
         )
 
 
-@client.on(InlineQuery)
-async def inline_handler(event):
+# ======= Dice ========#
+
+
+@client.on(events.NewMessage(pattern="/dice"))
+async def dice(event):
+    if event.is_private:
+        return await event.client.send_message(
+            event.chat_id,
+            """**🎲 Play against friend**
+
+If you want to play with your friend, you can do it in our group - @.""",
+            buttons=back_button,
+        )
+    if event.sender_id in game_mode:
+        return await event.reply("Your previous game is yet not finished")
+    text = event.text.split(" ")
+    try:
+        int(text[1])
+    except:
+        return await event.reply(
+            """🎲 Play Dice
+
+To play, type the command /dice with the desired bet.
+
+Examples:
+/dice 5.50 - to play for $5.50"""
+        )
+    await event.client.send_message(
+        event.chat_id,
+        f"🎲 Choose the game mode",
+        buttons=[
+            [
+                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}"),
+            ],
+            [
+                Button.inline("Double Roll", data="doubleroll"),
+            ],
+            [
+                Button.inline("Crazy Mode", data="crazymode"),
+            ],
+            [
+                Button.inline("ℹ️ Guide", data="diceguide"),
+                Button.inline("❌ Cancel", data="cancel"),
+            ],
+        ],
+    )
+    
+
+@client.on(events.InlineQuery)
+async def inline_handr(event):
     print(hello)
     event.builder
     query = event.text
@@ -164,53 +212,6 @@ async def gameplay(event):
 # async def fien3dus(event):
 #     await event.delete()
 
-
-# ======= Dice ========#
-
-
-@client.on(events.NewMessage(pattern="/dice"))
-async def dice(event):
-    if event.is_private:
-        return await event.client.send_message(
-            event.chat_id,
-            """**🎲 Play against friend**
-
-If you want to play with your friend, you can do it in our group - @.""",
-            buttons=back_button,
-        )
-    if event.sender_id in game_mode:
-        return await event.reply("Your previous game is yet not finished")
-    text = event.text.split(" ")
-    try:
-        int(text[1])
-    except:
-        return await event.reply(
-            """🎲 Play Dice
-
-To play, type the command /dice with the desired bet.
-
-Examples:
-/dice 5.50 - to play for $5.50"""
-        )
-    await event.client.send_message(
-        event.chat_id,
-        f"🎲 Choose the game mode",
-        buttons=[
-            [
-                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}"),
-            ],
-            [
-                Button.inline("Double Roll", data="doubleroll"),
-            ],
-            [
-                Button.inline("Crazy Mode", data="crazymode"),
-            ],
-            [
-                Button.inline("ℹ️ Guide", data="diceguide"),
-                Button.inline("❌ Cancel", data="cancel"),
-            ],
-        ],
-    )
 
 
 points_button = [
@@ -383,8 +384,11 @@ five_confirm_button = [
 
 
 # ==================== Start Client ==================#
-if len(sys.argv) in {1, 3, 4}:
-    with contextlib.suppress(ConnectionError):
-        client.run_until_disconnected()
-else:
-    client.disconnect()
+
+client.run_until_disconnected()
+
+# if len(sys.argv) in {1, 3, 4}:
+#     with contextlib.suppress(ConnectionError):
+#         client.run_until_disconnected()
+# else:
+#     client.disconnect()

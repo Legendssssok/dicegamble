@@ -228,6 +228,7 @@ Game mode: Normal Mode""",
         buttons=five_confirm_button,
     )
 
+
 three_confirm_button = [
     [
         Button.inline("✅ Confirm", data="thee_confirm_button"),
@@ -247,8 +248,7 @@ Win multiplier: 1.92x
 Mode: First to 2 points
 Game mode: Normal Mode""",
         buttons=three_confirm_button,
-)
-    
+    )
 
 
 final3_confirm_button = [
@@ -283,6 +283,7 @@ If you want to play, click the "Accept Match" button""",
         buttons=final3_confirm_button,
     )
 
+
 final5_confirm_button = [
     [
         Button.inline("✅ Accept Match", data="playerwplayer"),
@@ -292,6 +293,7 @@ final5_confirm_button = [
         Button.inline("❌ Cancel", data="cancel"),
     ],
 ]
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
 async def fi5erus(event):
@@ -332,6 +334,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3botwplayer")))
 async def fien3dus(event):
     times = 5
@@ -348,6 +351,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
+
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

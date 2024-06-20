@@ -377,7 +377,7 @@ async def gameplay(event):
         if count_round.get(player2.id, 1) % 2 == 0:
             current_round = count_round[player2.id]
             score_player1, score_player2 = score[player2.id]
-            player1_score = old_score[event.sender_id]
+            player1_score = old_score[event.sender_id][0]
             player2_score = player1
             if player1_score > player2_score:
                 score_player1 += 1

@@ -289,9 +289,9 @@ async def gameplay(event):
         print(time_since_last_message)
         if time_since_last_message < int(max_time):
             return
-    gamemode, round = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
+    gamemode, round = game_mode[event.sender_id]
     score_player1, score_player2 = score[event.sender_id]
     current_round = count_round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
@@ -336,7 +336,7 @@ async def gameplay(event):
 
 **{user.first_name}**, it's your turn!""",
         )
-        round[event.sender_id] = current_round + 1
+        count_round[event.sender_id] = current_round + 1
 
 
 # ==================== Start Client ==================#

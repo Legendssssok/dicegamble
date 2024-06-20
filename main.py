@@ -272,9 +272,15 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
         )
 
+last_message_times = {}
+
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
+    max_time = 8
+    time_since_last_message = time.time() - last_message_times[user_id]
+    if time_since_last_message < int(max_time):
+        return
     if not event.sender_id in game_mode:
         return
     if event.text:
@@ -285,6 +291,7 @@ async def gameplay(event):
     score_player1, score_player2 = score[event.sender_id]
     current_round = round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
+        last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
         await asyncio.sleep(4)
         await event.reply("Now it's my turn")

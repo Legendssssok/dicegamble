@@ -319,9 +319,9 @@ async def gameplay(event):
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     gamemode, round = game_mode[event.sender_id][:2]
-    score_player1, score_player2 = score[event.sender_id]
-    current_round = count_round[event.sender_id]
     if gamemode == "botwplayers":
+        score_player1, score_player2 = score[event.sender_id]
+        current_round = count_round[event.sender_id]
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
         await asyncio.sleep(3)
@@ -374,6 +374,8 @@ async def gameplay(event):
         player_turn[event.sender_id] = player2.id
         await asyncio.sleep(3)
         if round % 2 == 0:
+            current_round = count_round[player2.id]
+            score_player1, score_player2 = score[player2.id]
             player1_score = old_score[event.sender_id]
             player2_score = player1
             if player1_score > player2_score:
@@ -384,6 +386,24 @@ async def gameplay(event):
                 score[player2.id] = [player1_score, player2_score]
             else:
                 current_round -= 1
+            if round == current_round:
+                game_mode.pop(event.sender_id)
+                count_round.pop(player2.id)
+                old_score.pop(event.sender_id)
+                if score_player1 > score_player2:
+                    winner = f"🎉 Congratulations!  you won"
+                elif score_player1 < score_player2:
+                    winner = f"🎉 Congratulations! {player2.first_name} You Won"
+                    return await event.client.send_message(
+                        event.chat_id,
+                        f"""🏆 **Game over!**
+
+**Score:**
+player1 • {score_player1}
+{player2.first_name} • {score_player2}
+
+{winner}"""
+                    )
             await event.respond(
                 f"""**Score**
 
@@ -396,24 +416,6 @@ player1: {player1_score}
         else:
             old_score[player2.id] = [player1]
             await event.reply(f"{player2.first_name} your turn")
-        if round == current_round:
-            game_mode.pop(event.sender_id)
-            count_round.pop(event.sender_id)
-            old_score.pop(player2.id)
-            if score_player1 > score_player2:
-                winner = f"🎉 Congratulations!  you won"
-            elif score_player1 < score_player2:
-                winner = f"🎉 Congratulations! {player2.first_name} You Won"
-            await event.client.send_message(
-                event.chat_id,
-                f"""🏆 **Game over!**
-
-**Score:**
-player1 • {score_player1}
-{player2.first_name} • {score_player2}
-
-{winner}""",
-            )
 
 
 # ==================== Start Client ==================#

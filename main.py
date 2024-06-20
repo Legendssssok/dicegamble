@@ -143,6 +143,7 @@ def final_confirm_button(user_id, round):
             Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
         ],
     ]
+    return final_confirms_button
 
 
 @client.on(events.CallbackQuery)

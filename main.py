@@ -312,7 +312,7 @@ async def gameplay(event):
             current_round -= 1
         if round == current_round:
             game_mode.pop(event.sender_id)
-            round.pop(event.sender_id)
+            count_round.pop(event.sender_id)
             if score_player1 > score_player2:
                 winner = f"🎉 Congratulations! {user.first_name} You won"
             elif score_player1 < score_player2:

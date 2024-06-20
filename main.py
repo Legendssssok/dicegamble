@@ -396,9 +396,9 @@ async def gameplay(event):
                     winner = f"🎉 Congratulations! {player2.first_name}  you won"
                 elif score_player1 < score_player2:
                     winner = f"🎉 Congratulations! {player1_details.first_name} You Won"
-                    return await event.client.send_message(
-                        event.chat_id,
-                        f"""🏆 **Game over!**
+                return await event.client.send_message(
+                    event.chat_id,
+                    f"""🏆 **Game over!**
 
 **Score:**
 {player2.first_name}  • {score_player1}
@@ -406,7 +406,7 @@ async def gameplay(event):
 
 {winner}""",
                     )
-            await event.respond(
+            await event.reply(
                 f"""**Score**
 
 {player2.first_name}: {score_player1}

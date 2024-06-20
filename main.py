@@ -313,7 +313,6 @@ async def gameplay(event):
     if event.sender_id in last_message_times:
         max_time = 9
         time_since_last_message = time.time() - last_message_times[event.sender_id]
-        print(time_since_last_message)
         if time_since_last_message < int(max_time):
             return
     my_bot = await client.get_me()

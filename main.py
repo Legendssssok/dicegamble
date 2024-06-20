@@ -218,7 +218,7 @@ async def normalbkos(event):
     )
 
 
-#======= Five all handle ========#
+# ======= Five all handle ========#
 
 five_confirm_button = [
     [
@@ -293,7 +293,8 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
 
-#======== 3 All Handle ========
+
+# ======== 3 All Handle ========
 
 
 three_confirm_button = [
@@ -302,6 +303,7 @@ three_confirm_button = [
         Button.inline("❌ Cancel", data="cancel"),
     ]
 ]
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3_round")))
 async def fierus(event):
@@ -369,9 +371,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
     )
 
 
-
-#============ 1 All Handle ===========
-
+# ============ 1 All Handle ===========
 
 
 # ==================== Start Client ==================#

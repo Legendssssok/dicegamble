@@ -368,25 +368,28 @@ async def gameplay(event):
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
         opponent_id = game_mode[event.sender_id][2]
+        print(player_turn[event.sender_id])
+        print(event.sender_id)
         if player_turn[event.sender_id] != event.sender_id:
             return await event.reply("It's not your turn!")
-        await asyncio.sleep(3)
-        await event.reply(f"Now it's {opponent_id}'s turn")
-        async with client.conversation(event.chat_id) as conv:
-            lol = await conv.wait_event(
-                events.NewMessage(incoming=True, from_users=int(opponent_id))
-            )
-            print(lol)
-        await asyncio.sleep(3)
+        player2 = event.media.value
+        # await asyncio.sleep(3)
+        # await event.reply(f"Now it's {opponent_id}'s turn")
+        # async with client.conversation(event.chat_id) as conv:
+        #     lol = await conv.wait_event(
+        #         events.NewMessage(incoming=True, from_users=int(opponent_id))
+        #     )
+        #     print(lol)
+        # await asyncio.sleep(3)
         player_turn[event.sender_id] = opponent_id
         player_turn[opponent_id] = opponent_id
-        await asyncio.sleep(3)
-        if player1 > player2:
-            score_player1 += 1
-        elif player1 < player2:
-            score_player2 += 1
-        else:
-            current_round -= 1
+        # await asyncio.sleep(3)
+        # if player1 > player2:
+        #     score_player1 += 1
+        # elif player1 < player2:
+        #     score_player2 += 1
+        # else:
+        #     current_round -= 1
         if round == current_round:
             game_mode.pop(event.sender_id)
             game_mode.pop(opponent_id)

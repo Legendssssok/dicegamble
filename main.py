@@ -110,7 +110,6 @@ Examples:
 
 @client.on(events.CallbackQuery)
 async def callback_query(event):
-    event.builder
     query = event.text
     query_user_id = event.query.user_id
     if query.startswith("normalmode"):

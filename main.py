@@ -107,8 +107,8 @@ Examples:
     )
 
 
-@client.on(events.InlineQuery)
-async def inline_handr(event):
+@client.on(events.CallbackQuery)
+async def callback_query(event):
     print(hello)
     event.builder
     query = event.text

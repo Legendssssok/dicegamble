@@ -374,7 +374,7 @@ async def gameplay(event):
         player_turn[event.sender_id] = player2.id
         player_turn[opponent_id] = player2.id
         await asyncio.sleep(3)
-        if round % 2 == 0:
+        if count_round.get(player2.id, 1) % 2 == 0:
             current_round = count_round[player2.id]
             score_player1, score_player2 = score[player2.id]
             player1_score = old_score[event.sender_id]
@@ -415,6 +415,7 @@ player1: {player1_score}
             )
             count_round[player2.id] = current_round + 1
         else:
+            current_round = count_round[event.sender_id]
             old_score[player2.id] = [player1]
             await event.reply(f"{player2.first_name} your turn")
             count_round[event.sender_id] = current_round + 1

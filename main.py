@@ -151,7 +151,7 @@ async def callback_query(event):
     query = event.data.decode("ascii").lower()
     query_user_id = event.query.user_id
     if query.startswith("cancel"):
-        user_id = query.split("_")
+        user_id = query.split("_")[1]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"

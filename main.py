@@ -321,6 +321,7 @@ async def gameplay(event):
     gamemode, round = game_mode[event.sender_id][:2]
     score_player1, score_player2 = score[event.sender_id]
     current_round = count_round[event.sender_id]
+    print(gamemode)
     if gamemode == "botwplayers":
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value

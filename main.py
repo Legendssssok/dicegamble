@@ -5,8 +5,9 @@ import re
 import sys
 
 from telethon import Button, TelegramClient, events
+from telethon.events import InlineQuery
 from telethon.tl.types import InputMediaDice
-from telethon.events import CallbackQuery, InlineQuery
+
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
 TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"

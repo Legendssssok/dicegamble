@@ -263,9 +263,11 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
         score[player1.id] = [0, 0]
-        game_mode[player1.id] = ["playerwplayer", int(round)]
+        game_mode[int(user_id)] = ["playerwplayer", int(round), query_user_id]
+        game_mode[query_user_id] = ["playerwplayer", int(round), int(user_id)]
         count_round[player1.id] = 1
         player_turn[player1.id] = player1.id
+        player_turn[player2.id] = player1.id
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Player vs Player**
@@ -316,7 +318,7 @@ async def gameplay(event):
             return
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    gamemode, round = game_mode[event.sender_id]
+    gamemode, round = game_mode[event.sender_id][:2]
     score_player1, score_player2 = score[event.sender_id]
     current_round = count_round[event.sender_id]
     if gamemode == "botwplayers":
@@ -367,8 +369,8 @@ async def gameplay(event):
             return await event.reply("It's not your turn")
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
-        player2_id = [id for id in game_mode if id != event.sender_id][0]
-        player2 = await client.get_entity(player2_id)
+        opponent_id = game_mode[event.sender_id][2]
+        player2 = await client.get_entity(opponent_id)
         player_turn[event.sender_id] = player2.id
         await asyncio.sleep(3)
         if round % 2 == 0:

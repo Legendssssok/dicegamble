@@ -387,7 +387,7 @@ async def gameplay(event):
                 score_player2 += 1
                 score[player2.id] = [score_player1, score_player2]
             else:
-                current_round -= 1
+                current_round -= 2
             if round + round == current_round:
                 game_mode.pop(event.sender_id)
                 count_round.pop(player2.id)

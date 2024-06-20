@@ -112,7 +112,8 @@ Examples:
 async def callback_query(event):
     query = event.data
     query_user_id = event.query.user_id
-    if query.startswith("normalmode"):
+    print(query)
+    if query.startswith(b"normalmode"):
         user_id = query.text.split("_")[1]
         if query_user_id != user_id:
             return

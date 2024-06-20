@@ -265,7 +265,7 @@ If you want to play, click the "Accept Match" button""",
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"botwplayer")))
 async def fierndus(event):
     times = 5
-    await client.get_me()
+    my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]
     score[event.sender_id] = [0, 0]

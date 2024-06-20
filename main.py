@@ -25,7 +25,7 @@ game_mode = {}
 
 score = {}
 
-round = {}
+count_round = {}
 
 game = [
     [
@@ -279,27 +279,28 @@ last_message_times = {}
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
-    if event.sender_id in last_message_times:
-        max_time = 8
-        time_since_last_message = time.time() - last_message_times[event.sender_id]
-        if time_since_last_message < int(max_time):
-            return
     if not event.sender_id in game_mode:
         return
     if event.text:
         return
-    gamemode, times = game_mode[event.sender_id]
+    if event.sender_id in last_message_times:
+        max_time = 9
+        time_since_last_message = time.time() - last_message_times[event.sender_id]
+        print(time_since_last_message)
+        if time_since_last_message < int(max_time):
+            return
+    gamemode, round = game_mode[event.sender_id]
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     score_player1, score_player2 = score[event.sender_id]
-    current_round = round.get(event.sender_id, 1)
+    current_round = count_round.get(event.sender_id, 1)
     if gamemode == "botwplayers":
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
-        await asyncio.sleep(4)
+        await asyncio.sleep(3)
         await event.reply("Now it's my turn")
         bot_player = await event.reply(file=InputMediaDice(emoticon="🎲"))
-        await asyncio.sleep(4)
+        await asyncio.sleep(3)
         player2 = bot_player.media.value
         if player1 > player2:
             score_player1 += 1
@@ -309,7 +310,9 @@ async def gameplay(event):
             score[event.sender_id] = [score_player1, score_player2]
         else:
             current_round -= 1
-        if times == current_round:
+        if round == current_round:
+            game_mode.pop(event.sender_id)
+            round.pop(event.sender_id)
             if score_player1 > score_player2:
                 winner = f"🎉 Congratulations! {user.first_name} You won"
             elif score_player1 < score_player2:
@@ -324,8 +327,6 @@ async def gameplay(event):
 
 {winner}""",
             )
-            game_mode.pop(event.sender_id)
-            round.pop(event.sender_id)
             return
         await event.respond(
             f"""**Score**

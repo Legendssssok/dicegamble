@@ -63,6 +63,24 @@ Your balance: $0.00 (0.00000 LTC)""",
         )
 
 
+@client.on(InlineQuery)
+async def inline_handler(event):
+    print(hello)
+    event.builder
+    query = event.text
+    query_user_id = event.query.user_id
+    print(query)
+    print(query_user_id)
+    if query.startswith("normalmode"):
+        user_id = query.text.split("_")[1]
+        if query_user_id != user_id:
+            return
+        await event.edit(
+            "🎲 Choose the number of rouns to win",
+            buttons=points_button,
+        )
+
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
 async def home(event):
     if event.is_private:
@@ -195,23 +213,6 @@ Examples:
         ],
     )
 
-
-@client.on(InlineQuery)
-async def inline_handler(event):
-    print(hello)
-    event.builder
-    query = event.text
-    query_user_id = event.query.user_id
-    print(query)
-    print(query_user_id)
-    if query.startswith("normalmode"):
-        user_id = query.text.split("_")[1]
-        if query_user_id != user_id:
-            return
-        await event.edit(
-            "🎲 Choose the number of rouns to win",
-            buttons=points_button,
-        )
 
 
 points_button = [

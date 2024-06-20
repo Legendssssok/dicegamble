@@ -1,10 +1,7 @@
 import asyncio
-import contextlib
 import logging
-import sys
 
 from telethon import Button, TelegramClient, events
-from telethon.events import InlineQuery
 from telethon.tl.types import InputMediaDice
 
 API_ID = 11573285
@@ -108,7 +105,7 @@ Examples:
             ],
         ],
     )
-    
+
 
 @client.on(events.InlineQuery)
 async def inline_handr(event):
@@ -211,7 +208,6 @@ async def gameplay(event):
 # @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel")))
 # async def fien3dus(event):
 #     await event.delete()
-
 
 
 points_button = [

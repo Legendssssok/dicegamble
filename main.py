@@ -206,6 +206,7 @@ Game mode: Normal Mode""",
             points = 2
         else:
             points = 1
+        button = final_confirm_button(user_id, round)
         await event.client.send_message(
             event.chat_id,
             f"""{user.first_name} wants to play dice!
@@ -219,7 +220,7 @@ Normal Mode
 Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
 
 If you want to play, click the "Accept Match" button""",
-            buttons=,
+            buttons=button,
         )
     elif query.startswith("botwplayers"):
         text = query.split("_")

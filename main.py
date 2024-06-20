@@ -228,11 +228,33 @@ Game mode: Normal Mode""",
         buttons=five_confirm_button,
     )
 
+three_confirm_button = [
+    [
+        Button.inline("✅ Confirm", data="thee_confirm_button"),
+        Button.inline("❌ Cancel", data="cancel"),
+    ]
+]
 
-final_confirm_button = [
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3_round")))
+async def fierus(event):
+    await event.edit(
+        """🎲** Game Confirmation**
+
+Your bet: $1.00
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to 2 points
+Game mode: Normal Mode""",
+        buttons=three_confirm_button,
+)
+    
+
+
+final3_confirm_button = [
     [
         Button.inline("✅ Accept Match", data="playerwplayer"),
-        Button.inline("✅ Play against bot", data="botwplayer"),
+        Button.inline("✅ Play against bot", data="3botwplayer"),
     ],
     [
         Button.inline("❌ Cancel", data="cancel"),
@@ -240,7 +262,7 @@ final_confirm_button = [
 ]
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"thee_confirm_button")))
 async def fierus(event):
     await event.delete()
     await client.get_me()
@@ -258,12 +280,43 @@ Normal Mode
 Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
 
 If you want to play, click the "Accept Match" button""",
-        buttons=final_confirm_button,
+        buttons=final3_confirm_button,
+    )
+
+final5_confirm_button = [
+    [
+        Button.inline("✅ Accept Match", data="playerwplayer"),
+        Button.inline("✅ Play against bot", data="5botwplayer"),
+    ],
+    [
+        Button.inline("❌ Cancel", data="cancel"),
+    ],
+]
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
+async def fi5erus(event):
+    await event.delete()
+    await client.get_me()
+    user = await client.get_entity(event.sender_id)
+    await event.client.send_message(
+        event.chat_id,
+        f"""{user.first_name} wants to play dice!
+
+Bet: $1.00
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to 3 points
+
+Normal Mode
+Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
+
+If you want to play, click the "Accept Match" button""",
+        buttons=final5_confirm_button,
     )
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"botwplayer")))
-async def fierndus(event):
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5botwplayer")))
+async def fie5rndus(event):
     times = 5
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
@@ -279,6 +332,22 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
     )
 
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3botwplayer")))
+async def fien3dus(event):
+    times = 5
+    my_bot = await client.get_me()
+    user = await client.get_entity(event.sender_id)
+    game_mode[user.id] = ["botwplayers", times]
+    score[event.sender_id] = [0, 0]
+    await event.client.send_message(
+        event.chat_id,
+        f"""**🎲 Play with Bot**
+
+Player 1: [{user.first_name}](tg://user?id={user.id})
+Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
+
+**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
+    )
 
 # ==================== Start Client ==================#
 if len(sys.argv) in {1, 3, 4}:

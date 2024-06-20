@@ -1,7 +1,6 @@
 import asyncio
 import contextlib
 import logging
-import re
 import sys
 
 from telethon import Button, TelegramClient, events
@@ -101,8 +100,6 @@ async def inline_handler(event):
 # If you want to play with a bot, use the /dice command in our group - @ None""",
 #             buttons=back_button,
 #         )
-
-
 
 
 @client.on(events.NewMessage(incoming=True))

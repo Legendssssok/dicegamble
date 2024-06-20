@@ -308,7 +308,7 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if event.media or not isinstance(event.media, InputMediaDice):
+    if not isinstance(event.media, InputMediaDice):
         return
     if event.sender_id in last_message_times:
         max_time = 9

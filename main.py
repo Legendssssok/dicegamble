@@ -419,6 +419,7 @@ player1: {player1_score}
             await event.reply(f"{player2.first_name} your turn")
             count_round[event.sender_id] = current_round + 1
 
+
 # ==================== Start Client ==================#
 
 client.run_until_disconnected()

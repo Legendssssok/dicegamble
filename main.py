@@ -41,21 +41,7 @@ game = [
 
 back_button = [[Button.inline("⬅️ Back", data="home")]]
 
-dice_button = [
-    [
-        Button.inline("Normal Mode", data="normalmode"),
-    ],
-    [
-        Button.inline("Double Roll", data="doubleroll"),
-    ],
-    [
-        Button.inline("Crazy Mode", data="crazymode"),
-    ],
-    [
-        Button.inline("ℹ️ Guide", data="diceguide"),
-        Button.inline("❌ Cancel", data="cancel"),
-    ],
-]
+
 
 
 @client.on(events.NewMessage(pattern="/start"))
@@ -182,7 +168,7 @@ If you want to play with your friend, you can do it in our group - @.""",
     try:
         int(text[1])
     except:
-        await event.reply(
+        return await event.reply(
             """🎲 Play Dice
 
 To play, type the command /dice with the desired bet.
@@ -193,7 +179,37 @@ Examples:
     await event.client.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
-        buttons=dice_button,
+        buttons=[
+            [
+                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}"),
+            ],
+            [
+                Button.inline("Double Roll", data="doubleroll"),
+            ],
+            [
+                Button.inline("Crazy Mode", data="crazymode"),
+            ],
+            [
+                Button.inline("ℹ️ Guide", data="diceguide"),
+                Button.inline("❌ Cancel", data="cancel"),
+            ],
+        ]
+    )
+
+
+
+@client.on(InlineQuery)
+async def inline_handler(event):
+    builder = event.builder
+    query = event.text
+    query_user_id = event.query.user_id
+    if query.startswith("normalmode"):
+        user_id = query.text.split("_")[1]
+        if query_user_id != user_id:
+            return
+        await event.edit(
+        "🎲 Choose the number of rouns to win",
+        buttons=points_button,
     )
 
 
@@ -208,18 +224,6 @@ points_button = [
         Button.inline("1 Round", data="1_round"),
     ],
 ]
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
-async def normalbkos(event):
-    if event.query.user_id == event.client.uid:
-        print(event.query.user_id)
-        print(event.client.uid)
-        return
-    await event.edit(
-        "🎲 Choose the number of rouns to win",
-        buttons=points_button,
-    )
 
 
 # ======= Five all handle ========#

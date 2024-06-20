@@ -102,26 +102,44 @@ Examples:
             ],
             [
                 Button.inline("ℹ️ Guide", data="diceguide"),
-                Button.inline("❌ Cancel", data="cancel"),
+                Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
             ],
         ],
     )
+
+
+def point_button(user_id):
+    points_button = [
+       [
+            Button.inline("5 Round", data="round_{user_id}_5"),
+        ],
+        [
+            Button.inline("3 Round", data="round_{user_id}_3"),
+        ],
+        [
+            Button.inline("1 Round", data="round_{user_id}_1"),
+        ],
+    ]
+    return points_button
 
 
 @client.on(events.CallbackQuery)
 async def callback_query(event):
     query = event.data.decode("ascii").lower()
     query_user_id = event.query.user_id
-    print(query)
-    print(query_user_id)
+    if query.startswith("cancel"):
+        user_id = query.split("_")
+        if query_user_id != int(user_id):
+            return await event.answer("Sorry, but you are not allowed to click others users button")
     if query.startswith("normalmode"):
         user_id = query.split("_")[1]
         if query_user_id != int(user_id):
-            return
+            return await event.answer("Sorry, but you are not allowed to click others users button")
         await event.edit(
             "🎲 Choose the number of rouns to win",
             buttons=points_button,
         )
+    
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
@@ -201,25 +219,6 @@ async def gameplay(event):
         round[event.sender_id] = current_round + 1
 
 
-# ======= Cancel =======#
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel")))
-async def fien3dus(event):
-    await event.delete()
-
-
-points_button = [
-    [
-        Button.inline("5 Round", data="5_round"),
-    ],
-    [
-        Button.inline("3 Round", data="3_round"),
-    ],
-    [
-        Button.inline("1 Round", data="1_round"),
-    ],
-]
 
 
 # ======= Five all handle ========#

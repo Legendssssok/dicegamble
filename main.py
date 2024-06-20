@@ -357,8 +357,9 @@ async def gameplay(event):
         )
         count_round[event.sender_id] = current_round + 1
     elif gamemode == "playerwplayer":
-        return 
-        
+        return
+
+
 # ==================== Start Client ==================#
 
 client.run_until_disconnected()

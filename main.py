@@ -240,7 +240,7 @@ final_confirm_button = [
 ]
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"botwplayer")))
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
 async def fierus(event):
     await event.delete()
     await client.get_me()

@@ -235,7 +235,7 @@ final_confirm_button = [
         Button.inline("✅ Play against bot", data="botwplayer"),
     ],
     [
-        Button.inlinr("❌ Cancel", data="cancel"),
+        Button.inline("❌ Cancel", data="cancel"),
     ],
 ]
 

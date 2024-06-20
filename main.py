@@ -212,6 +212,10 @@ points_button = [
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"normalmode")))
 async def normalbkos(event):
+    if event.query.user_id == event.client.uid:
+        print(event.query.user_id)
+        print(event.client.uid)
+        return
     await event.edit(
         "🎲 Choose the number of rouns to win",
         buttons=points_button,

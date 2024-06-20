@@ -373,9 +373,10 @@ async def gameplay(event):
         await asyncio.sleep(3)
         await event.reply(f"Now it's {opponent_id}'s turn")
         async with client.conversation(event.chat_id) as conv:
-            await conv.wait_for_event(
+            lol = await conv.wait_event(
                 events.NewMessage(incoming=True, from_users=int(opponent_id))
             )
+            print(lol)
         await asyncio.sleep(3)
         player_turn[event.sender_id] = opponent_id
         player_turn[opponent_id] = opponent_id

@@ -408,8 +408,8 @@ player1 • {score_player1}
             await event.respond(
                 f"""**Score**
 
-player1: {player1_score}
-{player2.first_name}: {player2_score}
+player1: {score_player1}
+{player2.first_name}: {score_player2}
 
 **{player2.first_name}**, it's your turn!"""
             )

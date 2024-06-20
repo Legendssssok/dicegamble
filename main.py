@@ -113,7 +113,7 @@ async def callback_query(event):
     query = event.data.decode("ascii").lower()
     query_user_id = event.query.user_id
     print(query)
-    if query.startswith(b"normalmode"):
+    if query.startswith("normalmode"):
         user_id = query.split("_")[1]
         if query_user_id != user_id:
             return

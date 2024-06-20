@@ -154,6 +154,13 @@ async def gameplay(event):
         )
         round[event.sender_id] = current_round + 1
 
+#======= Cancel =======#
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel")))
+async def fien3dus(event):
+    await event.delete()
+
+#======= Dice ========#
 
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
@@ -319,6 +326,7 @@ If you want to play, click the "Accept Match" button""",
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5botwplayer")))
 async def fie5rndus(event):
+    await event.delete()
     times = 5
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
@@ -337,7 +345,8 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3botwplayer")))
 async def fien3dus(event):
-    times = 5
+    await event.delete()
+    times = 3
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
     game_mode[user.id] = ["botwplayers", times]

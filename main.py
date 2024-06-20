@@ -308,7 +308,7 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if event.text:
+    if event.media or not not isinstance(event.media, InputMediaDice):
         return
     if event.sender_id in last_message_times:
         max_time = 9
@@ -318,7 +318,7 @@ async def gameplay(event):
             return
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    gamemode, round = game_mode[event.sender_id]
+    gamemode, round = game_mode[event.sender_id][:2]
     score_player1, score_player2 = score[event.sender_id]
     current_round = count_round[event.sender_id]
     if gamemode == "botwplayers":

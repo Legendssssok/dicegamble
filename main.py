@@ -27,6 +27,8 @@ score = {}
 
 count_round = {}
 
+player_turn = {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),

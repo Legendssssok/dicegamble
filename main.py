@@ -372,6 +372,7 @@ async def gameplay(event):
         opponent_id = game_mode[event.sender_id][2]
         player2 = await client.get_entity(opponent_id)
         player_turn[event.sender_id] = player2.id
+        player_turn[opponent_id] = player2.id
         await asyncio.sleep(3)
         if round % 2 == 0:
             current_round = count_round[player2.id]

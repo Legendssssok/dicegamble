@@ -113,9 +113,10 @@ async def callback_query(event):
     query = event.data.decode("ascii").lower()
     query_user_id = event.query.user_id
     print(query)
+    print(query_user_id)
     if query.startswith("normalmode"):
         user_id = query.split("_")[1]
-        if query_user_id != user_id:
+        if query_user_id != int(user_id):
             return
         await event.edit(
             "🎲 Choose the number of rouns to win",

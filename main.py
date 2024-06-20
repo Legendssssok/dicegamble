@@ -42,8 +42,6 @@ game = [
 back_button = [[Button.inline("⬅️ Back", data="home")]]
 
 
-
-
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
     await event.client.send_message(
@@ -193,14 +191,13 @@ Examples:
                 Button.inline("ℹ️ Guide", data="diceguide"),
                 Button.inline("❌ Cancel", data="cancel"),
             ],
-        ]
+        ],
     )
-
 
 
 @client.on(InlineQuery)
 async def inline_handler(event):
-    builder = event.builder
+    event.builder
     query = event.text
     query_user_id = event.query.user_id
     if query.startswith("normalmode"):
@@ -208,9 +205,9 @@ async def inline_handler(event):
         if query_user_id != user_id:
             return
         await event.edit(
-        "🎲 Choose the number of rouns to win",
-        buttons=points_button,
-    )
+            "🎲 Choose the number of rouns to win",
+            buttons=points_button,
+        )
 
 
 points_button = [

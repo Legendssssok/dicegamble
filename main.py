@@ -154,13 +154,17 @@ async def gameplay(event):
         )
         round[event.sender_id] = current_round + 1
 
-#======= Cancel =======#
+
+# ======= Cancel =======#
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"cancel")))
 async def fien3dus(event):
     await event.delete()
 
-#======= Dice ========#
+
+# ======= Dice ========#
+
 
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):

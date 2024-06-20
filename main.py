@@ -156,7 +156,8 @@ async def callback_query(event):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
-    if query.startswith("normalmode"):
+        await event.delete()
+    elif query.startswith("normalmode"):
         user_id = query.split("_")[1]
         if query_user_id != int(user_id):
             return await event.answer(

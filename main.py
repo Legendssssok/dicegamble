@@ -109,12 +109,9 @@ Examples:
 
 @client.on(events.CallbackQuery)
 async def callback_query(event):
-    print(hello)
     event.builder
     query = event.text
     query_user_id = event.query.user_id
-    print(query)
-    print(query_user_id)
     if query.startswith("normalmode"):
         user_id = query.text.split("_")[1]
         if query_user_id != user_id:

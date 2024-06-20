@@ -239,6 +239,7 @@ If you want to play, click the "Accept Match" button""",
         user = await client.get_entity(int(user_id))
         game_mode[user.id] = ["botwplayers", int(round)]
         score[user.id] = [0, 0]
+        count_round[user.id] = 1
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Play with Bot**
@@ -293,7 +294,7 @@ async def gameplay(event):
     user = await client.get_entity(event.sender_id)
     gamemode, round = game_mode[event.sender_id]
     score_player1, score_player2 = score[event.sender_id]
-    current_round = count_round.get(event.sender_id, 1)
+    current_round = count_round[event.sender_id] 
     if gamemode == "botwplayers":
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value

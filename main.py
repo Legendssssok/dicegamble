@@ -369,6 +369,7 @@ async def gameplay(event):
             return await event.reply("It's not your turn")
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
+        player1_details = await client.get_entity(event.sender_id)
         opponent_id = game_mode[event.sender_id][2]
         player2 = await client.get_entity(opponent_id)
         player_turn[event.sender_id] = player2.id
@@ -392,16 +393,16 @@ async def gameplay(event):
                 count_round.pop(player2.id)
                 old_score.pop(event.sender_id)
                 if score_player1 > score_player2:
-                    winner = f"🎉 Congratulations!  you won"
+                    winner = f"🎉 Congratulations! {player2.first_name}  you won"
                 elif score_player1 < score_player2:
-                    winner = f"🎉 Congratulations! {player2.first_name} You Won"
+                    winner = f"🎉 Congratulations! {player1_details.first_name} You Won"
                     return await event.client.send_message(
                         event.chat_id,
                         f"""🏆 **Game over!**
 
 **Score:**
 {player2.first_name}  • {score_player1}
-player2• {score_player2}
+{player1_details.first_name}• {score_player2}
 
 {winner}""",
                     )
@@ -409,7 +410,7 @@ player2• {score_player2}
                 f"""**Score**
 
 {player2.first_name}: {score_player1}
-player2: {score_player2}
+{player1_details.first_name}: {score_player2}
 
 **{player2.first_name}**, it's your turn!"""
             )

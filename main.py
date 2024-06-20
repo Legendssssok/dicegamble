@@ -402,7 +402,7 @@ async def gameplay(event):
 player1 • {score_player1}
 {player2.first_name} • {score_player2}
 
-{winner}"""
+{winner}""",
                     )
             await event.respond(
                 f"""**Score**

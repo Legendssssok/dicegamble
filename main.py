@@ -306,6 +306,8 @@ last_message_times = {}
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
+    print(event.sender_id)
+    print(game_mode)
     if not event.sender_id in game_mode:
         return
     if event.text:

@@ -122,6 +122,7 @@ def point_button(user_id):
     ]
     return points_button
 
+
 def confirm_button(user_id, round):
     confirms_button = [
         [
@@ -141,9 +142,9 @@ def final_confirm_button(user_id, round):
         [
             Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
         ],
-   ]
-     
-    
+    ]
+
+
 @client.on(events.CallbackQuery)
 async def callback_query(event):
     query = event.data.decode("ascii").lower()
@@ -181,14 +182,14 @@ async def callback_query(event):
             points = 1
         button = confirm_button(user_id, round)
         await event.edit(
-        f"""🎲** Game Confirmation**
+            f"""🎲** Game Confirmation**
 
 Your bet: $ amount
 Win chance: 50/50
 Win multiplier: 1.92x
 Mode: First to {points} points
 Game mode: Normal Mode""",
-        buttons=button,
+            buttons=button,
         )
     elif query.startswith("confirm"):
         text = query.split("_")
@@ -246,7 +247,6 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         )
     elif query.startswith("playerwplayer"):
         await event.edit("Under Development")
-        
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
@@ -324,7 +324,6 @@ async def gameplay(event):
 **{user.first_name}**, it's your turn!""",
         )
         round[event.sender_id] = current_round + 1
-
 
 
 # ==================== Start Client ==================#

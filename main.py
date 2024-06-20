@@ -279,10 +279,11 @@ last_message_times = {}
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
-    max_time = 8
-    time_since_last_message = time.time() - last_message_times[user_id]
-    if time_since_last_message < int(max_time):
-        return
+    if event.sender_id in last_message_times:
+        max_time = 8
+        time_since_last_message = time.time() - last_message_times[event.sender_id]
+        if time_since_last_message < int(max_time):
+            return
     if not event.sender_id in game_mode:
         return
     if event.text:

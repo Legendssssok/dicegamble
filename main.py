@@ -237,7 +237,7 @@ If you want to play, click the "Accept Match" button""",
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
         game_mode[user.id] = ["botwplayers", int(round)]
-        score[user_id] = [0, 0]
+        score[user.id] = [0, 0]
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Play with Bot**

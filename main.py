@@ -372,13 +372,11 @@ async def gameplay(event):
             return await event.reply("It's not your turn!")
         await asyncio.sleep(3)
         await event.reply(f"Now it's {opponent_id}'s turn")
+        async with client.conversation(event.chat_id) as conv:
+            await conv.wait_for_event(events.NewMessage(incoming=True, from_users=int(opponent_id))
         await asyncio.sleep(3)
         player_turn[event.sender_id] = opponent_id
         player_turn[opponent_id] = opponent_id
-        await event.client.send_message(
-            event.chat_id,
-            f"**{opponent_id}**, it's your turn! To roll, send a dice emoji: 🎲",
-        )
         await asyncio.sleep(3)
         if player1 > player2:
             score_player1 += 1

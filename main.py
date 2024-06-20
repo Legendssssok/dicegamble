@@ -225,7 +225,7 @@ Basic game mode. You take turns rolling the dice, and whoever has the highest di
 If you want to play, click the "Accept Match" button""",
             buttons=button,
         )
-    elif query.startswith("botwplayers"):
+    elif query.startswith("botwplayer"):
         text = query.split("_")
         user_id = text[1]
         round = text[2]

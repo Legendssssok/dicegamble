@@ -111,18 +111,39 @@ Examples:
 def point_button(user_id):
     points_button = [
         [
-            Button.inline("5 Round", data="round_{user_id}_5"),
+            Button.inline("5 Round", data=f"round_{user_id}_5"),
         ],
         [
-            Button.inline("3 Round", data="round_{user_id}_3"),
+            Button.inline("3 Round", data=f"round_{user_id}_3"),
         ],
         [
-            Button.inline("1 Round", data="round_{user_id}_1"),
+            Button.inline("1 Round", data=f"round_{user_id}_1"),
         ],
     ]
     return points_button
 
+def confirm_button(user_id, round):
+    confirms_button = [
+        [
+            Button.inline("✅ Confirm", data=f"confirm_{user_id}_{round}"),
+            Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
+        ]
+    ]
+    return confirms_button
 
+
+def final_confirm_button(user_id, round):
+    final_confirms_button = [
+        [
+            Button.inline("✅ Accept Match", data=f"playerwplayer_{user_id}_{round}"),
+            Button.inline("✅ Play against bot", data=f"botwplayer_{user_id}_{round}"),
+        ],
+        [
+            Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
+        ],
+   ]
+     
+    
 @client.on(events.CallbackQuery)
 async def callback_query(event):
     query = event.data.decode("ascii").lower()
@@ -139,10 +160,92 @@ async def callback_query(event):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
+        button = point_button(user_id)
         await event.edit(
             "🎲 Choose the number of rouns to win",
-            buttons=points_button,
+            buttons=button,
         )
+    elif query.startswith("round"):
+        text = query.split("_")
+        user_id = text[1]
+        round = text[2]
+        if query_user_id != int(user_id):
+            return await event.answer(
+                "Sorry, but you are not allowed to click others users button"
+            )
+        if round == "5":
+            points = 3
+        elif round == "3":
+            points = 2
+        else:
+            points = 1
+        button = confirm_button(user_id, round)
+        await event.edit(
+        f"""🎲** Game Confirmation**
+
+Your bet: $ amount
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to {points} points
+Game mode: Normal Mode""",
+        buttons=button,
+        )
+    elif query.startswith("confirm"):
+        text = query.split("_")
+        user_id = text[1]
+        round = text[2]
+        if query_user_id != int(user_id):
+            return await event.answer(
+                "Sorry, but you are not allowed to click others users button"
+            )
+        await event.delete()
+        user = await client.get_entity(int(user_id))
+        if round == "5":
+            points = 3
+        elif round == "3":
+            points = 2
+        else:
+            points = 1
+        await event.client.send_message(
+            event.chat_id,
+            f"""{user.first_name} wants to play dice!
+
+Bet: Soon
+Win chance: 50/50
+Win multiplier: 1.92x
+Mode: First to {points} points
+
+Normal Mode
+Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
+
+If you want to play, click the "Accept Match" button""",
+            buttons=,
+        )
+    elif query.startswith("botwplayers"):
+        text = query.split("_")
+        user_id = text[1]
+        round = text[2]
+        if query_user_id != int(user_id):
+            return await event.answer(
+                "Sorry, but you are not allowed to click others users button"
+            )
+        await event.delete()
+        my_bot = await client.get_me()
+        user = await client.get_entity(user_id)
+        game_mode[user.id] = ["botwplayers", int(round)]
+        score[user_id] = [0, 0]
+        await event.client.send_message(
+            event.chat_id,
+            f"""**🎲 Play with Bot**
+
+Player 1: [{user.first_name}](tg://user?id={user.id})
+Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
+
+**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
+        )
+    elif query.startswith("playerwplayer"):
+        await event.edit("Under Development")
+        
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
@@ -221,161 +324,6 @@ async def gameplay(event):
         )
         round[event.sender_id] = current_round + 1
 
-
-# ======= Five all handle ========#
-
-five_confirm_button = [
-    [
-        Button.inline("✅ Confirm", data="fve_confirm_button"),
-        Button.inline("❌ Cancel", data="cancel"),
-    ]
-]
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5_round")))
-async def fierus(event):
-    await event.edit(
-        """🎲** Game Confirmation**
-
-Your bet: $1.00
-Win chance: 50/50
-Win multiplier: 1.92x
-Mode: First to 3 points
-Game mode: Normal Mode""",
-        buttons=five_confirm_button,
-    )
-
-
-final5_confirm_button = [
-    [
-        Button.inline("✅ Accept Match", data="playerwplayer"),
-        Button.inline("✅ Play against bot", data="5botwplayer"),
-    ],
-    [
-        Button.inline("❌ Cancel", data="cancel"),
-    ],
-]
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"fve_confirm_button")))
-async def fi5erus(event):
-    await event.delete()
-    await client.get_me()
-    user = await client.get_entity(event.sender_id)
-    await event.client.send_message(
-        event.chat_id,
-        f"""{user.first_name} wants to play dice!
-
-Bet: $1.00
-Win chance: 50/50
-Win multiplier: 1.92x
-Mode: First to 3 points
-
-Normal Mode
-Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
-
-If you want to play, click the "Accept Match" button""",
-        buttons=final5_confirm_button,
-    )
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"5botwplayer")))
-async def fie5rndus(event):
-    await event.delete()
-    times = 5
-    my_bot = await client.get_me()
-    user = await client.get_entity(event.sender_id)
-    game_mode[user.id] = ["botwplayers", times]
-    score[event.sender_id] = [0, 0]
-    await event.client.send_message(
-        event.chat_id,
-        f"""**🎲 Play with Bot**
-
-Player 1: [{user.first_name}](tg://user?id={user.id})
-Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
-
-**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
-    )
-
-
-# ======== 3 All Handle ========
-
-
-three_confirm_button = [
-    [
-        Button.inline("✅ Confirm", data="thee_confirm_button"),
-        Button.inline("❌ Cancel", data="cancel"),
-    ]
-]
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3_round")))
-async def fierus(event):
-    await event.edit(
-        """🎲** Game Confirmation**
-
-Your bet: $1.00
-Win chance: 50/50
-Win multiplier: 1.92x
-Mode: First to 2 points
-Game mode: Normal Mode""",
-        buttons=three_confirm_button,
-    )
-
-
-final3_confirm_button = [
-    [
-        Button.inline("✅ Accept Match", data="playerwplayer"),
-        Button.inline("✅ Play against bot", data="3botwplayer"),
-    ],
-    [
-        Button.inline("❌ Cancel", data="cancel"),
-    ],
-]
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"thee_confirm_button")))
-async def fierus(event):
-    await event.delete()
-    await client.get_me()
-    user = await client.get_entity(event.sender_id)
-    await event.client.send_message(
-        event.chat_id,
-        f"""{user.first_name} wants to play dice!
-
-Bet: $1.00
-Win chance: 50/50
-Win multiplier: 1.92x
-Mode: First to 3 points
-
-Normal Mode
-Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
-
-If you want to play, click the "Accept Match" button""",
-        buttons=final3_confirm_button,
-    )
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"3botwplayer")))
-async def fien3dus(event):
-    await event.delete()
-    times = 3
-    my_bot = await client.get_me()
-    user = await client.get_entity(event.sender_id)
-    game_mode[user.id] = ["botwplayers", times]
-    score[event.sender_id] = [0, 0]
-    await event.client.send_message(
-        event.chat_id,
-        f"""**🎲 Play with Bot**
-
-Player 1: [{user.first_name}](tg://user?id={user.id})
-Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
-
-**{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
-    )
-
-
-# ============ 1 All Handle ===========
 
 
 # ==================== Start Client ==================#

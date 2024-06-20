@@ -110,7 +110,7 @@ Examples:
 
 def point_button(user_id):
     points_button = [
-       [
+        [
             Button.inline("5 Round", data="round_{user_id}_5"),
         ],
         [
@@ -130,16 +130,19 @@ async def callback_query(event):
     if query.startswith("cancel"):
         user_id = query.split("_")
         if query_user_id != int(user_id):
-            return await event.answer("Sorry, but you are not allowed to click others users button")
+            return await event.answer(
+                "Sorry, but you are not allowed to click others users button"
+            )
     if query.startswith("normalmode"):
         user_id = query.split("_")[1]
         if query_user_id != int(user_id):
-            return await event.answer("Sorry, but you are not allowed to click others users button")
+            return await event.answer(
+                "Sorry, but you are not allowed to click others users button"
+            )
         await event.edit(
             "🎲 Choose the number of rouns to win",
             buttons=points_button,
         )
-    
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
@@ -217,8 +220,6 @@ async def gameplay(event):
 **{user.first_name}**, it's your turn!""",
         )
         round[event.sender_id] = current_round + 1
-
-
 
 
 # ======= Five all handle ========#

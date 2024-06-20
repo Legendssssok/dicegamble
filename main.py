@@ -250,7 +250,31 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
         )
     elif query.startswith("playerwplayer"):
-        await event.edit("Under Development")
+        text = query.split("_")
+        user_id = text[1]
+        round = text[2]
+        if query_user_id == int(user_id):
+            return await event.answer("You cannot accept your own match", alert=True)
+        await event.delete()
+        player1 = await client.get_entity(int(user_id))
+        player2 = await client.get_entity(query_user_id)
+        game_mode[int(user_id)] = ["playerwplayer", int(round), query_user_id]
+        game_mode[query_user_id] = ["playerwplayer", int(round), int(user_id)]
+        score[int(user_id)] = [0, 0]
+        score[query_user_id] = [0, 0]
+        count_round[int(user_id)] = 1
+        count_round[query_user_id] = 1
+        player_turn[int(user_id)] = int(user_id)
+        player_turn[query_user_id] = int(user_id)
+        await event.client.send_message(
+            event.chat_id,
+            f"""**🎲 Player vs Player**
+
+Player 1: [{player1.first_name}](tg://user?id={player1.id})
+Player 2: [{player2.first_name}](tg://user?id={player2.id})
+
+**{player1.first_name}** , your turn! To start, send a dice emoji: 🎲""",
+        )
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
@@ -334,6 +358,57 @@ async def gameplay(event):
 
 {user.first_name}: {score_player1}
 {my_bot.first_name}: {score_player2}
+
+**{user.first_name}**, it's your turn!""",
+        )
+        count_round[event.sender_id] = current_round + 1
+    elif gamemode == "playerwplayer":
+        last_message_times[event.sender_id] = time.time()
+        player1 = event.media.value
+        opponent_id = game_mode[event.sender_id][2]
+        if player_turn[event.sender_id] != event.sender_id:
+            return await event.reply("It's not your turn!")
+        await asyncio.sleep(3)
+        await event.reply(f"Now it's {opponent_id}'s turn")
+        await asyncio.sleep(3)
+        player_turn[event.sender_id] = opponent_id
+        player_turn[opponent_id] = opponent_id
+        await event.client.send_message(
+            event.chat_id,
+            f"**{opponent_id}**, it's your turn! To roll, send a dice emoji: 🎲"
+        )
+        await asyncio.sleep(3)
+        if player1 > player2:
+            score_player1 += 1
+        elif player1 < player2:
+            score_player2 += 1
+        else:
+            current_round -= 1
+        if round == current_round:
+            game_mode.pop(event.sender_id)
+            game_mode.pop(opponent_id)
+            count_round.pop(event.sender_id)
+            count_round.pop(opponent_id)
+            if score_player1 > score_player2:
+                winner = f"🎉 Congratulations! {user.first_name} You won"
+            elif score_player1 < score_player2:
+                winner = f"🎉 Congratulations! {my_bot.first_name} You won"
+            await event.client.send_message(
+                event.chat_id,
+                f"""🏆 **Game over!**
+
+**Score:**
+{user.first_name} • {score_player1}
+{opponent_id} • {score_player2}
+
+{winner}""",
+            )
+            return
+        await event.respond(
+            f"""**Score**
+
+{user.first_name}: {score_player1}
+{opponent_id}: {score_player2}
 
 **{user.first_name}**, it's your turn!""",
         )

@@ -405,7 +405,7 @@ async def gameplay(event):
 {player1_details.first_name}• {score_player2}
 
 {winner}""",
-                    )
+                )
             await event.reply(
                 f"""**Score**
 

@@ -387,7 +387,7 @@ async def gameplay(event):
                 score[player2.id] = [player1_score, player2_score]
             else:
                 current_round -= 1
-            if round == current_round:
+            if round + round == current_round:
                 game_mode.pop(event.sender_id)
                 count_round.pop(player2.id)
                 old_score.pop(event.sender_id)
@@ -417,7 +417,7 @@ player1: {player1_score}
         else:
             old_score[player2.id] = [player1]
             await event.reply(f"{player2.first_name} your turn")
-
+            count_round[event.sender_id] = current_round + 1
 
 # ==================== Start Client ==================#
 

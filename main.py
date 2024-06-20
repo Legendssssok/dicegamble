@@ -8,7 +8,7 @@ from telethon.tl.types import InputMediaDice
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
-TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
+TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"
 
 logging.basicConfig(
     format="[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s",
@@ -400,16 +400,16 @@ async def gameplay(event):
                         f"""🏆 **Game over!**
 
 **Score:**
-player1 • {score_player1}
-{player2.first_name} • {score_player2}
+{player2.first_name}  • {score_player1}
+player2• {score_player2}
 
 {winner}""",
                     )
             await event.respond(
                 f"""**Score**
 
-player1: {score_player1}
-{player2.first_name}: {score_player2}
+{player2.first_name}: {score_player1}
+player2: {score_player2}
 
 **{player2.first_name}**, it's your turn!"""
             )

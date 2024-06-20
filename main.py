@@ -377,7 +377,7 @@ async def gameplay(event):
         player_turn[opponent_id] = opponent_id
         await event.client.send_message(
             event.chat_id,
-            f"**{opponent_id}**, it's your turn! To roll, send a dice emoji: 🎲"
+            f"**{opponent_id}**, it's your turn! To roll, send a dice emoji: 🎲",
         )
         await asyncio.sleep(3)
         if player1 > player2:

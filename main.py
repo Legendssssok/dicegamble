@@ -3,8 +3,7 @@ import logging
 import re
 import time
 
-from telethon import Button, TelegramClient, events
-from telethon.functions.bots import SetBotCommandsRequest
+from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
 API_ID = 11573285
@@ -481,8 +480,8 @@ commands = [
 @client.on(events.NewMessage(pattern="/setbotcommand"))
 async def set_bot_command(event):
     owo = client(
-        SetBotCommandsRequest(
-            scope=BotCommandScopeDefault(), lang_code="en", commands=commands
+        functions.bots.SetBotCommandsRequest(
+            scope=types.BotCommandScopeDefault(), lang_code="en", commands=commands
         )
     )
     await event.reply(owo)

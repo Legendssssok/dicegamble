@@ -458,6 +458,9 @@ async def gameplay(event):
             await event.reply(f"{player2.first_name} your turn")
             count_round[event.sender_id] = current_round + 1
 
+# ============ balance, deposit, withdrawal =========#
+
+
 
 # =============== set command ==========#
 
@@ -479,12 +482,13 @@ commands = [
 
 @client.on(events.NewMessage(pattern="/setbotcommand"))
 async def set_bot_command(event):
-    owo = await client(
-        functions.bots.SetBotCommandsRequest(
-            scope=types.BotCommandScopeDefault(), lang_code="en", commands=commands
-        )
-    )
-    await event.reply(owo)
+    try:
+        result = await client(
+            functions.bots.SetBotCommandsRequest(
+                scope=types.BotCommandScopeDefault(), lang_code="en", commands=commands))
+        await event.client.send_message(event.chat_id, f"{result}")
+    except Exception as e:
+        await event.reply(f"Error : {e}")
 
 
 # ==================== Start Client ==================#

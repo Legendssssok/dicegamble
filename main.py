@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 import re
 import time
@@ -694,7 +693,7 @@ async def deposits_addy(event):
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,
-            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {amount}\n**Name**: {res_name}\n**Email**: {email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added"
+            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {amount}\n**Name**: {res_name}\n**Email**: {email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added",
         )
 
 

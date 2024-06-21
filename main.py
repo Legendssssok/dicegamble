@@ -2,7 +2,8 @@ import asyncio
 import logging
 import re
 import time
-
+import random
+import string
 import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
@@ -661,7 +662,7 @@ async def deposits_addy(event):
                 return await x.send_message(
                     f"Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\n**Error**: {e}\n\n**Try again later**"
                 )
-        reference_id = f"TS{amount}" + email.text[0:3]
+        reference_id = f"TS{amount}" + email.text[0:3] + generate_random_string(5)
         url = "https://api.razorpay.com/v1/payment_links/"
         headers = {"Content-type": "application/json"}
         data = {
@@ -693,8 +694,13 @@ async def deposits_addy(event):
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,
-            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {res_amount}\n**Name**: {res_name}\n**Email**: {res_email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added",
+            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {res_amount}\n**Name**: {res_name}\n**Email**: {res_email}\n**Pay Here**: {res_short_url}\n\nafter payment send `/addbalance <invoice id>` in chat, the balance will get automatically added",
         )
+
+
+def generate_random_string(length):
+    letters = string.ascii_letters + string.digits
+    return ''.join(random.choice(letters) for _ in range(length))
 
 
 @client.on(events.NewMessage(pattern="/addbal"))

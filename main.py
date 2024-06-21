@@ -398,10 +398,8 @@ async def gameplay(event):
         return
     if event.text:
         return
-    print(event)
-    lol = isinstance(event.media, "🎲")
-    print(lol)
-    if not isinstance(event.media, "🎲"):
+    lol = event.dice.emoticon == "🎲"
+    if not lol:
         return
     if event.sender_id in last_message_times:
         max_time = 9

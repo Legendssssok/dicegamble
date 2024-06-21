@@ -564,7 +564,7 @@ async def balance_func(event):
     else:
         await event.client.send_message(
             event.chat_id,
-            f"Your balance: ${balance}",
+            f"Your balance: **${balance}**",
             buttons=[
                 [
                     Button.url("💳 Deposit", url=f"https://t.me/{my_bot.username}"),

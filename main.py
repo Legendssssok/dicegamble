@@ -4,9 +4,8 @@ import re
 import time
 
 from telethon import Button, TelegramClient, events
-from telethon.tl.types import InputMediaDice, BotCommand
 from telethon.functions.bots import SetBotCommandsRequest
-
+from telethon.tl.types import BotCommand, InputMediaDice
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
@@ -460,6 +459,7 @@ async def gameplay(event):
             await event.reply(f"{player2.first_name} your turn")
             count_round[event.sender_id] = current_round + 1
 
+
 # =============== set command ==========#
 
 commands = [
@@ -471,16 +471,23 @@ commands = [
     BotCommand("leaderboard", "to see group statstics"),
     BotCommand("raffle", "to see active raffles"),
     BotCommand("matches", "too see match history"),
-    BotCommand("predict", "to bet against the house and predict what dice will ne rolled next"),
+    BotCommand(
+        "predict", "to bet against the house and predict what dice will ne rolled next"
+    ),
     BotCommand("housebal", "to see how much is left in the house balance"),
-
 ]
+
 
 @client.on(events.NewMessage(pattern="/setbotcommand"))
 async def set_bot_command(event):
-    owo = client(SetBotCommandsRequest(scope=BotCommandScopeDefault(), lang_code='en', commands=commands))
+    owo = client(
+        SetBotCommandsRequest(
+            scope=BotCommandScopeDefault(), lang_code="en", commands=commands
+        )
+    )
     await event.reply(owo)
-    
+
+
 # ==================== Start Client ==================#
 
 client.run_until_disconnected()

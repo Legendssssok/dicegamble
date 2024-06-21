@@ -291,7 +291,8 @@ async def bck_in_groups(event):
 def back_groups(user_id):
     back_group = [[Button.inline("⬅️ Back", data=f"back_{user_id}")]]
     return back_group
-    
+
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"diceguide_")))
 async def diceguide(event):
     query = event.data.decode("ascii").lower()
@@ -316,7 +317,6 @@ Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode
     )
 
 
-    
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
 async def home(event):
     if event.is_private:

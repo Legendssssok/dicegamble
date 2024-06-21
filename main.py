@@ -238,7 +238,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
     elif query.startswith("playerwplayer"):
         user_id, round = query.split("_")[1:3]
         if query_user_id == int(user_id):
-            return await event.answer("You cannot accept your own match", alert=True)
+            return await event.answer("You cannot accept your own match")
         await event.delete()
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
@@ -288,7 +288,7 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if not event.media or not isinstance(event.media, InputMediaDice):
+    if not event.media.emoticon == "🎲":
         return
     if event.sender_id in last_message_times:
         max_time = 9

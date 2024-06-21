@@ -2,6 +2,8 @@ import asyncio
 import logging
 import re
 import time
+import request
+
 
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
@@ -652,11 +654,11 @@ async def deposits_addy(event):
                     "Send me the email in which you want to get confirmation payment"
                 )
                 email = await x.get_response(timeout=1200)
-            except:
+            except Exception as e:
                 return await x.send_message(
-                    "Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\m**Try again later**"
+                    f"Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\n**Error**: {e}\n\n**Try again later**"
                 )
-        f"TS{amount}"
+        reference_id = f"TS{amount}" + email[0:3]
         url = "https://api.razorpay.com/v1/payments_links/"
         headers = {"Content-type": "application/json"}
         data = {
@@ -664,7 +666,7 @@ async def deposits_addy(event):
             "currency": "INR",
             "accept_partial": False,
             "first_min_partial_amount": 100,
-            "reference_id": "TS",
+            "reference_id": reference_id,
             "description": "Payment for Game Number",
             "customer": {"name": name.text, "email": email.text},
             "notify": {"email": True},
@@ -695,7 +697,7 @@ async def deposits_addy(event):
 async def add_upi_bal(event):
     payment_link_id = event.text.split(" ")[1]
     url = f"https://api.razorpay.com/v1/payment_links/{payment_link_id}"
-    auth_header = (key_id, key_secret)
+    auth_header = (api_key, api_secret)
     try:
         response = requests.get(
             url, headers={"content-type": "application/json"}, auth=auth_header

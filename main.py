@@ -487,9 +487,12 @@ async def gameplay(event):
             else:
                 current_round -= 2
             if round + round == current_round:
-                game_mode.pop(event.sender_id)
+                game_mode.pop(player2.id)
+                game_mode.pop(player1_details.id)
                 count_round.pop(player2.id)
-                old_score.pop(event.sender_id)
+                player_turn.pop(player2.id)
+                player_turn.pop(player1_details.id)
+                old_score.pop(player1_details.id)
                 if score_player1 > score_player2:
                     add_balance = players_balance[player2.id] + float(
                         bet_amount[player2.id] * 1.92

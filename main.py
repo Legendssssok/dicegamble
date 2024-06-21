@@ -419,17 +419,13 @@ async def gameplay(event):
                 add_balance = players_balance[int(user.id)] + float(
                     bet_amount[user.id] * 1.92
                 )
-                winner = (
-                    f"🎉 Congratulations! {user.first_name}, You won : ${bet_amount[user.id] * 1.92}"
-                )
+                winner = f"🎉 Congratulations! {user.first_name}, You won : ${bet_amount[user.id] * 1.92}"
             elif score_player1 < score_player2:
                 add_balance = players_balance[my_bot.id] + float(
                     bet_amount[my_bot.id] * 1.92
                 )
                 players_balance[my_bot.id] = add_balance
-                winner = (
-                    f"🎉 Congratulations! {my_bot.first_name}, Bot Won : ${bet_amount[my_bot.id] * 1.92}"
-                )
+                winner = f"🎉 Congratulations! {my_bot.first_name}, Bot Won : ${bet_amount[my_bot.id] * 1.92}"
             await event.client.send_message(
                 event.chat_id,
                 f"""🏆 **Game over!**
@@ -482,16 +478,12 @@ async def gameplay(event):
                     add_balance = players_balance[player2.id] + float(
                         bet_amount[player2.id] * 1.92
                     )
-                    winner = (
-                        f"🎉 Congratulations! {player2.first_name}, You won : ${bet_amount[player2.id] * 1.92}"
-                    )
+                    winner = f"🎉 Congratulations! {player2.first_name}, You won : ${bet_amount[player2.id] * 1.92}"
                 elif score_player1 < score_player2:
                     add_balance = players_balance[player1_details.id] + float(
                         bet_amount[player1_details.id] * 1.92
                     )
-                    winner = (
-                        f"🎉 Congratulations! {player1_details.first_name}, You won : ${bet_amount[player1_details.id] * 1.92}"
-                    )
+                    winner = f"🎉 Congratulations! {player1_details.first_name}, You won : ${bet_amount[player1_details.id] * 1.92}"
                 return await event.client.send_message(
                     event.chat_id,
                     f"""🏆 **Game over!**

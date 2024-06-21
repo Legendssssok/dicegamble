@@ -647,7 +647,7 @@ async def deposits_addy(event):
                 old_amount = await x.get_response(timeout=1200)
                 oamount = old_amount.text
                 if int(oamount) < 100:
-                    amount = str(oamount) + 00
+                    amount = str(oamount) + "00"
                     new_amount = int(amount)
                 else:
                     amount = str(oamount)
@@ -663,7 +663,7 @@ async def deposits_addy(event):
                     f"Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\n**Error**: {e}\n\n**Try again later**"
                 )
         reference_id = f"TS{amount}" + email.text[0:3]
-        url = "https://api.razorpay.com/v1/payments_links/"
+        url = "https://api.razorpay.com/v1/payment_links/"
         headers = {"Content-type": "application/json"}
         data = {
             "amount": new_amount,

@@ -551,8 +551,7 @@ async def balance_func(event):
     my_bot = await client.get_me()
     balance = players_balance.get(event.sender_id, 0)
     if event.is_private:
-        await event.client.send_message(
-            event.chat_id,
+        await event.reply(
             f"Your balance:** ${balance}**",
             buttons=[
                 [
@@ -562,8 +561,7 @@ async def balance_func(event):
             ],
         )
     else:
-        await event.client.send_message(
-            event.chat_id,
+        await event.reply(
             f"Your balance: **${balance}**",
             buttons=[
                 [

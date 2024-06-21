@@ -530,7 +530,7 @@ async def diceguide(event):
                 f"**💳 Litecoin deposit**\n\nTo top up your balance, transfer the desired amount to this LTC address.",
                 buttons=addy_button,
             )
-            rcv_balance = await x.wait_response()
+            rcv_balance = await x.get_response()
         players_balance[query_user_id] = int(rcv_balance.text)
         await event.client.send_message(
             event.chat_id, f"Payment confirmed! Amount ${rcv_balance.text}"

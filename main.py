@@ -271,7 +271,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         now_balance_player2 = players_balance.get(int(player2.id), 0)
         if now_balance_player2 <= 0:
             return await event.answer(
-                f"❌ Not enough balance. Your balance : ${now_balance}"
+                f"❌ Not enough balance. Your balance : ${now_balance_player2}"
             )
         left_balance_player1 = players_balance[player1.id] - float(bet)
         bet_amount[player1.id] = float(bet)

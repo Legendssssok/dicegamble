@@ -530,7 +530,9 @@ async def gameplay(event):
         else:
             current_round = count_round[event.sender_id]
             old_score[player2.id] = [player1]
-            await event.reply(f"[{player2.first_name}](tg://user?id={player2.id}) your turn")
+            await event.reply(
+                f"[{player2.first_name}](tg://user?id={player2.id}) your turn"
+            )
             count_round[event.sender_id] = current_round + 1
 
 

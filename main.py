@@ -462,7 +462,7 @@ async def gameplay(event):
 {user.first_name}: {score_player1}
 {my_bot.first_name}: {score_player2}
 
-**{user.first_name}**, it's your turn!""",
+[{user.first_name}](tg://user?id={user.id}), it's your turn!""",
         )
         count_round[event.sender_id] = current_round + 1
     elif gamemode == "playerwplayer":
@@ -524,13 +524,13 @@ async def gameplay(event):
 {player2.first_name}: {score_player1}
 {player1_details.first_name}: {score_player2}
 
-**{player2.first_name}**, it's your turn!"""
+[{player2.first_name}](tg://user?id={player2.id}), it's your turn!"""
             )
             count_round[player2.id] = current_round + 1
         else:
             current_round = count_round[event.sender_id]
             old_score[player2.id] = [player1]
-            await event.reply(f"{player2.first_name} your turn")
+            await event.reply(f"[{player2.first_name}](tg://user?id={player2.id}) your turn")
             count_round[event.sender_id] = current_round + 1
 
 

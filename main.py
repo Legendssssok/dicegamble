@@ -231,11 +231,14 @@ If you want to play, click the "Accept Match" button""",
             buttons=final_confirm_button(user_id, round, bet),
         )
     elif query.startswith("botwplayer"):
+        await asyncio.sleep(1)
         user_id, round, bet = query.split("_")[1:4]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
+        if int(user_id) in game_mode:
+            return
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
         now_balance_bot = players_balance.get(my_bot.id, 0)
@@ -262,7 +265,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
         )
-    elif query.startswith("playerwplayer"):
+    elif query.startswith("playerwplayer"):    
         user_id, round, bet = query.split("_")[1:4]
         if query_user_id == int(user_id):
             return await event.answer("You cannot accept your own match")

@@ -118,7 +118,7 @@ Examples:
                 Button.inline("Crazy Mode", data="crazymode"),
             ],
             [
-                Button.inline("ℹ️ Guide", data=f"diceguide_{event.sender_id}"),
+                Button.inline("ℹ️ Guide", data=f"diceguide_{event.sender_id}_{bet}"),
                 Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
             ],
         ],
@@ -300,7 +300,7 @@ Player 2: [{player2.first_name}](tg://user?id={player2.id})
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"back_")))
 async def bck_in_groups(event):
     query = event.data.decode("ascii").lower()
-    user_id = query.split("_")[1]
+    user_id, bet= query.split("_")[1:3]
     query_user_id = event.query.user_id
     if query_user_id != int(user_id):
         return await event.answer(
@@ -310,7 +310,7 @@ async def bck_in_groups(event):
         f"🎲 Choose the game mode",
         buttons=[
             [
-                Button.inline("Normal Mode", data=f"normalmode_{user_id}"),
+                Button.inline("Normal Mode", data=f"normalmode_{user_id}_{bet}"),
             ],
             [
                 Button.inline("Double Roll", data="doubleroll"),
@@ -319,22 +319,22 @@ async def bck_in_groups(event):
                 Button.inline("Crazy Mode", data="crazymode"),
             ],
             [
-                Button.inline("ℹ️ Guide", data=f"diceguide_{user_id}"),
+                Button.inline("ℹ️ Guide", data=f"diceguide_{user_id}_{bet}"),
                 Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
             ],
         ],
     )
 
 
-def back_groups(user_id):
-    back_group = [[Button.inline("⬅️ Back", data=f"back_{user_id}")]]
+def back_groups(user_id, bet):
+    back_group = [[Button.inline("⬅️ Back", data=f"back_{user_id}_{bet}")]]
     return back_group
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"diceguide_")))
 async def diceguide(event):
     query = event.data.decode("ascii").lower()
-    user_id = query.split("_")[1]
+    user_id, bet = query.split("_")[1:3]
     query_user_id = event.query.user_id
     if query_user_id != int(user_id):
         return await event.answer(
@@ -351,7 +351,7 @@ Similar to Normal, but you are rolling 2 dice in a row. The winner of the round 
 
 **Crazy Mode**
 Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode its all about rolling low! All dices are inverted - 6 is 1 and 1 is 6. Will you be able to keep from going crazy?""",
-        buttons=back_groups(user_id),
+        buttons=back_groups(user_id, bet),
     )
 
 

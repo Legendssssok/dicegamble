@@ -31,6 +31,8 @@ player_turn = {}
 
 old_score = {}
 
+players_balance = {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -461,7 +463,70 @@ async def gameplay(event):
 
 # ============ balance, deposit, withdrawal =========#
 
+@client.on(events.NewMessage(pattern="/bal"))
+async def balance_func(event):
+    my_bot = await client.get_me()
+    balance = players_balance.get(event.sender_id, 0)
+    if event.is_private:
+        await event.client.send_message(
+            event.chat_id,
+            f"Your balance: ${balance}",       
+            buttons=[
+                [
+                    Button.inline("💳 Deposit", data="deposit"),
+                    Button.inline("💸 Withdraw", data="withdraw"),
+                ]
+            ]
+        )
+    else:
+        await event.client.send_message(
+            event.chat_id,
+            f"Your balance: ${balance}",       
+            buttons=[
+                [
+                    Button.url("💳 Deposit", url=f"https://t.me/{my_bot.username}"),
+                    Button.inline("💸 Withdraw", url=f"https://t.me/{my_bot.username"),
+                ]
+            ]
+        )
+            
 
+deposit_button = [
+    [Button.inline("Litecoin", data="deposits_litecoin")],
+    [Button.inline("Etherum", data="deposits_etherum")],
+    [Button.inline("Bitcoin", data="deposits_bitcoin")],
+    [Button.inline("USDT ERC-20", data="deposits_usdterc20")],
+    [Button.inline("Monero", data="deposits_monero")],
+    [Button.inline("UPI", data="deposits_upi")],
+    [Button.inline("🔙 Back", data="home")],
+]
+
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposit")))
+async def deposit_func(event):
+    await event.edit(
+        f"**💳 Deposit**\n\nChoose your preferred deposit method:",
+        buttons=deposit_button,
+    )
+
+
+addy_button = [
+    [Button.inline("🔙 Back", data="deposit")],
+    [Button.inline("🔄 Refresh", data="refresh")]
+] 
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposits_")))
+async def diceguide(event):
+    query = event.data.decode("ascii").lower()
+    addy = query.split("_")[1]
+    query_user_id = event.query.user_id
+    print(query)
+    if addy == "litecoin":
+        await event.edit(
+            f"**💳 Litecoin deposit**\n\nTo top up your balance, transfer the desired amount to this LTC address.",
+            buttons=addy_button,
+        )
+    
 # =============== set command ==========#
 
 commands = [

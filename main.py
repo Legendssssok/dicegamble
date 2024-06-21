@@ -644,11 +644,11 @@ async def deposits_addy(event):
                     buttons=addy_button,
                 )
                 old_amount = await x.get_response(timeout=1200)
-                amount = int(old_amount.text)
-                if amount < 100:
-                    amount = str(amount) + 00
+                oamount = int(old_amount.text)
+                if oamount < 100:
+                    amount = str(oamount) + 00
                 else:
-                    amount = str(amount)
+                    amount = str(oamount)
                 await x.send_message("Send me your real name to create invoice")
                 name = await x.get_response(timeout=1200)
                 await x.send_message(

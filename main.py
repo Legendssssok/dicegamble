@@ -2,6 +2,7 @@ import asyncio
 import logging
 import re
 import time
+import json
 
 import requests
 from telethon import Button, TelegramClient, events, functions, types
@@ -678,10 +679,10 @@ async def deposits_addy(event):
             "callback_url": "https://t.me/DiceChallengersBot",
             "callback_method": "get",
         }
-        print(data)
+        print(json.dumps(data))
         try:
             response = requests.post(
-                url, headers=headers, json=data, auth=(api_key, api_secret)
+                url, headers=headers, json=json.dumps(data), auth=(api_key, api_secret)
             )
             response_json = response.json()
             print(response_json)

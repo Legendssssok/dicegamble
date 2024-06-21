@@ -63,9 +63,9 @@ Rules are simple: first to reach needed points wins.""",
         now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
-            f"""🏠 Menu
+            f"""**🏠 Menu**
 
-Your balance: ${now_balance}""",
+Your balance: **${now_balance}**""",
             buttons=game,
         )
 
@@ -358,13 +358,24 @@ Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
 async def home(event):
     if event.is_private:
+        now_balance = players_balance.get(event.sender_id, 0)
         await event.edit(
-            """🏠 Menu
+            f"""**🏠 Menu**
 
-Your balance: $0.00 (0.00000 LTC)""",
+Your balances: **${now_balance}**""",
             buttons=game,
         )
 
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstf")))
+async def playagainstf(event):
+    if event.is_private:
+        return await event.edit(
+            """**🎲 Play against friend**
+
+If you want to play with a bot, use the /dice command in our group - @ None""",
+            buttons=back_button,
+        )
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstb")))
 async def playagainstb(event):
@@ -541,7 +552,7 @@ async def balance_func(event):
     if event.is_private:
         await event.client.send_message(
             event.chat_id,
-            f"Your balance: ${balance}",
+            f"Your balance:** ${balance}**",
             buttons=[
                 [
                     Button.inline("💳 Deposit", data="deposit"),

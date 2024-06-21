@@ -396,7 +396,7 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if event.dice:
+    if not event.dice:
         return
     lol = event.dice.emoticon == "🎲"
     if not lol:

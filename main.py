@@ -679,7 +679,6 @@ async def deposits_addy(event):
             "callback_url": "https://t.me/DiceChallengersBot",
             "callback_method": "get",
         }
-        print(json.dumps(data))
         try:
             response = requests.post(
                 url, headers=headers, json=data, auth=(api_key, api_secret)
@@ -694,6 +693,7 @@ async def deposits_addy(event):
         res_id = response_json["id"]
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
+            event.chat_id,
             f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {amount}\n**Name**: {res_name}\n**Email**: {email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added"
         )
 

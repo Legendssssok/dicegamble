@@ -523,6 +523,7 @@ async def diceguide(event):
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
     print(query)
+    await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
@@ -536,7 +537,7 @@ async def diceguide(event):
         )
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
-            await event.edit(
+            await x.send_message(
                 f"**💳 Upi deposit**\n\nTo top up your balance, transfer the desired amount to this upi address.\n\n**Rate : ₹87/$",
                 buttons=addy_button,
             )

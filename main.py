@@ -686,14 +686,14 @@ async def deposits_addy(event):
             print(response_json)
         except Exception as e:
             return await event.client.send_message(event.chat_id, f"Error: {e}")
-        response_json["amount"]
+        res_amount = response_json["amount"]
         res_short_url = response_json["short_url"]
-        response_json["customer"]["email"]
+        res_email = response_json["customer"]["email"]
         res_id = response_json["id"]
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,
-            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {amount}\n**Name**: {res_name}\n**Email**: {email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added",
+            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {res_amount}\n**Name**: {res_name}\n**Email**: {res_email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added",
         )
 
 

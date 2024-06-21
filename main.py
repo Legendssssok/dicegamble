@@ -644,7 +644,7 @@ async def deposits_addy(event):
                     buttons=addy_button,
                 )
                 oamount = await x.get_response(timeout=1200).raw_text
-                #oamount = int(old_amount.text)
+                # oamount = int(old_amount.text)
                 if oamount < 100:
                     amount = str(oamount) + 00
                 else:

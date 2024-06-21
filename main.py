@@ -98,7 +98,7 @@ Examples:
 /dice 5.50 - to play for $5.50"""
         )
     now_balance = players_balance.get(event.sender_id, 0)
-    if now_balance <= 0:
+    if now_balance <= bet:
         return await event.reply(
             f"❌ Not enough balance\n\nYour balance: ${now_balance}"
         )
@@ -239,7 +239,7 @@ If you want to play, click the "Accept Match" button""",
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
         now_balance_bot = players_balance.get(int(my_bot.id), 0)
-        if now_balance_bot <= 0:
+        if now_balance_bot <= bet:
             return await event.answer(
                 f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance_bot}"
             )
@@ -263,13 +263,13 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
         )
     elif query.startswith("playerwplayer"):
-        user_id, round = query.split("_")[1:3]
+        user_id, round, bet = query.split("_")[1:4]
         if query_user_id == int(user_id):
             return await event.answer("You cannot accept your own match")
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
         now_balance_player2 = players_balance.get(int(player2.id), 0)
-        if now_balance_player2 <= 0:
+        if now_balance_player2 <= bet:
             return await event.answer(
                 f"❌ Not enough balance. Your balance : ${now_balance_player2}"
             )
@@ -560,12 +560,12 @@ async def balance_func(event):
 
 
 deposit_button = [
-    [Button.inline("Litecoin", data="deposits_litecoin")],
-    [Button.inline("Etherum", data="deposits_etherum")],
-    [Button.inline("Bitcoin", data="deposits_bitcoin")],
-    [Button.inline("USDT ERC-20", data="deposits_usdterc20")],
-    [Button.inline("Monero", data="deposits_monero")],
-    [Button.inline("UPI", data="deposits_upi")],
+    [Button.inline("Litecoin", data="add_litecoin")],
+    [Button.inline("Etherum", data="add_etherum")],
+    [Button.inline("Bitcoin", data="add_bitcoin")],
+    [Button.inline("USDT ERC-20", data="add_usdterc20")],
+    [Button.inline("Monero", data="add_monero")],
+    [Button.inline("UPI", data="add_upi")],
     [Button.inline("🔙 Back", data="home")],
 ]
 
@@ -584,7 +584,7 @@ addy_button = [
 ]
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposits_")))
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))
 async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]

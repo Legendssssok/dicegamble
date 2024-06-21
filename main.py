@@ -647,6 +647,8 @@ async def deposits_addy(event):
                 amount = int(old_amount.text)
                 if amount < 100:
                     amount = str(amount) + 00
+                else:
+                    amount = str(amount)
                 await x.send_message("Send me your real name to create invoice")
                 name = await x.get_response(timeout=1200)
                 await x.send_message(
@@ -657,7 +659,7 @@ async def deposits_addy(event):
                 return await x.send_message(
                     f"Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\n**Error**: {e}\n\n**Try again later**"
                 )
-        reference_id = f"TS{amount}" + email[0:3]
+        reference_id = f"TS{amount}" + email.text[0:3]
         url = "https://api.razorpay.com/v1/payments_links/"
         headers = {"Content-type": "application/json"}
         data = {

@@ -58,6 +58,7 @@ Play dice with your friend or just with the bot!
 Rules are simple: first to reach needed points wins.""",
     )
     if event.is_private:
+        now_balance = players_balance(event.sender_id)
         await event.client.send_message(
             event.chat_id,
             """🏠 Menu
@@ -84,7 +85,7 @@ If you want to play with your friend, you can do it in our group - @.""",
         return await event.reply("Your previous game is yet not finished")
     text = event.text.split(" ")
     try:
-        int(text[1])
+        bet = float(text[1])
     except:
         return await event.reply(
             """🎲 Play Dice
@@ -94,12 +95,15 @@ To play, type the command /dice with the desired bet.
 Examples:
 /dice 5.50 - to play for $5.50"""
         )
+    now_balance = players_balance.get(event.sender_id, 0)
+    if now_balance =< 0:
+        return await event.reply(f"❌ Not enough balance\n\nYour balance: ${now_balance}")
     await event.client.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
         buttons=[
             [
-                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}"),
+                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}_{bet}"),
             ],
             [
                 Button.inline("Double Roll", data="doubleroll"),
@@ -115,25 +119,25 @@ Examples:
     )
 
 
-def point_button(user_id):
+def point_button(user_id, bet):
     points_button = [
         [
-            Button.inline("5 Round", data=f"round_{user_id}_5"),
+            Button.inline("5 Round", data=f"round_{user_id}_5_{bet}"),
         ],
         [
-            Button.inline("3 Round", data=f"round_{user_id}_3"),
+            Button.inline("3 Round", data=f"round_{user_id}_3_{bet}"),
         ],
         [
-            Button.inline("1 Round", data=f"round_{user_id}_1"),
+            Button.inline("1 Round", data=f"round_{user_id}_1_{bet}"),
         ],
     ]
     return points_button
 
 
-def confirm_button(user_id, round):
+def confirm_button(user_id, round, bet):
     confirms_button = [
         [
-            Button.inline("✅ Confirm", data=f"confirm_{user_id}_{round}"),
+            Button.inline("✅ Confirm", data=f"confirm_{user_id}_{round}_{bet}"),
             Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
         ]
     ]
@@ -143,8 +147,8 @@ def confirm_button(user_id, round):
 def final_confirm_button(user_id, round):
     final_confirms_button = [
         [
-            Button.inline("✅ Accept Match", data=f"playerwplayer_{user_id}_{round}"),
-            Button.inline("✅ Play against bot", data=f"botwplayer_{user_id}_{round}"),
+            Button.inline("✅ Accept Match", data=f"playerwplayer_{user_id}_{round}_{bet}"),
+            Button.inline("✅ Play against bot", data=f"botwplayer_{user_id}_{round}_{bet}"),
         ],
         [
             Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
@@ -165,18 +169,18 @@ async def callback_query(event):
             )
         await event.delete()
     elif query.startswith("normalmode"):
-        user_id = query.split("_")[1]
+        user_id, bet = query.split("_")[1:3]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
-        button = point_button(user_id)
+        button = point_button(user_id, bet)
         await event.edit(
             "🎲 Choose the number of rouns to win",
             buttons=button,
         )
     elif query.startswith("round"):
-        user_id, round = query.split("_")[1:3]
+        user_id, round, bet = query.split("_")[1:4]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
@@ -185,15 +189,15 @@ async def callback_query(event):
         await event.edit(
             f"""🎲** Game Confirmation**
 
-Your bet: $ amount
+Your bet: $ {bet}
 Win chance: 50/50
 Win multiplier: 1.92x
 Mode: First to {points} points
 Game mode: Normal Mode""",
-            buttons=confirm_button(user_id, round),
+            buttons=confirm_button(user_id, round, bet),
         )
     elif query.startswith("confirm"):
-        user_id, round = query.split("_")[1:3]
+        user_id, round, bet = query.split("_")[1:4]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
@@ -205,7 +209,7 @@ Game mode: Normal Mode""",
             event.chat_id,
             f"""{user.first_name} wants to play dice!
 
-Bet: Soon
+Bet: ${bet}
 Win chance: 50/50
 Win multiplier: 1.92x
 Mode: First to {points} points
@@ -214,17 +218,26 @@ Normal Mode
 Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
 
 If you want to play, click the "Accept Match" button""",
-            buttons=final_confirm_button(user_id, round),
+            buttons=final_confirm_button(user_id, round, bet),
         )
     elif query.startswith("botwplayer"):
-        user_id, round = query.split("_")[1:3]
+        user_id, round, bet = query.split("_")[1:4]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
-        await event.delete()
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
+        now_balance_bot = players_balance.get(int(my_bot.id), 0)
+        if now_balance_bot =< 0:
+            return await event.answer(
+                f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance}"
+            )
+        left_balance_bot = players_balance[int(my_bot.id)] - bet
+        players_balance[int(my_bot.id)] = left_balance_bot
+        left_balance_user = players_balance[int(user_id)] - bet
+        players_balance[int(user_id)] = left_balance_user
+        await event.delete()
         game_mode[user.id] = ["botwplayers", int(round)]
         score[user.id] = [0, 0]
         count_round[user.id] = 1
@@ -241,9 +254,18 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         user_id, round = query.split("_")[1:3]
         if query_user_id == int(user_id):
             return await event.answer("You cannot accept your own match")
-        await event.delete()
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
+        now_balance_player2 = players_balance.get(int(player2.id), 0)
+        if now_balance_player2 =< 0:
+            return await event.answer(
+                f"❌ Not enough balance. Your balance : ${now_balance}"
+            )
+        left_balance_player1 = players_balance[int(player1.id)] - bet
+        players_balance[int(player1.id)] = left_balance_player1
+        left_balance_player2 = players_balance[int(player2.id)] - bet
+        players_balance[int(player2.id)] = left_balance_player2
+        await event.delete()
         score[player1.id] = [0, 0]
         game_mode[int(user_id)] = ["playerwplayer", int(round), query_user_id]
         game_mode[query_user_id] = ["playerwplayer", int(round), int(user_id)]
@@ -380,9 +402,12 @@ async def gameplay(event):
             game_mode.pop(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
-                winner = f"🎉 Congratulations! {user.first_name} You won"
+                add_balance = players_balance[int(user.id)] + int(bet*1.92)
+                winner = f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
             elif score_player1 < score_player2:
-                winner = f"🎉 Congratulations! {my_bot.first_name} I Won"
+                add_balance = players_balance[int(my_bot.id)] + int(bet*1.92)
+                players_balance[my_bot.id] = add_balance
+                winner = f"🎉 Congratulations! {my_bot.first_name} I Won : ${add_balance}"
             await event.client.send_message(
                 event.chat_id,
                 f"""🏆 **Game over!**
@@ -464,6 +489,22 @@ async def gameplay(event):
 # ============ balance, deposit, withdrawal =========#
 
 
+@client.on(events.NewMessage(pattern="/housebal"))
+async def house_bal(event):
+    my_bot = await client.get_me()
+    now_balance = players_balance.get(my_bot.id, 0)
+    await event.reply(f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}")
+
+@client.on(events.NewMessage(pattern="/addhousebal"))
+async def house_bal(event):
+    amount = event.text.split(" ")[1]
+    my_bot = await client.get_me()
+    old_balance = players_balance.get(my_bot.id, 0)
+    now_balance = old_balance + int(amount)
+    await event.reply(f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}")
+
+
+
 @client.on(events.NewMessage(pattern="/bal"))
 async def balance_func(event):
     my_bot = await client.get_me()
@@ -518,7 +559,7 @@ addy_button = [
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposits_")))
-async def diceguide(event):
+async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
@@ -531,9 +572,10 @@ async def diceguide(event):
                 buttons=addy_button,
             )
             rcv_balance = await x.get_response()
-        players_balance[query_user_id] = int(rcv_balance.text)
+        old_balance = players_balance.get(query_user_id, 0)
+        players_balance[query_user_id] = float(old_balance) + float(rcv_balance.text)
         await event.client.send_message(
-            event.chat_id, f"Payment confirmed! Amount ${rcv_balance.text}"
+            event.chat_id, f"Payment confirmed! Amount ${rcv_balance.text}\n\nYour Balance : {players_balance[query_user_id]}"
         )
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
@@ -543,9 +585,10 @@ async def diceguide(event):
             )
             rcv_balance = await x.get_response()
         now_balance = int(rcv_balance.text) / 87
-        players_balance[query_user_id] = now_balance
+        old_balance = players_balance.get(query_user_id, 0)
+        players_balance[query_user_id] = float(old_balance) + float(now_balance)
         await event.client.send_message(
-            event.chat_id, f"Payment confirmed! Amount ${now_balance}"
+            event.chat_id, f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}"
         )
 
 

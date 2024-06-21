@@ -313,7 +313,7 @@ Similar to Normal, but you are rolling 2 dice in a row. The winner of the round 
 
 **Crazy Mode**
 Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode its all about rolling low! All dices are inverted - 6 is 1 and 1 is 6. Will you be able to keep from going crazy?""",
-        buttons=back_group(user_id),
+        buttons=back_groups(user_id),
     )
 
 

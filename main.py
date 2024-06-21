@@ -634,10 +634,21 @@ async def deposits_addy(event):
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                f"**💳 Upi deposit**\n\nTo top up your balance, transfer the desired amount to this upi address.\n\n**Rate : ₹87/$**",
+                f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**",
                 buttons=addy_button,
-            )
-            rcv_balance = await x.get_response()
+            try:
+                old_amount = await x.get_response()
+                amount = int(old_amount.text)
+            await x.send_message("Send me your real name to create invoice")
+            name = await x.get_response()
+            await x.send_message("Send me the email in which you want to get confirmation payment")
+            email = await x.get_response()
+        url = 'https://api.razorpay.com/v1/payments_links/'
+        headers = {'Content-type': 'application/json'}
+        data = {"amount": amount}
+        response = requests.post(url, headers=headers, json=data, auth=('',''))
+        response_json = response.json()
+        
         now_balance = int(rcv_balance.text) / 87
         old_balance = players_balance.get(query_user_id, 0)
         players_balance[query_user_id] = float(old_balance) + float(now_balance)

@@ -241,7 +241,7 @@ If you want to play, click the "Accept Match" button""",
         now_balance_bot = players_balance.get(int(my_bot.id), 0)
         if now_balance_bot <= 0:
             return await event.answer(
-                f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance}"
+                f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance_bot}"
             )
         left_balance_bot = players_balance[my_bot.id] - float(bet)
         bet_amount[my_bot.id] = float(bet)

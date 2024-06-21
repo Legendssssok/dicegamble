@@ -463,6 +463,7 @@ async def gameplay(event):
 
 # ============ balance, deposit, withdrawal =========#
 
+
 @client.on(events.NewMessage(pattern="/bal"))
 async def balance_func(event):
     my_bot = await client.get_me()
@@ -470,26 +471,26 @@ async def balance_func(event):
     if event.is_private:
         await event.client.send_message(
             event.chat_id,
-            f"Your balance: ${balance}",       
+            f"Your balance: ${balance}",
             buttons=[
                 [
                     Button.inline("💳 Deposit", data="deposit"),
                     Button.inline("💸 Withdraw", data="withdraw"),
                 ]
-            ]
+            ],
         )
     else:
         await event.client.send_message(
             event.chat_id,
-            f"Your balance: ${balance}",       
+            f"Your balance: ${balance}",
             buttons=[
                 [
                     Button.url("💳 Deposit", url=f"https://t.me/{my_bot.username}"),
                     Button.inline("💸 Withdraw", url=f"https://t.me/{my_bot.username}"),
                 ]
-            ]
+            ],
         )
-            
+
 
 deposit_button = [
     [Button.inline("Litecoin", data="deposits_litecoin")],
@@ -512,8 +513,9 @@ async def deposit_func(event):
 
 addy_button = [
     [Button.inline("🔙 Back", data="deposit")],
-    [Button.inline("🔄 Refresh", data="refresh")]
-] 
+    [Button.inline("🔄 Refresh", data="refresh")],
+]
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposits_")))
 async def diceguide(event):
@@ -530,8 +532,7 @@ async def diceguide(event):
             rcv_balance = await x.get_response()
         players_balance[query_user_id] = int(rcv_balance.text)
         await event.client.send_message(
-            event.chat_id,
-            f"Payment confirmed! Amount ${rcv_balance.text}"
+            event.chat_id, f"Payment confirmed! Amount ${rcv_balance.text}"
         )
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
@@ -540,13 +541,13 @@ async def diceguide(event):
                 buttons=addy_button,
             )
             rcv_balance = await x.get_response()
-        now_balance = int(rcv_balance.text)/87
+        now_balance = int(rcv_balance.text) / 87
         players_balance[query_user_id] = now_balance
         await event.client.send_message(
-            event.chat_id,
-            f"Payment confirmed! Amount ${now_balance}"
+            event.chat_id, f"Payment confirmed! Amount ${now_balance}"
         )
-    
+
+
 # =============== set command ==========#
 
 commands = [

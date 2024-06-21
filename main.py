@@ -682,7 +682,7 @@ async def deposits_addy(event):
         print(json.dumps(data))
         try:
             response = requests.post(
-                url, headers=headers, json=json.dumps(data), auth=(api_key, api_secret)
+                url, headers=headers, json=data, auth=(api_key, api_secret)
             )
             response_json = response.json()
             print(response_json)

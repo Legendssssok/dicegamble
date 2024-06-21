@@ -416,14 +416,14 @@ async def gameplay(event):
             game_mode.pop(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
-                add_balance = players_balance[int(user.id)] + int(
+                add_balance = players_balance[int(user.id)] + float(
                     bet_amount[user.id] * 1.92
                 )
                 winner = (
                     f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
                 )
             elif score_player1 < score_player2:
-                add_balance = players_balance[int(my_bot.id)] + int(
+                add_balance = players_balance[int(my_bot.id)] + float(
                     bet_amount[user.id] * 1.92
                 )
                 players_balance[my_bot.id] = add_balance

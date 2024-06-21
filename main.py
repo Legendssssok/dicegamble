@@ -670,7 +670,6 @@ async def deposits_addy(event):
             "amount": new_amount,
             "currency": "INR",
             "accept_partial": False,
-            "first_min_partial_amount": 100,
             "reference_id": reference_id,
             "description": "Payment for Free Lancing",
             "customer": {"name": name.text, "email": email.text},

@@ -377,6 +377,7 @@ If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_button,
         )
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstb")))
 async def playagainstb(event):
     if event.is_private:

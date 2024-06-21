@@ -420,15 +420,15 @@ async def gameplay(event):
                     bet_amount[user.id] * 1.92
                 )
                 winner = (
-                    f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
+                    f"🎉 Congratulations! {user.first_name}, You won : ${bet_amount[user.id] * 1.92}"
                 )
             elif score_player1 < score_player2:
-                add_balance = players_balance[int(my_bot.id)] + float(
-                    bet_amount[user.id] * 1.92
+                add_balance = players_balance[my_bot.id] + float(
+                    bet_amount[my_bot.id] * 1.92
                 )
                 players_balance[my_bot.id] = add_balance
                 winner = (
-                    f"🎉 Congratulations! {my_bot.first_name} I Won : ${add_balance}"
+                    f"🎉 Congratulations! {my_bot.first_name}, Bot Won : ${bet_amount[my_bot.id] * 1.92}"
                 )
             await event.client.send_message(
                 event.chat_id,
@@ -479,9 +479,19 @@ async def gameplay(event):
                 count_round.pop(player2.id)
                 old_score.pop(event.sender_id)
                 if score_player1 > score_player2:
-                    winner = f"🎉 Congratulations! {player2.first_name}  you won"
+                    add_balance = players_balance[player2.id] + float(
+                        bet_amount[player2.id] * 1.92
+                    )
+                    winner = (
+                        f"🎉 Congratulations! {player2.first_name}, You won : ${bet_amount[player2.id] * 1.92}"
+                    )
                 elif score_player1 < score_player2:
-                    winner = f"🎉 Congratulations! {player1_details.first_name} You Won"
+                    add_balance = players_balance[player1_details.id] + float(
+                        bet_amount[player1_details.id] * 1.92
+                    )
+                    winner = (
+                        f"🎉 Congratulations! {player1_details.first_name}, You won : ${bet_amount[player1_details.id] * 1.92}"
+                    )
                 return await event.client.send_message(
                     event.chat_id,
                     f"""🏆 **Game over!**
@@ -554,7 +564,7 @@ async def balance_func(event):
             buttons=[
                 [
                     Button.url("💳 Deposit", url=f"https://t.me/{my_bot.username}"),
-                    Button.inline("💸 Withdraw", url=f"https://t.me/{my_bot.username}"),
+                    Button.url("💸 Withdraw", url=f"https://t.me/{my_bot.username}"),
                 ]
             ],
         )

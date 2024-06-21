@@ -643,36 +643,38 @@ async def deposits_addy(event):
                     f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**\n\n**Note**: if you want to send the amount of ₹100, you must enter the value 10000.(extra 2 zeros)",
                     buttons=addy_button,
                 )
-                oamount = await x.get_response(timeout=1200).raw_text
-                # oamount = int(old_amount.text)
-                if oamount < 100:
+                old_amount = await x.get_response(timeout=1200)
+                oamount = old_amount.text
+                if int(oamount) < 100:
                     amount = str(oamount) + 00
+                    new_amount = int(amount)
                 else:
                     amount = str(oamount)
+                    new_amount = int(amount)
                 await x.send_message("Send me your real name to create invoice")
-                name = await x.get_response(timeout=1200).raw_text
+                name = await x.get_response(timeout=1200)
                 await x.send_message(
                     "Send me the email in which you want to get confirmation payment"
                 )
-                email = await x.get_response(timeout=1200).raw_text
+                email = await x.get_response(timeout=1200)
             except Exception as e:
                 return await x.send_message(
                     f"Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\n**Error**: {e}\n\n**Try again later**"
                 )
-        reference_id = f"TS{amount}" + email[0:3]
+        reference_id = f"TS{amount}" + email.text[0:3]
         url = "https://api.razorpay.com/v1/payments_links/"
         headers = {"Content-type": "application/json"}
         data = {
-            "amount": amount,
+            "amount": new_amount,
             "currency": "INR",
             "accept_partial": False,
             "first_min_partial_amount": 100,
             "reference_id": reference_id,
-            "description": "Payment for Game Number",
-            "customer": {"name": name, "email": email},
+            "description": "Payment for Free Lancing",
+            "customer": {"name": name.text, "email": email.text},
             "notify": {"email": True},
             "reminder_enable": True,
-            "notes": {"policy_name": "Game Bima"},
+            "notes": {"policy_name": "Free Lancing Bima"},
             "callback_url": "https://t.me/DiceChallengersBot",
             "callback_method": "get",
         }

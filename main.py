@@ -238,8 +238,8 @@ If you want to play, click the "Accept Match" button""",
             )
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
-        now_balance_bot = players_balance.get(int(my_bot.id), 0)
-        if now_balance_bot <= bet:
+        now_balance_bot = players_balance.get(my_bot.id, 0)
+        if float(now_balance_bot) <= float(bet):
             return await event.answer(
                 f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance_bot}"
             )
@@ -268,8 +268,8 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
             return await event.answer("You cannot accept your own match")
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
-        now_balance_player2 = players_balance.get(int(player2.id), 0)
-        if now_balance_player2 <= bet:
+        now_balance_player2 = players_balance.get(player2.id, 0)
+        if float(now_balance_player2) <= float(bet):
             return await event.answer(
                 f"❌ Not enough balance. Your balance : ${now_balance_player2}"
             )

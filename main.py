@@ -106,7 +106,7 @@ Examples:
                 Button.inline("Crazy Mode", data="crazymode"),
             ],
             [
-                Button.inline("ℹ️ Guide", data="diceguide"),
+                Button.inline("ℹ️ Guide", data=f"diceguide_{event.sender_id}"),
                 Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
             ],
         ],
@@ -259,6 +259,64 @@ Player 2: [{player2.first_name}](tg://user?id={player2.id})
         )
 
 
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"back_")))
+async def bck_in_groups(event):
+    query = event.data.decode("ascii").lower()
+    user_id = query.split("_")[1]
+    query_user_id = event.query.user_id
+    if query_user_id != int(user_id):
+        return await event.answer(
+            "Sorry, but you are not allowed to click others users button"
+        )
+    await event.edit(
+        f"🎲 Choose the game mode",
+        buttons=[
+            [
+                Button.inline("Normal Mode", data=f"normalmode_{user_id}"),
+            ],
+            [
+                Button.inline("Double Roll", data="doubleroll"),
+            ],
+            [
+                Button.inline("Crazy Mode", data="crazymode"),
+            ],
+            [
+                Button.inline("ℹ️ Guide", data=f"diceguide_{user_id}"),
+                Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
+            ],
+        ],
+    )
+
+
+def back_groups(user_id):
+    back_group = [[Button.inline("⬅️ Back", data=f"back_{user_id}")]]
+    return back_group
+    
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"diceguide_")))
+async def diceguide(event):
+    query = event.data.decode("ascii").lower()
+    user_id = query.split("_")[1]
+    query_user_id = event.query.user_id
+    if query_user_id != int(user_id):
+        return await event.answer(
+            "Sorry, but you are not allowed to click others users button"
+        )
+    await event.edit(
+        """🎲 **Game Modes**
+
+**Normal Mode**
+Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
+
+**Double Roll**
+Similar to Normal, but you are rolling 2 dice in a row. The winner of the round is the one who has the greater sum of the two dice's digits.
+
+**Crazy Mode**
+Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode its all about rolling low! All dices are inverted - 6 is 1 and 1 is 6. Will you be able to keep from going crazy?""",
+        buttons=back_group(user_id),
+    )
+
+
+    
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
 async def home(event):
     if event.is_private:

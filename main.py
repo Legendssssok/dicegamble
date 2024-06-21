@@ -611,6 +611,9 @@ addy_button = [
 ]
 
 
+api_key = "rzp_live_OH4h4RtCPQFnLG"
+api_secret = "CPEWuysDiY69CIdZeDwazbdi"
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))
 async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
@@ -633,30 +636,78 @@ async def deposits_addy(event):
         )
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
-            await x.send_message(
-                f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**",
-                buttons=addy_button,
             try:
-                old_amount = await x.get_response()
+                await x.send_message(f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**\n\n**Note**: if you want to send the amount of ₹100, you must enter the value 10000.(extra 2 zeros)", buttons=addy_button)
+                old_amount = await x.get_response(timeout=1200)
                 amount = int(old_amount.text)
-            await x.send_message("Send me your real name to create invoice")
-            name = await x.get_response()
-            await x.send_message("Send me the email in which you want to get confirmation payment")
-            email = await x.get_response()
+                if amount < 100:
+                    amount = str(amount) + 00
+                await x.send_message("Send me your real name to create invoice")
+                name = await x.get_response(timeout=1200)
+                await x.send_message("Send me the email in which you want to get confirmation payment")
+                email = await x.get_response(timeout=1200)
+            except:
+                return await x.send_message("Something went wrong, may be that you are too slow to respose\nMistankely write something in chat, input amount only\n\m**Try again later**")
+        reference_id = f"TS{amount}"
         url = 'https://api.razorpay.com/v1/payments_links/'
         headers = {'Content-type': 'application/json'}
-        data = {"amount": amount}
-        response = requests.post(url, headers=headers, json=data, auth=('',''))
-        response_json = response.json()
+        data = {
+            "amount": amount,
+            "currency": "INR",
+            "accept_partial": False,
+            "first_min_partial_amount": 100,
+            "reference_id": "TS",
+            "description": "Payment for Game Number",
+            "customer": {
+                "name": name.text,
+                "email": email.text
+            },
+            "notify": {
+                "email": True
+            },
+            "reminder_enable": True,
+            "notes": {
+                "policy_name": "Game Bima"
+            },
+            "callback_url": "https://t.me/DiceChallengersBot",
+            "callback_method": "get"
+        }
+        try:
+            response = requests.post(url, headers=headers, json=data, auth=(api_key, api_secret))
+            response_json = response.json()
+            print(response_json)
+        except Exception as e:
+            return await event.client.send_message(event.chat_id, f"Error: {e}")
+        res_amount = response_json["amount"]
+        res_short_url = response_json["short_url"]
+        res_email = response_json["customer"]["email"]
+        res_id = response_json["id"]
+        res_name = response_json["customer"]["name"]
+        await event.client.send_message(f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {amount}\n**Name**: {res_name}\n**Email**: {email}\n**Pay Here**: {res_short_url}\n\nafter payment send /addbalance <invoice id> in chat, the balance will get automatically added")
         
-        now_balance = int(rcv_balance.text) / 87
-        old_balance = players_balance.get(query_user_id, 0)
-        players_balance[query_user_id] = float(old_balance) + float(now_balance)
-        await event.client.send_message(
-            event.chat_id,
-            f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}",
-        )
 
+
+@client.on(events.NewMessage(pattern="/addbal"))
+async def add_upi_bal(event):
+    payment_link_id = event.text.split(" ")[1]
+    url = f'https://api.razorpay.com/v1/payment_links/{payment_link_id}'
+    auth_header = (key_id, key_secret)
+    try:
+        response = requests.get(url, headers={'content-type': 'application/json'}, auth=auth_header)
+        response_json = response.json()
+    except Exception as e:
+        return await event.reply(f"Error : {e}")
+    status = response_json["status"]
+    amount = response_json["amount_paid"]
+    if status == "paid":
+        old_balance = players_balance.get(event.sender_id, 0)
+        now_balance = float(str(amount)[:-2]) / 87
+        players_balance[event.sender_id] = float(old_balance) + float(now_balance)
+        await event.reply(
+            f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}"
+        )
+    else:
+        await event.reply(f"Your status : {status}")
 
 # =============== set command ==========#
 

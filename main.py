@@ -33,6 +33,8 @@ old_score = {}
 
 players_balance = {}
 
+bet_amount = {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -96,7 +98,7 @@ Examples:
 /dice 5.50 - to play for $5.50"""
         )
     now_balance = players_balance.get(event.sender_id, 0)
-    if now_balance =< 0:
+    if now_balance <= 0:
         return await event.reply(f"❌ Not enough balance\n\nYour balance: ${now_balance}")
     await event.client.send_message(
         event.chat_id,
@@ -229,14 +231,16 @@ If you want to play, click the "Accept Match" button""",
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
         now_balance_bot = players_balance.get(int(my_bot.id), 0)
-        if now_balance_bot =< 0:
+        if now_balance_bot <= 0:
             return await event.answer(
                 f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance}"
             )
-        left_balance_bot = players_balance[int(my_bot.id)] - bet
-        players_balance[int(my_bot.id)] = left_balance_bot
-        left_balance_user = players_balance[int(user_id)] - bet
-        players_balance[int(user_id)] = left_balance_user
+        left_balance_bot = players_balance[my_bot.id] - float(bet)
+        bet_amount[my_bot.id] = float(bet)
+        players_balance[my_bot.id] = left_balance_bot
+        left_balance_user = players_balance[user.id] - float(bet)
+        bet_amount[user.id] = float(bet)
+        players_balance[user.id] = left_balance_user
         await event.delete()
         game_mode[user.id] = ["botwplayers", int(round)]
         score[user.id] = [0, 0]
@@ -257,14 +261,16 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
         now_balance_player2 = players_balance.get(int(player2.id), 0)
-        if now_balance_player2 =< 0:
+        if now_balance_player2 <= 0:
             return await event.answer(
                 f"❌ Not enough balance. Your balance : ${now_balance}"
             )
-        left_balance_player1 = players_balance[int(player1.id)] - bet
-        players_balance[int(player1.id)] = left_balance_player1
-        left_balance_player2 = players_balance[int(player2.id)] - bet
-        players_balance[int(player2.id)] = left_balance_player2
+        left_balance_player1 = players_balance[player1.id] - float(bet)
+        bet_amount[player1.id] = float(bet)
+        players_balance[player1.id] = left_balance_player1
+        left_balance_player2 = players_balance[player2.id] - float(bet)
+        bet_amount[player2.id] = float(bet)
+        players_balance[player2.id] = left_balance_player2
         await event.delete()
         score[player1.id] = [0, 0]
         game_mode[int(user_id)] = ["playerwplayer", int(round), query_user_id]
@@ -402,10 +408,10 @@ async def gameplay(event):
             game_mode.pop(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
-                add_balance = players_balance[int(user.id)] + int(bet*1.92)
+                add_balance = players_balance[int(user.id)] + int(bet_amount[user.id]*1.92)
                 winner = f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
             elif score_player1 < score_player2:
-                add_balance = players_balance[int(my_bot.id)] + int(bet*1.92)
+                add_balance = players_balance[int(my_bot.id)] + int(bet_amount[user.id]*1.92)
                 players_balance[my_bot.id] = add_balance
                 winner = f"🎉 Congratulations! {my_bot.first_name} I Won : ${add_balance}"
             await event.client.send_message(

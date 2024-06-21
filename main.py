@@ -60,12 +60,12 @@ Play dice with your friend or just with the bot!
 Rules are simple: first to reach needed points wins.""",
     )
     if event.is_private:
-        players_balance(event.sender_id)
+        now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
-            """🏠 Menu
+            f"""🏠 Menu
 
-Your balance: $0.00 (0.00000 LTC)""",
+Your balance: ${now_balance}""",
             buttons=game,
         )
 
@@ -607,7 +607,7 @@ async def deposits_addy(event):
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                f"**💳 Upi deposit**\n\nTo top up your balance, transfer the desired amount to this upi address.\n\n**Rate : ₹87/$",
+                f"**💳 Upi deposit**\n\nTo top up your balance, transfer the desired amount to this upi address.\n\n**Rate : ₹87/$**",
                 buttons=addy_button,
             )
             rcv_balance = await x.get_response()

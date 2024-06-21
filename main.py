@@ -265,7 +265,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
         )
-    elif query.startswith("playerwplayer"):    
+    elif query.startswith("playerwplayer"):
         user_id, round, bet = query.split("_")[1:4]
         if query_user_id == int(user_id):
             return await event.answer("You cannot accept your own match")

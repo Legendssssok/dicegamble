@@ -174,20 +174,12 @@ async def callback_query(event):
             buttons=button,
         )
     elif query.startswith("round"):
-        text = query.split("_")
-        user_id = text[1]
-        round = text[2]
+        user_id, round = query.split("_")[1:3]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
-        if round == "5":
-            points = 3
-        elif round == "3":
-            points = 2
-        else:
-            points = 1
-        button = confirm_button(user_id, round)
+        points = {"5": 3, "3": 2, "1": 1}[round]
         await event.edit(
             f"""🎲** Game Confirmation**
 
@@ -196,25 +188,17 @@ Win chance: 50/50
 Win multiplier: 1.92x
 Mode: First to {points} points
 Game mode: Normal Mode""",
-            buttons=button,
+            buttons=confirm_button(user_id, round),
         )
     elif query.startswith("confirm"):
-        text = query.split("_")
-        user_id = text[1]
-        round = text[2]
+        user_id, round = query.split("_")[1:3]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
         await event.delete()
         user = await client.get_entity(int(user_id))
-        if round == "5":
-            points = 3
-        elif round == "3":
-            points = 2
-        else:
-            points = 1
-        button = final_confirm_button(user_id, round)
+        points = {"5": 3, "3": 2, "1": 1}[round]
         await event.client.send_message(
             event.chat_id,
             f"""{user.first_name} wants to play dice!
@@ -228,12 +212,10 @@ Normal Mode
 Basic game mode. You take turns rolling the dice, and whoever has the highest digit wins the round.
 
 If you want to play, click the "Accept Match" button""",
-            buttons=button,
+            buttons=final_confirm_button(user_id, round),
         )
     elif query.startswith("botwplayer"):
-        text = query.split("_")
-        user_id = text[1]
-        round = text[2]
+        user_id, round = query.split("_")[1:3]
         if query_user_id != int(user_id):
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
@@ -254,9 +236,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
 **{user.first_name}** , your turn! To start, send a dice emoji: 🎲""",
         )
     elif query.startswith("playerwplayer"):
-        text = query.split("_")
-        user_id = text[1]
-        round = text[2]
+        user_id, round = query.split("_")[1:3]
         if query_user_id == int(user_id):
             return await event.answer("You cannot accept your own match", alert=True)
         await event.delete()
@@ -308,7 +288,7 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if event.text:
+    if not event.media or not isinstance(event.media, InputMediaDice):
         return
     if event.sender_id in last_message_times:
         max_time = 9

@@ -485,7 +485,7 @@ async def balance_func(event):
             buttons=[
                 [
                     Button.url("💳 Deposit", url=f"https://t.me/{my_bot.username}"),
-                    Button.inline("💸 Withdraw", url=f"https://t.me/{my_bot.username"),
+                    Button.inline("💸 Withdraw", url=f"https://t.me/{my_bot.username}"),
                 ]
             ]
         )
@@ -522,9 +522,29 @@ async def diceguide(event):
     query_user_id = event.query.user_id
     print(query)
     if addy == "litecoin":
-        await event.edit(
-            f"**💳 Litecoin deposit**\n\nTo top up your balance, transfer the desired amount to this LTC address.",
-            buttons=addy_button,
+        async with client.conversation(event.chat_id) as x:
+            await event.edit(
+                f"**💳 Litecoin deposit**\n\nTo top up your balance, transfer the desired amount to this LTC address.",
+                buttons=addy_button,
+            )
+            rcv_balance = await x.get_response()
+        players_balance[query_user_id] = int(rcv_balance.text)
+        await event.client.send_message(
+            event.chat_id,
+            f"Payment confirmed! Amount ${rcv_balance.text}"
+        )
+    elif addy == "upi":
+        async with client.conversation(event.chat_id) as x:
+            await event.edit(
+                f"**💳 Upi deposit**\n\nTo top up your balance, transfer the desired amount to this upi address.\n\n**Rate : ₹87/$",
+                buttons=addy_button,
+            )
+            rcv_balance = await x.get_response()
+        now_balance = int(rcv_balance.text)/87
+        players_balance[query_user_id] = now_balance
+        await event.client.send_message(
+            event.chat_id,
+            f"Payment confirmed! Amount ${now_balance}"
         )
     
 # =============== set command ==========#

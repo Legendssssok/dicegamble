@@ -150,7 +150,7 @@ def confirm_button(user_id, round, bet):
     return confirms_button
 
 
-def final_confirm_button(user_id, round):
+def final_confirm_button(user_id, round, bet):
     final_confirms_button = [
         [
             Button.inline(

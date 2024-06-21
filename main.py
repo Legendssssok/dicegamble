@@ -479,7 +479,7 @@ commands = [
 
 @client.on(events.NewMessage(pattern="/setbotcommand"))
 async def set_bot_command(event):
-    owo = client(
+    owo = await client(
         functions.bots.SetBotCommandsRequest(
             scope=types.BotCommandScopeDefault(), lang_code="en", commands=commands
         )

@@ -1,9 +1,10 @@
 import asyncio
 import logging
-import re
-import time
 import random
+import re
 import string
+import time
+
 import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
@@ -700,7 +701,7 @@ async def deposits_addy(event):
 
 def generate_random_string(length):
     letters = string.ascii_letters + string.digits
-    return ''.join(random.choice(letters) for _ in range(length))
+    return "".join(random.choice(letters) for _ in range(length))
 
 
 @client.on(events.NewMessage(pattern="/addbal"))

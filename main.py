@@ -396,8 +396,11 @@ last_message_times = {}
 async def gameplay(event):
     if not event.sender_id in game_mode:
         return
-    if not event.media.emoticon == "🎲":
+    if event.text:
         return
+    if event.media:
+        if not event.media.emoticon == "🎲":
+            return
     if event.sender_id in last_message_times:
         max_time = 9
         time_since_last_message = time.time() - last_message_times[event.sender_id]
@@ -428,9 +431,10 @@ async def gameplay(event):
             game_mode.pop(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
-                add_balance = players_balance[int(user.id)] + float(
+                add_balance = players_balance[user.id] + float(
                     bet_amount[user.id] * 1.92
                 )
+                players_balance[user.id] = add_balance
                 winner = f"🎉 Congratulations! {user.first_name}, You won : ${bet_amount[user.id] * 1.92}"
             elif score_player1 < score_player2:
                 add_balance = players_balance[my_bot.id] + float(
@@ -490,11 +494,13 @@ async def gameplay(event):
                     add_balance = players_balance[player2.id] + float(
                         bet_amount[player2.id] * 1.92
                     )
+                    players_balance[player2.id] = add_balance
                     winner = f"🎉 Congratulations! {player2.first_name}, You won : ${bet_amount[player2.id] * 1.92}"
                 elif score_player1 < score_player2:
                     add_balance = players_balance[player1_details.id] + float(
                         bet_amount[player1_details.id] * 1.92
                     )
+                    players_balance[player1_details.id] = add_balance
                     winner = f"🎉 Congratulations! {player1_details.first_name}, You won : ${bet_amount[player1_details.id] * 1.92}"
                 return await event.client.send_message(
                     event.chat_id,

@@ -300,7 +300,7 @@ Player 2: [{player2.first_name}](tg://user?id={player2.id})
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"back_")))
 async def bck_in_groups(event):
     query = event.data.decode("ascii").lower()
-    user_id, bet= query.split("_")[1:3]
+    user_id, bet = query.split("_")[1:3]
     query_user_id = event.query.user_id
     if query_user_id != int(user_id):
         return await event.answer(

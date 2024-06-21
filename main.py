@@ -60,7 +60,7 @@ Play dice with your friend or just with the bot!
 Rules are simple: first to reach needed points wins.""",
     )
     if event.is_private:
-        now_balance = players_balance(event.sender_id)
+        players_balance(event.sender_id)
         await event.client.send_message(
             event.chat_id,
             """🏠 Menu
@@ -99,13 +99,17 @@ Examples:
         )
     now_balance = players_balance.get(event.sender_id, 0)
     if now_balance <= 0:
-        return await event.reply(f"❌ Not enough balance\n\nYour balance: ${now_balance}")
+        return await event.reply(
+            f"❌ Not enough balance\n\nYour balance: ${now_balance}"
+        )
     await event.client.send_message(
         event.chat_id,
         f"🎲 Choose the game mode",
         buttons=[
             [
-                Button.inline("Normal Mode", data=f"normalmode_{event.sender_id}_{bet}"),
+                Button.inline(
+                    "Normal Mode", data=f"normalmode_{event.sender_id}_{bet}"
+                ),
             ],
             [
                 Button.inline("Double Roll", data="doubleroll"),
@@ -149,8 +153,12 @@ def confirm_button(user_id, round, bet):
 def final_confirm_button(user_id, round):
     final_confirms_button = [
         [
-            Button.inline("✅ Accept Match", data=f"playerwplayer_{user_id}_{round}_{bet}"),
-            Button.inline("✅ Play against bot", data=f"botwplayer_{user_id}_{round}_{bet}"),
+            Button.inline(
+                "✅ Accept Match", data=f"playerwplayer_{user_id}_{round}_{bet}"
+            ),
+            Button.inline(
+                "✅ Play against bot", data=f"botwplayer_{user_id}_{round}_{bet}"
+            ),
         ],
         [
             Button.inline("❌ Cancel", data=f"cancel_{user_id}"),
@@ -408,12 +416,20 @@ async def gameplay(event):
             game_mode.pop(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
-                add_balance = players_balance[int(user.id)] + int(bet_amount[user.id]*1.92)
-                winner = f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
+                add_balance = players_balance[int(user.id)] + int(
+                    bet_amount[user.id] * 1.92
+                )
+                winner = (
+                    f"🎉 Congratulations! {user.first_name} You won : ${add_balance}"
+                )
             elif score_player1 < score_player2:
-                add_balance = players_balance[int(my_bot.id)] + int(bet_amount[user.id]*1.92)
+                add_balance = players_balance[int(my_bot.id)] + int(
+                    bet_amount[user.id] * 1.92
+                )
                 players_balance[my_bot.id] = add_balance
-                winner = f"🎉 Congratulations! {my_bot.first_name} I Won : ${add_balance}"
+                winner = (
+                    f"🎉 Congratulations! {my_bot.first_name} I Won : ${add_balance}"
+                )
             await event.client.send_message(
                 event.chat_id,
                 f"""🏆 **Game over!**
@@ -499,7 +515,10 @@ async def gameplay(event):
 async def house_bal(event):
     my_bot = await client.get_me()
     now_balance = players_balance.get(my_bot.id, 0)
-    await event.reply(f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}")
+    await event.reply(
+        f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}"
+    )
+
 
 @client.on(events.NewMessage(pattern="/addhousebal"))
 async def house_bal(event):
@@ -507,8 +526,9 @@ async def house_bal(event):
     my_bot = await client.get_me()
     old_balance = players_balance.get(my_bot.id, 0)
     now_balance = old_balance + int(amount)
-    await event.reply(f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}")
-
+    await event.reply(
+        f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}"
+    )
 
 
 @client.on(events.NewMessage(pattern="/bal"))
@@ -581,7 +601,8 @@ async def deposits_addy(event):
         old_balance = players_balance.get(query_user_id, 0)
         players_balance[query_user_id] = float(old_balance) + float(rcv_balance.text)
         await event.client.send_message(
-            event.chat_id, f"Payment confirmed! Amount ${rcv_balance.text}\n\nYour Balance : {players_balance[query_user_id]}"
+            event.chat_id,
+            f"Payment confirmed! Amount ${rcv_balance.text}\n\nYour Balance : {players_balance[query_user_id]}",
         )
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
@@ -594,7 +615,8 @@ async def deposits_addy(event):
         old_balance = players_balance.get(query_user_id, 0)
         players_balance[query_user_id] = float(old_balance) + float(now_balance)
         await event.client.send_message(
-            event.chat_id, f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}"
+            event.chat_id,
+            f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}",
         )
 
 

@@ -641,7 +641,6 @@ async def refresh(event):
                 transaction_timeout,
                 transaction_checkout_url,
                 transaction_qrcode_url,
-                
                 main_time,
             ) = ltc_store[query_user_id]
             time_since_last_message = time.time() - main_time

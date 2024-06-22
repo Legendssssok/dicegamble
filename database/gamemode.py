@@ -14,4 +14,4 @@ def add_game_mode(user_id, mode, round, query_id=False):
 def remove_game_mode(user_id):
   ok = game_mode()
   ok.pop(user_id)
-  return await legend_db.set_key("GAMEMODE', ok)
+  return await legend_db.set_key("GAMEMODE", ok)

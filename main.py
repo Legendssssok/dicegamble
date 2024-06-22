@@ -31,9 +31,9 @@ players_balance = {}
 
 bet_amount = {}
 
-all_invoice_id = {}
-
 ltc_store = {}
+
+upi_store = {}
 
 game = [
     [

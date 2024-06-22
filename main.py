@@ -685,7 +685,7 @@ async def deposits_addy(event):
                 transaction_qrcode_url = transaction["qrcode_url"]
                 transaction_id = transaction["txn_id"]
                 hours = transaction_timeout // 3600
-                remaining_seconds = time % 3600
+                remaining_seconds = transaction_timeout % 3600
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds % 60
                 addy_buttons = addy_button(transaction_timeout)

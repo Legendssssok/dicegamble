@@ -10,3 +10,8 @@ def add_game_mode(user_id, mode, round, query_id=False):
   else:
     ok[user_id] = [mode, round, query_id]
   return await legend_db.set_key("GAMEMODE", ok)
+
+def remove_game_mode(user_id):
+  ok = game_mode()
+  ok.pop(user_id)
+  return await legend_db.set_key("GAMEMODE', ok)

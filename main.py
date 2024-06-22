@@ -635,10 +635,20 @@ async def refresh(event):
     if transactionInfo["error"] == "ok":
         status = transactionInfo["status_text"]
         if status != "Complete":
-            transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url , main_time = ltc_store[query_user_id]
+            (
+                transaction_amount,
+                transaction_address,
+                transaction_timeout,
+                transaction_checkout_url,
+                transaction_qrcode_url,
+                main_time,
+            ) = ltc_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
-                return await event.edit(f"Link get expired exceed over time, click again to generate", buttons=addy_buttons)
+                return await event.edit(
+                    f"Link get expired exceed over time, click again to generate",
+                    buttons=addy_buttons,
+                )
             remaining_time = int(transaction_timeout) - time_since_last_message
             hours = remaining_time // 3600
             remaining_seconds = remaining_time % 3600
@@ -663,7 +673,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Transaction ID** : {transaction_id}
 
 **Expire In :** {hours}:{minutes}:{seconds}""",
-               buttons=addy_buttons,
+                buttons=addy_buttons,
             )
             return
         received_fund = transactionInfo["receivedf"]
@@ -680,7 +690,7 @@ async def deposits_addy(event):
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
     if query_user_id in ltc_store:
-        return 
+        return
     await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
@@ -728,7 +738,15 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Expire In :** {hours}:{minutes}:{seconds}""",
                     buttons=addy_buttons,
                 )
-                ltc_store[query_user_id] = [transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url, transaction_id, time.time()]
+                ltc_store[query_user_id] = [
+                    transaction_amount,
+                    transaction_address,
+                    transaction_timeout,
+                    transaction_checkout_url,
+                    transaction_qrcode_url,
+                    transaction_id,
+                    time.time(),
+                ]
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
             try:

@@ -605,17 +605,27 @@ deposit_button = [
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"deposit")))
 async def deposit_func(event):
+    query = event.data.decode("ascii").lower()
+    query_user_id = event.query.user_id
+    try:
+        timeout = query.split("_")[1]
+        time_since_last_time = time.time() - store_time[query_user_id] 
+        if time_since_last_time < int(timeout):
+            return await event.answer("Wait")
+    except:
+        pass
     await event.edit(
         f"**💳 Deposit**\n\nChoose your preferred deposit method:",
         buttons=deposit_button,
     )
 
 
-addy_button = [
-    [Button.inline("🔙 Back", data="deposit")],
-    [Button.inline("🔄 Refresh", data="refresh")],
-]
-
+def addy_button(timeout):
+    addy_buttons = [
+        [Button.inline("🔙 Back", data=f"deposit_{timeout}")],
+        [Button.inline("🔄 Refresh", data="refresh")],
+    ]
+    return addy_buttons
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
@@ -651,13 +661,13 @@ crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
-    event.query.user_id
+    query_user_id = event.query.user_id
     print(query)
     await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                "To top up your balance, enter thr desired amount which you want send from LTC address"
+                "**To top up your balance**,\nEnter the desired amount in $."
             )
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
@@ -672,11 +682,12 @@ async def deposits_addy(event):
                 transaction_timeout = transaction["timeout"]
                 transaction_checkout_url = transaction["checkout_url"]
                 transaction_qrcode_url = transaction["qrcode_url"]
-                transaction_id = transaction[txn_id]
+                transaction_id = transaction["txn_id"]
                 hours = transaction_timeout // 3600
                 remaining_seconds = time % 3600
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds % 60
+                addy_buttons = addy_button(transaction_timeout)
                 await event.client.send_message(
                     f"""**💳 Litecoin deposit**
 
@@ -693,9 +704,10 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Transaction ID** : {transaction_id}
 
 **Expire In : {hours}:{minutes}:{seconds}""",
-                    buttons=addy_button,
+                    buttons=addy_buttons,
                 )
-                txn_id_store[event.sender_id] = transaction_id
+                txn_id_store[query_user_id] = transaction_id
+                store_time[query_user_id] = time.time()
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
             try:

@@ -624,7 +624,7 @@ async def deposit_func(event):
             remaining_time = int(timeout) - time_since_last_time
             remaining_seconds = remaining_time % 3600
             return await event.answer(
-                f"Wait for link expire in {remaining_time // 3600}:{remaining_seconds // 60}:{remaining_seconds % 60}"
+                f"Wait for link expire in {int(remaining_time // 3600)}:{int(remaining_seconds // 60)}:{int(remaining_seconds % 60)}"
             )
     except:
         pass
@@ -700,8 +700,11 @@ async def deposits_addy(event):
 To top up your balance, transfer the desired amount to this LTC address.
 
 **Please note:**
-1. The deposit address is temporary and is only issued for 1 hour. A new one will be created after that.
+1. The deposit address is temporary and is only issued for 1 hour.
 2. One address accepts only one payment.
+3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
+4. After Payment Click On Refresh
+
 
 **LTC address** : `{transaction_address}`
 **Transaction Amount**: {transaction_amount}

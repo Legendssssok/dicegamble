@@ -956,6 +956,7 @@ def calculate_2_percent(input_value):
     except ValueError:
         return "Invalid input. Please provide a valid number."
 
+
 # =============== set command ==========#
 
 commands = [

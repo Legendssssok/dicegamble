@@ -616,22 +616,26 @@ addy_button = [
     [Button.inline("🔄 Refresh", data="refresh")],
 ]
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
     query_user_id = event.query.user_id
     txn_id = txn_id_store[query_user_id]
     post_params1 = {
-        'txid' : txn_id,    
+        "txid": txn_id,
     }
     transactionInfo = client.getTransactionInfo(post_params1)
-    if transactionInfo['error'] == 'ok': 
+    if transactionInfo["error"] == "ok":
         status = transactionInfo["status_text"]
         if status != "Complete":
             return await event.answer("Wait patience Let it to be received")
         received_fund = transactionInfo["receivedf"]
         net_fund = transactionInfo["netf"]
-        await event.edit(f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $")
+        await event.edit(
+            f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $"
+        )
         txn_id_store.pop(query_user_id)
+
 
 api_key = "rzp_live_OH4h4RtCPQFnLG"
 api_secret = "CPEWuysDiY69CIdZeDwazbdi"
@@ -647,25 +651,27 @@ crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
-    query_user_id = event.query.user_id
+    event.query.user_id
     print(query)
     await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
-            await x.send_message("To top up your balance, enter thr desired amount which you want send from LTC address")
+            await x.send_message(
+                "To top up your balance, enter thr desired amount which you want send from LTC address"
+            )
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
-                'amount' : int(old_amount.text),
-                'currency1' : 'USD',
-                'currency2' : 'LTC'
+                "amount": int(old_amount.text),
+                "currency1": "USD",
+                "currency2": "LTC",
             }
             transaction = crypto_client.createTransaction(create_transaction_params)
-            if transaction['error'] == 'ok': 
-                transaction_amount = transaction['amount']
-                transaction_address = transaction['address']
-                transaction_timeout = transaction ['timeout']
-                transaction_checkout_url = transaction['checkout_url']
-                transaction_qrcode_url = transaction['qrcode_url']
+            if transaction["error"] == "ok":
+                transaction_amount = transaction["amount"]
+                transaction_address = transaction["address"]
+                transaction_timeout = transaction["timeout"]
+                transaction_checkout_url = transaction["checkout_url"]
+                transaction_qrcode_url = transaction["qrcode_url"]
                 transaction_id = transaction[txn_id]
                 hours = transaction_timeout // 3600
                 remaining_seconds = time % 3600

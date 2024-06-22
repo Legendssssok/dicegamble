@@ -618,45 +618,50 @@ async def deposit_func(event):
     )
 
 
-addy_buttons = [
-    [Button.inline("🔙 Back", data=f"deposit")],
-    [Button.inline("🔄 Refresh", data="refresh")],
-]
-
+def addy_button(method):
+    addy_buttons = [
+        [Button.inline("🔙 Back", data=f"deposit")],
+        [Button.inline("🔄 Refresh", data=f"refresh_{method}")],
+    ]
+    return addy_buttons
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
+    query = event.data.decode("ascii").lower()
+    addy = query.split("_")[1]
     query_user_id = event.query.user_id
-    (
-        transaction_amount,
-        transaction_address,
-        transaction_timeout,
-        transaction_checkout_url,
-        transaction_qrcode_url,
-        transaction_id,
-        main_time,
-    ) = ltc_store[query_user_id]
-    post_params1 = {
-        "txid": transaction_id,
-    }
-    transactionInfo = crypto_client.getTransactionInfo(post_params1)
-    if transactionInfo["error"] == "ok":
-        status = transactionInfo["status_text"]
-        if status != "Complete":
-            time_since_last_message = time.time() - main_time
-            if time_since_last_message > int(transaction_timeout):
-                ltc_store.pop(query_user_id)
-                return await event.edit(
-                    f"Link get expired exceed over time, click again to generate",
-                    buttons=addy_buttons,
-                )
-            remaining_time = int(transaction_timeout) - time_since_last_message
-            hours = remaining_time // 3600
-            remaining_seconds = remaining_time % 3600
-            minutes = remaining_seconds // 60
-            seconds = remaining_seconds % 60
-            await event.edit(
-                f"""**💳 Litecoin deposit**
+    if addy == "litecoin":
+        addy_buttons = addy_button("litecoin")
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = ltc_store[query_user_id]
+        post_params1 = {
+            "txid": transaction_id,
+        }
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status != "Complete":
+                time_since_last_message = time.time() - main_time
+                if time_since_last_message > int(transaction_timeout):
+                    ltc_store.pop(query_user_id)
+                    return await event.edit(
+                        f"Link get expired exceed over time, click again to generate",
+                        buttons=addy_buttons,
+                    )
+                remaining_time = int(transaction_timeout) - time_since_last_message
+                hours = remaining_time // 3600
+                remaining_seconds = remaining_time % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.edit(
+                    f"""**💳 Litecoin deposit**
 
 To top up your balance, transfer the desired amount to this LTC address.
 
@@ -674,16 +679,60 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Transaction ID** : {transaction_id}
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
-                buttons=addy_buttons,
-                disable_web_page_preview=True,
+                    buttons=addy_buttons,
+                )
+                return
+            received_fund = transactionInfo["receivedf"]
+            net_fund = transactionInfo["netf"]
+            await event.edit(
+                f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $"
             )
-            return
-        received_fund = transactionInfo["receivedf"]
-        net_fund = transactionInfo["netf"]
-        await event.edit(
-            f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $"
-        )
-        txn_id_store.pop(query_user_id)
+            ltc_store.pop(query_user_id)
+    elif addy == "upi":
+        addy_buttons = addy_button("upi")
+        (
+            res_id, res_amount, res_name, res_email, res_short_url
+        ) = upi_store[query_user_id]
+        url = f"https://api.razorpay.com/v1/payment_links/{res_id}"
+        auth_header = (api_key, api_secret)
+        try:
+            response = requests.get(
+                url, headers={"content-type": "application/json"}, auth=auth_header
+            )
+            response_json = response.json()
+        except Exception as e:
+            return await event.reply(f"Error : {e}")
+        status = response_json["status"]
+        amount = response_json["amount_paid"]
+        if status == "paid":
+            actual_amount = str(amount)[:-2]
+            cut_2_percent = calculate_2_percent(actual_amount)
+            after_cut_2_percent = float(actual_amount) - cut_2_percent
+            old_balance = players_balance.get(event.sender_id, 0)
+            now_balance = after_cut_2_percent / 87
+            players_balance[event.sender_id] = float(old_balance) + float(now_balance)
+            await event.reply(f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}")
+            
+        else:
+            await event.edit(
+                f"""**💳 UPI deposit**
+
+To top up your balance, transfer the desired amount to this link.
+
+**Please note:**
+1. After deposit the address click on Refresh button.
+2. One links accepts only one payment.
+
+
+**Invoice ID** : `{res_id}`
+**Transaction Amount**: {res_amount}
+**Name**: {res_name}
+**Email Address** : {res_email}
+**CheckOut URL** : {res_short_url}
+
+**Your Status** : {status}""",
+                buttons=addy_buttons,
+            )
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))
@@ -692,6 +741,7 @@ async def deposits_addy(event):
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
     if addy == "litecoin":
+        addy_buttons = addy_button("litecoin")
         if query_user_id in ltc_store:
             (
                 transaction_amount,
@@ -734,7 +784,6 @@ To top up your balance, transfer the desired amount to this LTC address.
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                 buttons=addy_buttons,
-                disable_web_page_preview=True,
             )
             return
         await event.delete()
@@ -781,6 +830,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                     buttons=addy_buttons,
+                    disable_web_page_preview=True,
                 )
                 ltc_store[query_user_id] = [
                     transaction_amount,
@@ -792,12 +842,34 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
     elif addy == "upi":
+        addy_buttons = addy_button("upi")
+        if query_user_id in upi_store:
+            (
+                res_id, res_amount, res_name, res_email, res_short_url
+            ) = upi_store[query_user_id]
+            await event.edit(
+                f"""**💳 UPI deposit**
+
+To top up your balance, transfer the desired amount to this link.
+
+**Please note:**
+1. After deposit the address click on Refresh button.
+2. One links accepts only one payment.
+
+
+**Invoice ID** : `{res_id}`
+**Transaction Amount**: {res_amount}
+**Name**: {res_name}
+**Email Address** : {res_email}
+**CheckOut URL** : {res_short_url}""",
+            buttons=addy_buttons,
+        )
+            return
         await event.delete()
         async with client.conversation(event.chat_id) as x:
             try:
                 await x.send_message(
-                    f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**",
-                    buttons=addy_button,
+                    "**To top up your balance**,\nEnter the desired amount which you want to add."
                 )
                 old_amount = await x.get_response(timeout=1200)
                 oamount = old_amount.text
@@ -834,7 +906,6 @@ To top up your balance, transfer the desired amount to this LTC address.
                 url, headers=headers, json=data, auth=(api_key, api_secret)
             )
             response_json = response.json()
-            print(response_json)
         except Exception as e:
             return await event.client.send_message(event.chat_id, f"Error: {e}")
         res_amount = str(response_json["amount"])[:-2]
@@ -844,8 +915,23 @@ To top up your balance, transfer the desired amount to this LTC address.
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,
-            f"**Invoice created**\n\n**Invoice ID**: `{res_id}`\n**amount**: {res_amount}\n**Name**: {res_name}\n**Email**: {res_email}\n**Pay Here**: {res_short_url}\n\nafter payment send `/addbal <invoice id>` in chat, the balance will get automatically added",
+            f"""**💳 UPI deposit**
+
+To top up your balance, transfer the desired amount to this link.
+
+**Please note:**
+1. After deposit the address click on Refresh button.
+2. One links accepts only one payment.
+
+
+**Invoice ID** : `{res_id}`
+**Transaction Amount**: {res_amount}
+**Name**: {res_name}
+**Email Address** : {res_email}
+**CheckOut URL** : {res_short_url}""",
+            buttons=addy_buttons,
         )
+        upi_store[query_user_id] = [res_id, res_amount, res_name, res_email, res_short_url]
 
 
 def generate_random_string(length):

@@ -627,7 +627,7 @@ addy_buttons = [
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
     query_user_id = event.query.user_id
-    txn_id = txn_id_store[query_user_id]
+    txn_id = ltc_store[query_user_id][5]
     post_params1 = {
         "txid": txn_id,
     }
@@ -641,6 +641,7 @@ async def refresh(event):
                 transaction_timeout,
                 transaction_checkout_url,
                 transaction_qrcode_url,
+                
                 main_time,
             ) = ltc_store[query_user_id]
             time_since_last_message = time.time() - main_time

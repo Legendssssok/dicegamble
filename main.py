@@ -621,7 +621,7 @@ async def deposit_func(event):
         timeout = query.split("_")[1]
         time_since_last_time = time.time() - store_time[query_user_id]
         if time_since_last_time < int(timeout):
-            remaining_time = int(timeout) - time_since_last_message
+            remaining_time = int(timeout) - time_since_last_time
             remaining_seconds = remaining_time % 3600
             return await event.answer(
                 f"Wait for link expire in {remaining_time // 3600}:{remaining_seconds // 60}:{remaining_seconds % 60}"

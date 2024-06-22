@@ -5,7 +5,7 @@ def game_mode():
 
 def add_game_mode(user_id, mode, round, query_id=False):
   ok = game_mode()
-  if query_id=false:
+  if query_id == False:
     ok[user_id] = [mode, round]
   else:
     ok[user_id] = [mode, round, query_id]

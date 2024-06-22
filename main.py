@@ -690,6 +690,7 @@ async def deposits_addy(event):
                 seconds = remaining_seconds % 60
                 addy_buttons = addy_button(transaction_timeout)
                 await event.client.send_message(
+                    event.chat_id,
                     f"""**💳 Litecoin deposit**
 
 To top up your balance, transfer the desired amount to this LTC address.

@@ -642,17 +642,13 @@ async def deposits_addy(event):
         async with client.conversation(event.chat_id) as x:
             try:
                 await x.send_message(
-                    f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**\n\n**Note**: if you want to send the amount of ₹100, you must enter the value 10000.(extra 2 zeros)",
+                    f"**💳 Upi deposit**\n\nTo top up your balance, send the desired amount which you want add.\n\n**Rate : ₹87/$**",
                     buttons=addy_button,
                 )
                 old_amount = await x.get_response(timeout=1200)
                 oamount = old_amount.text
-                if int(oamount) < 100:
-                    amount = str(oamount) + "00"
-                    new_amount = int(amount)
-                else:
-                    amount = str(oamount)
-                    new_amount = int(amount)
+                amount = str(oamount) + "00"
+                new_amount = int(amount)
                 await x.send_message("Send me your real name to create invoice")
                 name = await x.get_response(timeout=1200)
                 await x.send_message(
@@ -687,7 +683,7 @@ async def deposits_addy(event):
             print(response_json)
         except Exception as e:
             return await event.client.send_message(event.chat_id, f"Error: {e}")
-        res_amount = response_json["amount"]
+        res_amount = str(response_json["amount"])[:-2]
         res_short_url = response_json["short_url"]
         res_email = response_json["customer"]["email"]
         res_id = response_json["id"]

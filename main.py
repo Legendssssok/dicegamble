@@ -8,6 +8,8 @@ import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
+from pyCoinPayments import CryptoPayments
+
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
 TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"
@@ -653,7 +655,7 @@ async def deposits_addy(event):
             await x.send_message("To top up your balance, enter thr desired amount which you want send from LTC address")
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
-                'amount' : int(old_amount.text)
+                'amount' : int(old_amount.text),
                 'currency1' : 'USD',
                 'currency2' : 'LTC'
             }

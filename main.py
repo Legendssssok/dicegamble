@@ -285,7 +285,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         await event.delete()
         score[player1.id] = [0, 0]
         add_game_mode(int(user_id), "playerwplayer", int(round), query_user_id)
-        add_game_mode(query_user_id, "playerwplayer", int(round), int(user_id)]
+        add_game_mode(query_user_id, "playerwplayer", int(round), int(user_id))
         count_round[player1.id] = 1
         player_turn[player1.id] = player1.id
         player_turn[player2.id] = player1.id
@@ -397,7 +397,8 @@ last_message_times = {}
 
 @client.on(events.NewMessage(incoming=True))
 async def gameplay(event):
-    if not event.sender_id in game_mode:
+    ok = game_mode()
+    if not event.sender_id in ok:
         return
     if not event.dice:
         return
@@ -411,7 +412,7 @@ async def gameplay(event):
             return
     my_bot = await client.get_me()
     user = await client.get_entity(event.sender_id)
-    gamemode, round = game_mode[event.sender_id][:2]
+    gamemode, round = ok[event.sender_id][:2]
     if gamemode == "botwplayers":
         score_player1, score_player2 = score[event.sender_id]
         current_round = count_round[event.sender_id]
@@ -431,7 +432,7 @@ async def gameplay(event):
         else:
             current_round -= 1
         if round == current_round:
-            game_mode.pop(event.sender_id)
+            remove_game_mode(event.sender_id)
             count_round.pop(event.sender_id)
             if score_player1 > score_player2:
                 add_balance = players_balance[user.id] + float(
@@ -490,8 +491,8 @@ async def gameplay(event):
             else:
                 current_round -= 2
             if round + round == current_round:
-                game_mode.pop(player2.id)
-                game_mode.pop(player1_details.id)
+                remove_game_mode(player2.id)
+                remove_game_mode(player1_details.id)
                 count_round.pop(player2.id)
                 player_turn.pop(player2.id)
                 player_turn.pop(player1_details.id)

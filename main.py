@@ -645,6 +645,7 @@ async def refresh(event):
         if status != "Complete":
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
+                ltc_store.pop(query_user_id)
                 return await event.edit(
                     f"Link get expired exceed over time, click again to generate",
                     buttons=addy_buttons,
@@ -672,8 +673,9 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Qr Code URL**: {transaction_qrcode_url}
 **Transaction ID** : {transaction_id}
 
-**Expire In :** {hours}:{minutes}:{seconds}""",
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                 buttons=addy_buttons,
+                disable_web_page_preview=True,
             )
             return
         received_fund = transactionInfo["receivedf"]
@@ -689,10 +691,53 @@ async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
-    if query_user_id in ltc_store:
-        return
-    await event.delete()
     if addy == "litecoin":
+        if query_user_id in ltc_store:
+            (
+                transaction_amount,
+                transaction_address,
+                transaction_timeout,
+                transaction_checkout_url,
+                transaction_qrcode_url,
+                transaction_id,
+                main_time,
+            ) = ltc_store[query_user_id]
+            time_since_last_message = time.time() - main_time
+            if time_since_last_message > int(transaction_timeout):
+                ltc_store.pop(query_user_id)
+                return await event.edit(
+                    f"Link get expired exceed over time, click again to generate",
+                    buttons=addy_buttons,
+                )
+            remaining_time = int(transaction_timeout) - time_since_last_message
+            hours = remaining_time // 3600
+            remaining_seconds = remaining_time % 3600
+            minutes = remaining_seconds // 60
+            seconds = remaining_seconds % 60
+            await event.edit(
+            f"""**💳 Litecoin deposit**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
+4. After Payment Click On Refresh
+
+
+**LTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                buttons=addy_buttons,
+                disable_web_page_preview=True,
+            )
+            return
+        await event.delete()
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
                 "**To top up your balance**,\nEnter the desired amount in $."
@@ -734,7 +779,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Qr Code URL**: {transaction_qrcode_url}
 **Transaction ID** : {transaction_id}
 
-**Expire In :** {hours}:{minutes}:{seconds}""",
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                     buttons=addy_buttons,
                 )
                 ltc_store[query_user_id] = [
@@ -747,6 +792,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
     elif addy == "upi":
+        await event.delete()
         async with client.conversation(event.chat_id) as x:
             try:
                 await x.send_message(

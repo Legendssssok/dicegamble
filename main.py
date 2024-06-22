@@ -545,6 +545,18 @@ async def gameplay(event):
 # ============ balance, deposit, withdrawal =========#
 
 
+
+api_key = "rzp_live_OH4h4RtCPQFnLG"
+api_secret = "CPEWuysDiY69CIdZeDwazbdi"
+
+API_KEY = "f7d33ea12c30dfdd2df8bb63f521145b24108416ec8ff05e3292b90cb69e5ba6"
+API_SECRET = "1Cc25057C77617495dB8Ec7448463c3c435409Bd46c5F03EEaDA15f68e77bc7c"
+IPN_URL = "https://google.com/ipn"
+
+crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
+
+
+
 @client.on(events.NewMessage(pattern="/housebal"))
 async def house_bal(event):
     my_bot = await client.get_me()
@@ -611,13 +623,16 @@ async def deposit_func(event):
         timeout = query.split("_")[1]
         time_since_last_time = time.time() - store_time[query_user_id]
         if time_since_last_time < int(timeout):
-            return await event.answer("Wait")
+            remaining_time = int(timeout) - time_since_last_message
+            remaining_seconds = remaining_time % 3600
+            return await event.answer(f"Wait for link expire in {remaining_time // 3600}:{remaining_seconds // 60}:{remaining_seconds % 60}")
     except:
         pass
     await event.edit(
         f"**💳 Deposit**\n\nChoose your preferred deposit method:",
         buttons=deposit_button,
     )
+    store_time.pop(query_user_id)
 
 
 def addy_button(timeout):
@@ -635,7 +650,7 @@ async def refresh(event):
     post_params1 = {
         "txid": txn_id,
     }
-    transactionInfo = client.getTransactionInfo(post_params1)
+    transactionInfo = crypto_client.getTransactionInfo(post_params1)
     if transactionInfo["error"] == "ok":
         status = transactionInfo["status_text"]
         if status != "Complete":
@@ -648,22 +663,12 @@ async def refresh(event):
         txn_id_store.pop(query_user_id)
 
 
-api_key = "rzp_live_OH4h4RtCPQFnLG"
-api_secret = "CPEWuysDiY69CIdZeDwazbdi"
-
-API_KEY = "f7d33ea12c30dfdd2df8bb63f521145b24108416ec8ff05e3292b90cb69e5ba6"
-API_SECRET = "1Cc25057C77617495dB8Ec7448463c3c435409Bd46c5F03EEaDA15f68e77bc7c"
-IPN_URL = "https://google.com/ipn"
-
-crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
-
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))
 async def deposits_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
-    print(query)
     await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
@@ -705,7 +710,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 **Qr Code URL**: {transaction_qrcode_url}
 **Transaction ID** : {transaction_id}
 
-**Expire In : {hours}:{minutes}:{seconds}""",
+**Expire In :** {hours}:{minutes}:{seconds}""",
                     buttons=addy_buttons,
                 )
                 txn_id_store[query_user_id] = transaction_id

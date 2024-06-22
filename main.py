@@ -470,7 +470,7 @@ async def gameplay(event):
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
         player1_details = await client.get_entity(event.sender_id)
-        opponent_id = game_mode[event.sender_id][2]
+        opponent_id = ok[event.sender_id][2]
         player2 = await client.get_entity(opponent_id)
         player_turn[event.sender_id] = player2.id
         player_turn[opponent_id] = player2.id

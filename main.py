@@ -609,7 +609,7 @@ async def deposit_func(event):
     query_user_id = event.query.user_id
     try:
         timeout = query.split("_")[1]
-        time_since_last_time = time.time() - store_time[query_user_id] 
+        time_since_last_time = time.time() - store_time[query_user_id]
         if time_since_last_time < int(timeout):
             return await event.answer("Wait")
     except:
@@ -626,6 +626,7 @@ def addy_button(timeout):
         [Button.inline("🔄 Refresh", data="refresh")],
     ]
     return addy_buttons
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):

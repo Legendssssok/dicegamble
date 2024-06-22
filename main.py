@@ -715,7 +715,6 @@ async def deposits_addy(event):
                 remaining_seconds = transaction_timeout % 3600
                 minutes = remaining_seconds // 60
                 seconds = remaining_seconds % 60
-                addy_buttons = addy_button(transaction_timeout)
                 await event.client.send_message(
                     event.chat_id,
                     f"""**💳 Litecoin deposit**

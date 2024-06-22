@@ -625,6 +625,7 @@ def addy_button(method):
     ]
     return addy_buttons
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
     query = event.data.decode("ascii").lower()
@@ -690,9 +691,9 @@ To top up your balance, transfer the desired amount to this LTC address.
             ltc_store.pop(query_user_id)
     elif addy == "upi":
         addy_buttons = addy_button("upi")
-        (
-            res_id, res_amount, res_name, res_email, res_short_url
-        ) = upi_store[query_user_id]
+        (res_id, res_amount, res_name, res_email, res_short_url) = upi_store[
+            query_user_id
+        ]
         url = f"https://api.razorpay.com/v1/payment_links/{res_id}"
         auth_header = (api_key, api_secret)
         try:
@@ -711,8 +712,10 @@ To top up your balance, transfer the desired amount to this LTC address.
             old_balance = players_balance.get(event.sender_id, 0)
             now_balance = after_cut_2_percent / 87
             players_balance[event.sender_id] = float(old_balance) + float(now_balance)
-            await event.reply(f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}")
-            
+            await event.reply(
+                f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}"
+            )
+
         else:
             await event.edit(
                 f"""**💳 UPI deposit**
@@ -844,9 +847,9 @@ To top up your balance, transfer the desired amount to this LTC address.
     elif addy == "upi":
         addy_buttons = addy_button("upi")
         if query_user_id in upi_store:
-            (
-                res_id, res_amount, res_name, res_email, res_short_url
-            ) = upi_store[query_user_id]
+            (res_id, res_amount, res_name, res_email, res_short_url) = upi_store[
+                query_user_id
+            ]
             await event.edit(
                 f"""**💳 UPI deposit**
 
@@ -862,8 +865,8 @@ To top up your balance, transfer the desired amount to this link.
 **Name**: {res_name}
 **Email Address** : {res_email}
 **CheckOut URL** : {res_short_url}""",
-            buttons=addy_buttons,
-        )
+                buttons=addy_buttons,
+            )
             return
         await event.delete()
         async with client.conversation(event.chat_id) as x:
@@ -931,7 +934,13 @@ To top up your balance, transfer the desired amount to this link.
 **CheckOut URL** : {res_short_url}""",
             buttons=addy_buttons,
         )
-        upi_store[query_user_id] = [res_id, res_amount, res_name, res_email, res_short_url]
+        upi_store[query_user_id] = [
+            res_id,
+            res_amount,
+            res_name,
+            res_email,
+            res_short_url,
+        ]
 
 
 def generate_random_string(length):

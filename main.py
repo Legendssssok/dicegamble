@@ -545,7 +545,6 @@ async def gameplay(event):
 # ============ balance, deposit, withdrawal =========#
 
 
-
 api_key = "rzp_live_OH4h4RtCPQFnLG"
 api_secret = "CPEWuysDiY69CIdZeDwazbdi"
 
@@ -554,7 +553,6 @@ API_SECRET = "1Cc25057C77617495dB8Ec7448463c3c435409Bd46c5F03EEaDA15f68e77bc7c"
 IPN_URL = "https://google.com/ipn"
 
 crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
-
 
 
 @client.on(events.NewMessage(pattern="/housebal"))
@@ -625,7 +623,9 @@ async def deposit_func(event):
         if time_since_last_time < int(timeout):
             remaining_time = int(timeout) - time_since_last_message
             remaining_seconds = remaining_time % 3600
-            return await event.answer(f"Wait for link expire in {remaining_time // 3600}:{remaining_seconds // 60}:{remaining_seconds % 60}")
+            return await event.answer(
+                f"Wait for link expire in {remaining_time // 3600}:{remaining_seconds // 60}:{remaining_seconds % 60}"
+            )
     except:
         pass
     await event.edit(
@@ -661,7 +661,6 @@ async def refresh(event):
             f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $"
         )
         txn_id_store.pop(query_user_id)
-
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))

@@ -627,22 +627,22 @@ addy_buttons = [
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
     query_user_id = event.query.user_id
-    txn_id = ltc_store[query_user_id][5]
+    (
+        transaction_amount,
+        transaction_address,
+        transaction_timeout,
+        transaction_checkout_url,
+        transaction_qrcode_url,
+        transaction_id,
+        main_time,
+    ) = ltc_store[query_user_id]
     post_params1 = {
-        "txid": txn_id,
+        "txid": transaction_id,
     }
     transactionInfo = crypto_client.getTransactionInfo(post_params1)
     if transactionInfo["error"] == "ok":
         status = transactionInfo["status_text"]
         if status != "Complete":
-            (
-                transaction_amount,
-                transaction_address,
-                transaction_timeout,
-                transaction_checkout_url,
-                transaction_qrcode_url,
-                main_time,
-            ) = ltc_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
                 return await event.edit(

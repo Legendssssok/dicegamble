@@ -681,12 +681,13 @@ To top up your balance, transfer the desired amount to this LTC address.
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                     buttons=addy_buttons,
+                    link_preview=False,
                 )
                 return
             received_fund = transactionInfo["receivedf"]
             net_fund = transactionInfo["netf"]
             await event.edit(
-                f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $"
+                f"Payment Confirmed! • LTC: {received_fund}, $ soon \n**Net Fund** LTC: {net_fund}, $ soon"
             )
             ltc_store.pop(query_user_id)
     elif addy == "upi":
@@ -787,6 +788,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                 buttons=addy_buttons,
+                link_preview=False,
             )
             return
         await event.delete()
@@ -833,7 +835,7 @@ To top up your balance, transfer the desired amount to this LTC address.
 
 **Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
                     buttons=addy_buttons,
-                    disable_web_page_preview=True,
+                    link_preview=False,
                 )
                 ltc_store[query_user_id] = [
                     transaction_amount,

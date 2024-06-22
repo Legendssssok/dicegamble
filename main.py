@@ -715,7 +715,7 @@ async def deposits_addy(event):
             minutes = remaining_seconds // 60
             seconds = remaining_seconds % 60
             await event.edit(
-            f"""**💳 Litecoin deposit**
+                f"""**💳 Litecoin deposit**
 
 To top up your balance, transfer the desired amount to this LTC address.
 

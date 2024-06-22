@@ -715,7 +715,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             await event.reply(
                 f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}"
             )
-
+            upi_store.pop(query_user_id)
         else:
             await event.edit(
                 f"""**💳 UPI deposit**
@@ -955,41 +955,6 @@ def calculate_2_percent(input_value):
         return result
     except ValueError:
         return "Invalid input. Please provide a valid number."
-
-
-@client.on(events.NewMessage(pattern="/addbal"))
-async def add_upi_bal(event):
-    payment_link_id = event.text.split(" ")[1]
-    if payment_link_id in all_invoice_id:
-        user = await client.get_entity(all_invoice_id[payment_link_id])
-        return await event.reply(
-            f"This invoice id is already reedeem by [{user.first_name}](tg://user?id={user.id})"
-        )
-    url = f"https://api.razorpay.com/v1/payment_links/{payment_link_id}"
-    auth_header = (api_key, api_secret)
-    try:
-        response = requests.get(
-            url, headers={"content-type": "application/json"}, auth=auth_header
-        )
-        response_json = response.json()
-    except Exception as e:
-        return await event.reply(f"Error : {e}")
-    status = response_json["status"]
-    amount = response_json["amount_paid"]
-    if status == "paid":
-        actual_amount = str(amount)[:-2]
-        cut_2_percent = calculate_2_percent(actual_amount)
-        after_cut_2_percent = float(actual_amount) - cut_2_percent
-        old_balance = players_balance.get(event.sender_id, 0)
-        now_balance = after_cut_2_percent / 87
-        players_balance[event.sender_id] = float(old_balance) + float(now_balance)
-        await event.reply(
-            f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[event.sender_id]}"
-        )
-        all_invoice_id[payment_link_id] = event.sender_id
-    else:
-        await event.reply(f"Your status : {status}")
-
 
 # =============== set command ==========#
 

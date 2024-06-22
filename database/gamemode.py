@@ -8,5 +8,5 @@ def add_game_mode(user_id, mode, round, query_id=False):
   if query_id=false:
     ok[user_id] = [mode, round]
   else:
-    ok[user_id)] = [mode, round, query_id]
+    ok[user_id] = [mode, round, query_id]
   return await legend_db.set_key("GAMEMODE", ok)

@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import random
 import re
 import string
@@ -8,23 +7,17 @@ import time
 import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
+from loggers import LOGS
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
 TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"
 
-logging.basicConfig(
-    format="[%(asctime)s] [%(levelname)s] [%(name)s] : %(message)s",
-    level=logging.ERROR,
-    datefmt="%H:%M:%S",
-)
 
-LOGS = logging.getLogger("Dice bot")
 
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
-
-game_mode = {}
+from database.gamemode import *
 
 score = {}
 
@@ -88,7 +81,8 @@ async def dice(event):
 If you want to play with your friend, you can do it in our group - @.""",
             buttons=back_button,
         )
-    if event.sender_id in game_mode:
+    ok = game_mode()
+    if event.sender_id in ok:
         return await event.reply("Your previous game is yet not finished")
     text = event.text.split(" ")
     try:
@@ -242,7 +236,8 @@ If you want to play, click the "Accept Match" button""",
             return await event.answer(
                 "Sorry, but you are not allowed to click others users button"
             )
-        if int(user_id) in game_mode:
+        ok = game_mode()
+        if int(user_id) in ok:
             return
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
@@ -258,7 +253,7 @@ If you want to play, click the "Accept Match" button""",
         bet_amount[user.id] = float(bet)
         players_balance[user.id] = left_balance_user
         await event.delete()
-        game_mode[user.id] = ["botwplayers", int(round)]
+        add_game_mode(user.id, "botwplayers", int(round))
         score[user.id] = [0, 0]
         count_round[user.id] = 1
         await event.client.send_message(
@@ -289,8 +284,8 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         players_balance[player2.id] = left_balance_player2
         await event.delete()
         score[player1.id] = [0, 0]
-        game_mode[int(user_id)] = ["playerwplayer", int(round), query_user_id]
-        game_mode[query_user_id] = ["playerwplayer", int(round), int(user_id)]
+        add_game_mode(int(user_id), "playerwplayer", int(round), query_user_id)
+        add_game_mode(query_user_id, "playerwplayer", int(round), int(user_id)]
         count_round[player1.id] = 1
         player_turn[player1.id] = player1.id
         player_turn[player2.id] = player1.id

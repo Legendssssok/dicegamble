@@ -701,7 +701,6 @@ def generate_random_string(length):
     return "".join(random.choice(letters) for _ in range(length))
 
 
-
 def calculate_2_percent(input_value):
     try:
         num_value = float(input_value)
@@ -710,12 +709,15 @@ def calculate_2_percent(input_value):
     except ValueError:
         return "Invalid input. Please provide a valid number."
 
+
 @client.on(events.NewMessage(pattern="/addbal"))
 async def add_upi_bal(event):
     payment_link_id = event.text.split(" ")[1]
     if payment_link_id in all_invoice_id:
         user = await client.get_entity(all_invoice_id[payment_link_id])
-        return await event.reply(f"This invoice id is already reedeem by [{user.first_name}](tg://user?id={user.id})")
+        return await event.reply(
+            f"This invoice id is already reedeem by [{user.first_name}](tg://user?id={user.id})"
+        )
     url = f"https://api.razorpay.com/v1/payment_links/{payment_link_id}"
     auth_header = (api_key, api_secret)
     try:

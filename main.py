@@ -31,6 +31,11 @@ bet_amount = {}
 
 all_invoice_id = {}
 
+txn_id_store = {}
+
+store_time = {}
+
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -609,9 +614,31 @@ addy_button = [
     [Button.inline("🔄 Refresh", data="refresh")],
 ]
 
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
+async def refresh(event):
+    query_user_id = event.query.user_id
+    txn_id = txn_id_store[query_user_id]
+    post_params1 = {
+        'txid' : txn_id,    
+    }
+    transactionInfo = client.getTransactionInfo(post_params1)
+    if transactionInfo['error'] == 'ok': 
+        status = transactionInfo["status_text"]
+        if status != "Complete":
+            return await event.answer("Wait patience Let it to be received")
+        received_fund = transactionInfo["receivedf"]
+        net_fund = transactionInfo["netf"]
+        await event.edit(f"Payment Confirmed! • LTC: {received_fund}, $ \n**Net Fund** LTC: {net_fund}, $")
+        txn_id_store.pop(query_user_id)
 
 api_key = "rzp_live_OH4h4RtCPQFnLG"
 api_secret = "CPEWuysDiY69CIdZeDwazbdi"
+
+API_KEY = "f7d33ea12c30dfdd2df8bb63f521145b24108416ec8ff05e3292b90cb69e5ba6"
+API_SECRET = "1Cc25057C77617495dB8Ec7448463c3c435409Bd46c5F03EEaDA15f68e77bc7c"
+IPN_URL = "https://google.com/ipn"
+
+crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"add_")))
@@ -623,17 +650,44 @@ async def deposits_addy(event):
     await event.delete()
     if addy == "litecoin":
         async with client.conversation(event.chat_id) as x:
-            await x.send_message(
-                f"**💳 Litecoin deposit**\n\nTo top up your balance, transfer the desired amount to this LTC address.",
-                buttons=addy_button,
-            )
-            rcv_balance = await x.get_response()
-        old_balance = players_balance.get(query_user_id, 0)
-        players_balance[query_user_id] = float(old_balance) + float(rcv_balance.text)
-        await event.client.send_message(
-            event.chat_id,
-            f"Payment confirmed! Amount ${rcv_balance.text}\n\nYour Balance : {players_balance[query_user_id]}",
-        )
+            await x.send_message("To top up your balance, enter thr desired amount which you want send from LTC address")
+            old_amount = await x.get_response(timeout=1200)
+            create_transaction_params = {
+                'amount' : int(old_amount.text)
+                'currency1' : 'USD',
+                'currency2' : 'LTC'
+            }
+            transaction = crypto_client.createTransaction(create_transaction_params)
+            if transaction['error'] == 'ok': 
+                transaction_amount = transaction['amount']
+                transaction_address = transaction['address']
+                transaction_timeout = transaction ['timeout']
+                transaction_checkout_url = transaction['checkout_url']
+                transaction_qrcode_url = transaction['qrcode_url']
+                transaction_id = transaction[txn_id]
+                hours = transaction_timeout // 3600
+                remaining_seconds = time % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.client.send_message(
+                    f"""**💳 Litecoin deposit**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour. A new one will be created after that.
+2. One address accepts only one payment.
+
+**LTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In : {hours}:{minutes}:{seconds}""",
+                    buttons=addy_button,
+                )
+                txn_id_store[event.sender_id] = transaction_id
     elif addy == "upi":
         async with client.conversation(event.chat_id) as x:
             try:

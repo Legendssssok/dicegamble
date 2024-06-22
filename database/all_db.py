@@ -3,7 +3,6 @@ import os
 import sys
 
 from config import *
-
 from loggers import logging
 
 LOGS = logging.getLogger(__name__)

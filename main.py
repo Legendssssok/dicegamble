@@ -684,19 +684,19 @@ To top up your balance, transfer the desired amount to this LTC address.
                     link_preview=False,
                 )
                 return
-            received_fund = transactionInfo["receivedf"]
+            transactionInfo["receivedf"]
             net_fund = transactionInfo["netf"]
-            params = {'cmd': 'rates', 'accepted': 1}
+            params = {"cmd": "rates", "accepted": 1}
             rate = crypto_client.rates(params)
-            from_rate = rate["USDT"]['rate_btc']
-            to_rate = rate["LTC"]['rate_btc']
+            from_rate = rate["USDT"]["rate_btc"]
+            to_rate = rate["LTC"]["rate_btc"]
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
-            now_balance = str(conversion_rate*net_fund)[:10]
+            now_balance = str(conversion_rate * net_fund)[:10]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
             await event.edit(
                 f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
-            )  
+            )
             ltc_store.pop(query_user_id)
     elif addy == "upi":
         addy_buttons = addy_button("upi")
@@ -817,7 +817,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                 transaction_timeout = transaction["timeout"]
                 transaction_checkout_url = transaction["checkout_url"]
                 transaction_qrcode_url = transaction["qrcode_url"]
-                #transaction_id = transaction["txn_id"]
+                # transaction_id = transaction["txn_id"]
                 transaction_id = "CPIF5LGOBDMZI5UV39XNOOFRYQ"
                 hours = transaction_timeout // 3600
                 remaining_seconds = transaction_timeout % 3600
@@ -925,7 +925,7 @@ To top up your balance, transfer the desired amount to this link.
         res_amount = str(response_json["amount"])[:-2]
         res_short_url = response_json["short_url"]
         res_email = response_json["customer"]["email"]
-        #res_id = response_json["id"]
+        # res_id = response_json["id"]
         res_id = "plink_OPcuOBCL60Qc1n"
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
@@ -1054,20 +1054,20 @@ async def check_crypto_payments():
         if transactionInfo["error"] == "ok":
             status = transactionInfo["status_text"]
             if status == "Complete":
-                received_fund = transactionInfo["receivedf"]
+                transactionInfo["receivedf"]
                 net_fund = transactionInfo["netf"]
-                params = {'cmd': 'rates', 'accepted': 1}
+                params = {"cmd": "rates", "accepted": 1}
                 rate = crypto_client.rates(params)
-                from_rate = rate["USDT"]['rate_btc']
-                to_rate = rate["LTC"]['rate_btc']
+                from_rate = rate["USDT"]["rate_btc"]
+                to_rate = rate["LTC"]["rate_btc"]
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
-                now_balance = str(conversion_rate*net_fund)[:10]
+                now_balance = str(conversion_rate * net_fund)[:10]
                 players_balance[user_id] = float(old_balance) + float(now_balance)
                 await client.send_message(
                     user_id,
-                    f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
-                )  
+                    f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                )
                 ltc_store.pop(query_user_id)
 
 

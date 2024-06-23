@@ -763,6 +763,7 @@ To top up your balance, transfer the desired amount to this link.
 
 **Your Status** : {status}""",
                 buttons=addy_buttons,
+                link_preview=False,
             )
 
 
@@ -895,6 +896,7 @@ To top up your balance, transfer the desired amount to this link.
 **Email Address** : {res_email}
 **CheckOut URL** : {res_short_url}""",
                 buttons=addy_buttons,
+                link_preview=False,
             )
             return
         await event.delete()
@@ -963,6 +965,7 @@ To top up your balance, transfer the desired amount to this link.
 **Email Address** : {res_email}
 **CheckOut URL** : {res_short_url}""",
             buttons=addy_buttons,
+            link_preview=False,
         )
         upi_store[query_user_id] = [
             res_id,

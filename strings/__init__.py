@@ -3,11 +3,11 @@ import sys
 from glob import glob
 from typing import Any, Dict, List, Union
 
-from .translate import translate
-
 from database.all_db import legend_db
 from database.languages import *
 from loggers import LOGS
+
+from .translate import translate
 
 try:
     from yaml import safe_load

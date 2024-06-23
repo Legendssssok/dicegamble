@@ -9,7 +9,7 @@ game_1: "🎲 Play against friend"
 
 
 #Common
-back = "⬅️ Back"
+back: "⬅️ Back"
 
 #settings
 choose_language: "⚙ Settings\n\nHere you can change the bot's language" 

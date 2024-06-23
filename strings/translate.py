@@ -39,7 +39,7 @@ def _get_value(stri):
     try:
         value = eval(stri.strip())
     except Exception as er:
-        from .. import LOGS
+        from loggers import LOGS
 
         LOGS.debug(er)
         value = stri.strip()

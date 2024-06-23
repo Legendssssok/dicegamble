@@ -1,6 +1,6 @@
 import json
 import random
-
+import requests
 
 def _package_rpc(text, lang_src="auto", lang_tgt="auto"):
     GOOGLE_TTS_RPC = ["MkEWBc"]

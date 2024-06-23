@@ -75,14 +75,14 @@ Play dice with your friend or just with the bot!
 Rules are simple: first to reach needed points wins.""",
     )
     if event.is_private:
-        game = games(event.sender_id)
+        games = game(event.sender_id)
         now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
             f"""**🏠 Menu**
 
 Your balance: **${str(now_balance)[:10]}**""",
-            buttons=game,
+            buttons=games,
         )
 
 

@@ -19,6 +19,7 @@ class ULTConfig:
     lang = "en"
     thumb = "resources/extras/ultroid.jpg"
 
+
 ULTConfig.lang = legend_db.get_key("language") or os.getenv("LANGUAGE", "en")
 
 languages = {}
@@ -42,7 +43,6 @@ def load(file):
 
 
 load(PATH.format(ULTConfig.lang))
-
 
 
 def get_string(key: str, user_id: int, _res: bool = True) -> Any:

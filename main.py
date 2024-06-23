@@ -37,7 +37,7 @@ upi_store = {}
 
 eth_store = {}
 
-usdt_store= {}
+usdt_store = {}
 
 game = [
     [

@@ -2,3 +2,4 @@ telethon
 psutil
 requests
 APScheduler
+pyYaml

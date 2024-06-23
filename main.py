@@ -989,7 +989,79 @@ async def set_bot_command(event):
     except Exception as e:
         await event.reply(f"Error : {e}")
 
+# ================== Check Payments Automatically ===================#
+
+
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+scheduler = AsyncIOScheduler()
+
+async def check_upi_payments():
+    for user_id, payment_details in list(upi_store.items()):
+        res_id, res_amount, res_name, res_email, res_short_url = payment_details
+        url = f"https://api.razorpay.com/v1/payment_links/{res_id}"
+        auth_header = (api_key, api_secret)
+        try:
+            response = requests.get(
+                url, headers={"content-type": "application/json"}, auth=auth_header
+            )
+            response_json = response.json()
+        except Exception as e:
+            print(f"Error checking UPI payment for user {user_id}: {e}")
+            continue
+        status = response_json["status"]
+        amount = response_json["amount_paid"]
+        if status == "paid":
+            actual_amount = str(amount)[:-2]
+            cut_2_percent = calculate_2_percent(actual_amount)
+            after_cut_2_percent = float(actual_amount) - cut_2_percent
+            old_balance = players_balance.get(user_id, 0)
+            now_balance = after_cut_2_percent / 87
+            players_balance[user_id] = float(old_balance) + float(now_balance)
+            # Notify user about the balance update
+            await client.send_message(
+                user_id,
+                f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[user_id]}"
+            )
+            upi_store.pop(user_id)
+
+async def check_crypto_payments():
+    for user_id, payment_details in list(ltc_store.items()):
+        transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url, transaction_id, main_time = payment_details
+        post_params1 = {"txid": transaction_id}
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status == "Complete":
+                received_fund = transactionInfo["receivedf"]
+                net_fund = transactionInfo["netf"]
+                # Update the user's balance
+                old_balance = players_balance.get(user_id, 0)
+                new_balance = old_balance + float(received_fund)
+                players_balance[user_id] = new_balance
+                # Notify user about the balance update
+                await client.send_message(
+                    user_id,
+                    f"Payment Confirmed! • LTC: {received_fund}, $ soon \n**Net Fund** LTC: {net_fund}, $ soon"
+                )
+                ltc_store.pop(user_id)
+
+scheduler.add_job(check_upi_payments, "interval", minutes=5)
+scheduler.add_job(check_crypto_payments, "interval", minutes=5)
+
+scheduler.start()
+
+
+
 
 # ==================== Start Client ==================#
 
+scheduler.add_job(check_upi_payments, "interval", minutes=5)
+scheduler.add_job(check_crypto_payments, "interval", minutes=5)
+
+scheduler.start()
+
+
+client.start()
 client.run_until_disconnected()

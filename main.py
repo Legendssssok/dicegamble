@@ -989,13 +989,14 @@ async def set_bot_command(event):
     except Exception as e:
         await event.reply(f"Error : {e}")
 
-# ================== Check Payments Automatically ===================#
 
+# ================== Check Payments Automatically ===================#
 
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 scheduler = AsyncIOScheduler()
+
 
 async def check_upi_payments():
     for user_id, payment_details in list(upi_store.items()):
@@ -1022,13 +1023,22 @@ async def check_upi_payments():
             # Notify user about the balance update
             await client.send_message(
                 user_id,
-                f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[user_id]}"
+                f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[user_id]}",
             )
             upi_store.pop(user_id)
 
+
 async def check_crypto_payments():
     for user_id, payment_details in list(ltc_store.items()):
-        transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url, transaction_id, main_time = payment_details
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = payment_details
         post_params1 = {"txid": transaction_id}
         transactionInfo = crypto_client.getTransactionInfo(post_params1)
         if transactionInfo["error"] == "ok":
@@ -1043,16 +1053,15 @@ async def check_crypto_payments():
                 # Notify user about the balance update
                 await client.send_message(
                     user_id,
-                    f"Payment Confirmed! • LTC: {received_fund}, $ soon \n**Net Fund** LTC: {net_fund}, $ soon"
+                    f"Payment Confirmed! • LTC: {received_fund}, $ soon \n**Net Fund** LTC: {net_fund}, $ soon",
                 )
                 ltc_store.pop(user_id)
+
 
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
 scheduler.add_job(check_crypto_payments, "interval", minutes=5)
 
 scheduler.start()
-
-
 
 
 # ==================== Start Client ==================#

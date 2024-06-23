@@ -695,7 +695,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             now_balance = str(conversion_rate*net_fund)[:10]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
             await event.edit(
-                f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id}"
+                f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
             )  
             ltc_store.pop(query_user_id)
     elif addy == "upi":

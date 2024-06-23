@@ -72,6 +72,7 @@ def get_string(key: str, _res: bool = True) -> Any:
             return None
         return languages["en"].get(key) or f"Failed to load language string '{key}'"
 
+
 def get_help(key, user_id):
     doc = get_string(f"help_{key}", user_id, _res=False)
     if doc:

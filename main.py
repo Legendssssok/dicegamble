@@ -1658,7 +1658,7 @@ async def check_btc_payments():
                 btc_store.pop(query_user_id)
 
 
-async def check_usdy_payments():
+async def check_usdt_payments():
     for user_id, payment_details in list(usdt_store.items()):
         (
             transaction_amount,

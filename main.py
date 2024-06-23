@@ -611,10 +611,9 @@ deposit_button = [
     [Button.inline("Litecoin", data="add_litecoin")],
     [Button.inline("Etherum", data="add_etherum")],
     [Button.inline("Bitcoin", data="add_bitcoin")],
-    [Button.inline("USDT ERC-20", data="add_usdterc20")],
-    [Button.inline("Monero", data="add_monero")],
+    [Button.inline("Usdt Tron", data="add_usdt")],
     [Button.inline("UPI", data="add_upi")],
-    [Button.inline("🔙 Back", data="home")],
+    [Button.inline("⬅️ Back", data="home")],
 ]
 
 
@@ -818,7 +817,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             if status != "Complete":
                 time_since_last_message = time.time() - main_time
                 if time_since_last_message > int(transaction_timeout):
-                    eth_store.pop(query_user_id)
+                    btc_store.pop(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
                         buttons=addy_back_buttons,
@@ -861,6 +860,76 @@ To top up your balance, transfer the desired amount to this ETH address.
                 f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
             btc_store.pop(query_user_id)
+    elif addy == "usdt":
+        if query_user_id not in btc_store:
+            del_msg = await event.edit(
+                "Payment was received successfully & was added before to your balance or may be the time exceed."
+            )
+            await asyncio.sleep(10)
+            await del_msg.delete()
+            return
+        addy_buttons = addy_button("usdt")
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = usdt_store[query_user_id]
+        post_params1 = {
+            "txid": transaction_id,
+        }
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status != "Complete":
+                time_since_last_message = time.time() - main_time
+                if time_since_last_message > int(transaction_timeout):
+                    usdt_store.pop(query_user_id)
+                    return await event.edit(
+                        f"Link get expired exceed over time, click again to generate",
+                        buttons=addy_back_buttons,
+                    )
+                remaining_time = int(transaction_timeout) - time_since_last_message
+                hours = remaining_time // 3600
+                remaining_seconds = remaining_time % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.edit(
+                    f"""**💳 Bitcoin deposit**
+
+To top up your balance, transfer the desired amount to this ETH address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour 30 min.
+2. One address accepts only one payment.
+
+**BTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                    buttons=addy_buttons,
+                    link_preview=False,
+                )
+                return
+            net_fund = transactionInfo["netf"]
+            params = {"cmd": "rates", "accepted": 1}
+            rate = crypto_client.rates(params)
+            from_rate = rate["USDT"]["rate_btc"]
+            to_rate = rate["USDT"]["rate_btc"]
+            conversion_rate = float(to_rate) / float(from_rate)
+            old_balance = players_balance.get(query_user_id, 0)
+            now_balance = str(conversion_rate * float(net_fund))[:10]
+            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            await event.reply(
+                f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
+            )
+            usdt_store.pop(query_user_id)
     elif addy == "upi":
         if query_user_id not in upi_store:
             del_msg = await event.edit(
@@ -1225,7 +1294,106 @@ To top up your balance, transfer the desired amount to this LTC address.
                 await event.client.send_message(
                     event.chat_id, f"Error : {transaction['error']}"
                 )
+    elif addy == "usdt":
+        addy_buttons = addy_button("usdt")
+        if query_user_id in usdt_store:
+            (
+                transaction_amount,
+                transaction_address,
+                transaction_timeout,
+                transaction_checkout_url,
+                transaction_qrcode_url,
+                transaction_id,
+                main_time,
+            ) = usdt_store[query_user_id]
+            time_since_last_message = time.time() - main_time
+            if time_since_last_message > int(transaction_timeout):
+                usdt_store.pop(query_user_id)
+                return await event.edit(
+                    f"Link get expired exceed over time, click again to generate",
+                    buttons=addy_buttons,
+                )
+            remaining_time = int(transaction_timeout) - time_since_last_message
+            hours = remaining_time // 3600
+            remaining_seconds = remaining_time % 3600
+            minutes = remaining_seconds // 60
+            seconds = remaining_seconds % 60
+            await event.edit(
+                f"""**💳 Tether USD deposit**
 
+To top up your balance, transfer the desired amount to this ETH address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+
+**USDT trc-20 address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                buttons=addy_buttons,
+                link_preview=False,
+            )
+            return
+        await event.delete()
+        async with client.conversation(event.chat_id) as x:
+            await x.send_message(
+                "**To top up your balance**,\n\nEnter the desired $ amount:"
+            )
+            old_amount = await x.get_response(timeout=1200)
+            create_transaction_params = {
+                "amount": int(old_amount.text),
+                "currency1": "USD",
+                "currency2": "USDT.TRC20",
+            }
+            transaction = crypto_client.createTransaction(create_transaction_params)
+            if transaction["error"] == "ok":
+                transaction_amount = transaction["amount"]
+                transaction_address = transaction["address"]
+                transaction_timeout = transaction["timeout"] - 60
+                transaction_checkout_url = transaction["checkout_url"]
+                transaction_qrcode_url = transaction["qrcode_url"]
+                transaction_id = transaction["txn_id"]
+                hours = transaction_timeout // 3600
+                remaining_seconds = transaction_timeout % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.client.send_message(
+                    event.chat_id,
+                    f"""**💳 Tether USD deposit**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+
+**USDT trc-20 address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                    buttons=addy_buttons,
+                    link_preview=False,
+                )
+                usdt_store[query_user_id] = [
+                    transaction_amount,
+                    transaction_address,
+                    transaction_timeout,
+                    transaction_checkout_url,
+                    transaction_qrcode_url,
+                    transaction_id,
+                    time.time(),
+                ]
+            else:
+                await event.client.send_message(
+                    event.chat_id, f"Error : {transaction['error']}"
+                )
     elif addy == "upi":
         addy_buttons = addy_button("upi")
         if query_user_id in upi_store:
@@ -1424,7 +1592,7 @@ async def check_upi_payments():
             upi_store.pop(user_id)
 
 
-async def check_crypto_payments():
+async def check_ltc_payments():
     for user_id, payment_details in list(ltc_store.items()):
         (
             transaction_amount,
@@ -1457,8 +1625,75 @@ async def check_crypto_payments():
                 ltc_store.pop(query_user_id)
 
 
+async def check_btc_payments():
+    for user_id, payment_details in list(btc_store.items()):
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = payment_details
+        post_params1 = {"txid": transaction_id}
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status == "Complete":
+                transactionInfo["receivedf"]
+                net_fund = transactionInfo["netf"]
+                params = {"cmd": "rates", "accepted": 1}
+                rate = crypto_client.rates(params)
+                from_rate = rate["USDT"]["rate_btc"]
+                to_rate = rate["BTC"]["rate_btc"]
+                conversion_rate = float(to_rate) / float(from_rate)
+                old_balance = players_balance.get(user_id, 0)
+                now_balance = str(conversion_rate * float(net_fund))[:10]
+                players_balance[user_id] = float(old_balance) + float(now_balance)
+                await client.send_message(
+                    user_id,
+                    f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                )
+                btc_store.pop(query_user_id)
+
+
+async def check_usdy_payments():
+    for user_id, payment_details in list(usdt_store.items()):
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = payment_details
+        post_params1 = {"txid": transaction_id}
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status == "Complete":
+                transactionInfo["receivedf"]
+                net_fund = transactionInfo["netf"]
+                params = {"cmd": "rates", "accepted": 1}
+                rate = crypto_client.rates(params)
+                from_rate = rate["USDT"]["rate_btc"]
+                to_rate = rate["USDT"]["rate_btc"]
+                conversion_rate = float(to_rate) / float(from_rate)
+                old_balance = players_balance.get(user_id, 0)
+                now_balance = str(conversion_rate * float(net_fund))[:10]
+                players_balance[user_id] = float(old_balance) + float(now_balance)
+                await client.send_message(
+                    user_id,
+                    f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                )
+                usdt_store.pop(query_user_id)
+
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
-scheduler.add_job(check_crypto_payments, "interval", minutes=5)
+scheduler.add_job(check_ltc_payments, "interval", minutes=5)
+scheduler.add_job(check_btc_payments, "interval", minutes=5)
+scheduler.add_job(check_usdt_payments, "interval", minutes=5)
 scheduler.start()
 
 # ==================== Start Client ==================#

@@ -1690,6 +1690,7 @@ async def check_usdy_payments():
                 )
                 usdt_store.pop(query_user_id)
 
+
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
 scheduler.add_job(check_ltc_payments, "interval", minutes=5)
 scheduler.add_job(check_btc_payments, "interval", minutes=5)

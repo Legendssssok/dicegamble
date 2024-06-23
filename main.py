@@ -625,6 +625,9 @@ def addy_button(method):
     ]
     return addy_buttons
 
+addy_back_buttons = [
+    [Button.inline("🔙 Back", data=f"deposit")],
+]
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
@@ -634,9 +637,9 @@ async def refresh(event):
     if addy == "litecoin":
         if query_user_id not in ltc_store:
             del_msg = await event.edit(
-                "Payment was received successfully & Added to your balance"
+                "Payment was received successfully & was added before to your balance or may be the time exceed."
             )
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             await del_msg.delete()
             return
         addy_buttons = addy_button("litecoin")
@@ -661,7 +664,7 @@ async def refresh(event):
                     ltc_store.pop(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
-                        buttons=addy_buttons,
+                        buttons=addy_back_buttons,
                     )
                 remaining_time = int(transaction_timeout) - time_since_last_message
                 hours = remaining_time // 3600
@@ -701,8 +704,8 @@ To top up your balance, transfer the desired amount to this LTC address.
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(conversion_rate * float(net_fund))[:10]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
-            await event.edit(
-                f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
+            await event.reply(
+                f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
             ltc_store.pop(query_user_id)
     elif addy == "upi":
@@ -828,11 +831,10 @@ To top up your balance, transfer the desired amount to this LTC address.
             if transaction["error"] == "ok":
                 transaction_amount = transaction["amount"]
                 transaction_address = transaction["address"]
-                transaction_timeout = transaction["timeout"]
+                transaction_timeout = transaction["timeout"] - 60
                 transaction_checkout_url = transaction["checkout_url"]
                 transaction_qrcode_url = transaction["qrcode_url"]
-                # transaction_id = transaction["txn_id"]
-                transaction_id = "CPIF5LGOBDMZI5UV39XNOOFRYQ"
+                transaction_id = transaction["txn_id"]
                 hours = transaction_timeout // 3600
                 remaining_seconds = transaction_timeout % 3600
                 minutes = remaining_seconds // 60
@@ -939,8 +941,8 @@ To top up your balance, transfer the desired amount to this link.
         res_amount = str(response_json["amount"])[:-2]
         res_short_url = response_json["short_url"]
         res_email = response_json["customer"]["email"]
-        # res_id = response_json["id"]
-        res_id = "plink_OPcuOBCL60Qc1n"
+        res_id = response_json["id"]
+        #res_id = "plink_OPcuOBCL60Qc1n"
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,

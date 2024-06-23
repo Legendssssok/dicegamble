@@ -625,9 +625,11 @@ def addy_button(method):
     ]
     return addy_buttons
 
+
 addy_back_buttons = [
     [Button.inline("🔙 Back", data=f"deposit")],
 ]
+
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"refresh")))
 async def refresh(event):
@@ -942,7 +944,7 @@ To top up your balance, transfer the desired amount to this link.
         res_short_url = response_json["short_url"]
         res_email = response_json["customer"]["email"]
         res_id = response_json["id"]
-        #res_id = "plink_OPcuOBCL60Qc1n"
+        # res_id = "plink_OPcuOBCL60Qc1n"
         res_name = response_json["customer"]["name"]
         await event.client.send_message(
             event.chat_id,

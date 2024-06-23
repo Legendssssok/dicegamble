@@ -1066,7 +1066,7 @@ async def check_crypto_payments():
                 players_balance[user_id] = float(old_balance) + float(now_balance)
                 await client.send_message(
                     user_id,
-                    f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id}"
+                    f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
                 )  
                 ltc_store.pop(query_user_id)
 

@@ -19,10 +19,10 @@ class ULTConfig:
     lang = "en"
     thumb = "resources/extras/ultroid.jpg"
 
-
-ULTConfig.lang = all_user_lang() or os.getenv("LANGUAGE", "en")
+ULTConfig.lang = legend_db.get_key("language") or os.getenv("LANGUAGE", "en")
 
 languages = {}
+
 PATH = "strings/strings/{}.yml"
 
 
@@ -33,20 +33,16 @@ def load(file):
         file = PATH.format("en")
     code = file.split("/")[-1].split("\\")[-1][:-4]
     try:
-        with open(file, encoding="UTF-8") as f:
-            languages[code] = safe_load(f)
+        languages[code] = safe_load(
+            open(file, encoding="UTF-8"),
+        )
     except Exception as er:
         LOGS.info(f"Error in {file[:-4]} language file")
         LOGS.exception(er)
 
 
-def load_all_languages():
-    for file in glob("strings/strings/*.yml"):
-        load(file)
-
-
 load(PATH.format(ULTConfig.lang))
-load_all_languages()
+
 
 
 def get_string(key: str, user_id: int, _res: bool = True) -> Any:
@@ -86,7 +82,8 @@ def get_help(key, user_id):
 
 
 def get_languages() -> Dict[str, Union[str, List[str]]]:
-    load_all_languages()
+    for file in glob("strings/strings/*yml"):
+        load(file)
     return {
         code: {
             "name": languages[code]["name"],

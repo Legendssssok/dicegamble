@@ -3,7 +3,7 @@ import sys
 from glob import glob
 from typing import Any, Dict, List, Union
 
-from translate import translate
+from .translate import translate
 
 from database.all_db import legend_db
 from database.languages import *

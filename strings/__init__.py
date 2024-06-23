@@ -2,7 +2,7 @@ import os
 import sys
 from glob import glob
 from typing import Any, Dict, List, Union
-
+from loggers import LOGS
 from database.all_db import legend_db
 
 from .translate import translate

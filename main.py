@@ -586,11 +586,10 @@ async def house_bal(event):
 
 @client.on(events.NewMessage(pattern="/addmybal"))
 async def add_bal(event):
-    amount = event.text.split(" ")[1]
-    await client.get_me()
-    old_balance = players_balance.get(event.sender_id, 0)
+    amount, user_id = event.text.split(" ")[1:3]
+    old_balance = players_balance.get(int(user_id), 0)
     now_balance = float(old_balance) + float(amount)
-    players_balance[event.sender_id] = now_balance
+    players_balance[int(user_id)] = now_balance
     await event.reply(
         f"💰** My Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )

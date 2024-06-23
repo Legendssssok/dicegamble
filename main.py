@@ -35,6 +35,10 @@ ltc_store = {}
 
 upi_store = {}
 
+eth_store = {}
+
+usdt_store= {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),

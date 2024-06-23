@@ -882,6 +882,17 @@ To top up your balance, transfer the desired amount to this LTC address.
             (res_id, res_amount, res_name, res_email, res_short_url) = upi_store[
                 query_user_id
             ]
+            url = f"https://api.razorpay.com/v1/payment_links/{res_id}"
+            auth_header = (api_key, api_secret)
+            try:
+                response = requests.get(
+                    url, headers={"content-type": "application/json"}, auth=auth_header
+                )
+                response_json = response.json()
+            except Exception as e:
+                await event.reply(f"Error checking UPI payment for user {user_id}: {e}")
+                return
+            status = response_json["status"]
             await event.edit(
                 f"""**💳 UPI deposit**
 
@@ -896,7 +907,9 @@ To top up your balance, transfer the desired amount to this link.
 **Transaction Amount**: {res_amount}
 **Name**: {res_name}
 **Email Address** : {res_email}
-**CheckOut URL** : {res_short_url}""",
+**CheckOut URL** : {res_short_url}
+
+**Your Status** : {status}""",
                 buttons=addy_buttons,
                 link_preview=False,
             )

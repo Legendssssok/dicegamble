@@ -4,6 +4,7 @@ from glob import glob
 from typing import Any, Dict, List, Union
 
 from database.all_db import legend_db
+
 from .translate import translate
 
 try:
@@ -15,6 +16,7 @@ except ModuleNotFoundError:
 class ULTConfig:
     lang = "en"
     thumb = "resources/extras/ultroid.jpg"
+
 
 ULTConfig.lang = legend_db.get_key("language") or os.getenv("LANGUAGE", "en")
 
@@ -84,4 +86,4 @@ def get_languages() -> Dict[str, Union[str, List[str]]]:
             "authors": languages[code]["authors"],
         }
         for code in languages
-      }
+    }

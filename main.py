@@ -632,6 +632,11 @@ async def refresh(event):
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
     if addy == "litecoin":
+        if query_user_id not in ltc_store:
+            del_msg = await event.edit("Payment was received successfully & Added to your balance")
+            await asyncio.sleep(5)
+            await del_msg.delete()
+            return
         addy_buttons = addy_button("litecoin")
         (
             transaction_amount,
@@ -692,13 +697,18 @@ To top up your balance, transfer the desired amount to this LTC address.
             to_rate = rate["LTC"]["rate_btc"]
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
-            now_balance = str(conversion_rate * net_fund)[:10]
+            now_balance = str(conversion_rate * float(net_fund))[:10]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
             await event.edit(
                 f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}"
             )
             ltc_store.pop(query_user_id)
     elif addy == "upi":
+        if query_user_id not in upi_store:
+            del_msg = await event.edit("Payment was received successfully & Added to your balance")
+            await asyncio.sleep(5)
+            await del_msg.delete()
+            return
         addy_buttons = addy_button("upi")
         (res_id, res_amount, res_name, res_email, res_short_url) = upi_store[
             query_user_id
@@ -1062,7 +1072,7 @@ async def check_crypto_payments():
                 to_rate = rate["LTC"]["rate_btc"]
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
-                now_balance = str(conversion_rate * net_fund)[:10]
+                now_balance = str(conversion_rate * float(net_fund))[:10]
                 players_balance[user_id] = float(old_balance) + float(now_balance)
                 await client.send_message(
                     user_id,

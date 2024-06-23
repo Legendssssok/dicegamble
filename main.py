@@ -56,7 +56,7 @@ async def game(user_id):
             Button.inline("⚙ Settings", data="settings"),
         ],
     ]
-    retun games
+    return games
 
 back_button = [[Button.inline("⬅️ Back", data="home")]]
 

@@ -41,7 +41,7 @@ usdt_store = {}
 
 btc_store = {}
 
-monero_store = {}
+
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -579,7 +579,18 @@ async def house_bal(event):
     await event.reply(
         f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )
-
+    
+@client.on(events.NewMessage(pattern="/addmybal"))
+async def add_bal(event):
+    amount = event.text.split(" ")[1]
+    my_bot = await client.get_me()
+    old_balance = players_balance.get(event.sender_id, 0)
+    now_balance = float(old_balance) + float(amount)
+    players_balance[event.sender_id] = now_balance
+    await event.reply(
+        f"💰** My Balance**\n\nAvailable balance of the bot: ${now_balance}"
+    )
+    
 
 @client.on(events.NewMessage(pattern="/bal"))
 async def balance_func(event):
@@ -1624,6 +1635,38 @@ async def check_ltc_payments():
                 )
                 ltc_store.pop(query_user_id)
 
+async def check_eth_payments():
+    for user_id, payment_details in list(eth_store.items()):
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = payment_details
+        post_params1 = {"txid": transaction_id}
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status == "Complete":
+                transactionInfo["receivedf"]
+                net_fund = transactionInfo["netf"]
+                params = {"cmd": "rates", "accepted": 1}
+                rate = crypto_client.rates(params)
+                from_rate = rate["USDT"]["rate_btc"]
+                to_rate = rate["ETH"]["rate_btc"]
+                conversion_rate = float(to_rate) / float(from_rate)
+                old_balance = players_balance.get(user_id, 0)
+                now_balance = str(conversion_rate * float(net_fund))[:10]
+                players_balance[user_id] = float(old_balance) + float(now_balance)
+                await client.send_message(
+                    user_id,
+                    f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                )
+                eth_store.pop(query_user_id)
+
 
 async def check_btc_payments():
     for user_id, payment_details in list(btc_store.items()):
@@ -1693,6 +1736,7 @@ async def check_usdt_payments():
 
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
 scheduler.add_job(check_ltc_payments, "interval", minutes=5)
+scheduler.add_job(check_eth_payments, "interval", minutes=5)
 scheduler.add_job(check_btc_payments, "interval", minutes=5)
 scheduler.add_job(check_usdt_payments, "interval", minutes=5)
 scheduler.start()

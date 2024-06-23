@@ -1,5 +1,6 @@
 import json
 import random
+from loggers import LOGS
 
 
 def _package_rpc(text, lang_src="auto", lang_tgt="auto"):
@@ -34,6 +35,15 @@ def translate(*args, **kwargs):
         response += i[0]
     return response
 
+def _get_value(stri):
+    try:
+        value = eval(stri.strip())
+    except Exception as er:
+        from .. import LOGS
+
+        LOGS.debug(er)
+        value = stri.strip()
+    return value
 
 def safe_load(file, *args, **kwargs):
     if isinstance(file, str):

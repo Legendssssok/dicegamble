@@ -620,8 +620,10 @@ async def deposit_func(event):
 
 def addy_button(method):
     addy_buttons = [
-        [Button.inline("🔙 Back", data=f"deposit")],
-        [Button.inline("🔄 Refresh", data=f"refresh_{method}")],
+        [
+            Button.inline("⬅️ Back", data=f"deposit"),
+            Button.inline("🔄 Refresh", data=f"refresh_{method}"),
+        ],
     ]
     return addy_buttons
 

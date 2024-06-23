@@ -5,4 +5,4 @@ authors:
   - LegendDevs
 
 #Dice Bot
-game_1 = "🎲 Play against friend"
+game_1: "🎲 Play against friend"

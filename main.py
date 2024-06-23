@@ -8,8 +8,8 @@ import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
-from strings import get_string
 from pyCoinPayments import CryptoPayments
+from strings import get_string
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"

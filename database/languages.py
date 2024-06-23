@@ -7,7 +7,7 @@ def all_user_lang():
 
 def get_user_lang(user_id):
     ok = all_user_lang()
-    if user_id in get_user_lang:
+    if user_id in ok:
         return ok[user_id]
 
 

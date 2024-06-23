@@ -1072,7 +1072,7 @@ To top up your balance, transfer the desired amount to this ETH address.
         await event.delete()
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                "**To top up your balance**,\n\nEnter the desired $ amount.\n\n**Please Note**: Minimum deposit $30"
+                "**To top up your balance**\n\n**Please Note**: Minimum deposit $30\n\nEnter the desired $ amount:"
             )
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
@@ -1122,7 +1122,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
             else:
-                await event.client.send_message(event.chat_id, f"Error : {transaction['error']")
+                await event.client.send_message(event.chat_id, f"Error : {transaction['error']}")
     elif addy == "bitcoin":
         addy_buttons = addy_button("bitcoin")
         if query_user_id in btc_store:
@@ -1170,7 +1170,7 @@ To top up your balance, transfer the desired amount to this ETH address.
         await event.delete()
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                "**To top up your balance**,\n\nEnter the desired $ amount.\n\n**Please Note**: Minimum deposit $30"
+                "**To top up your balance**,\n\nEnter the desired $ amount:"
             )
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
@@ -1220,8 +1220,8 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
             else:
-                await event.client.send_message(event.chat_id, f"Error : {transaction['error']")
-    elif addy == "               
+                await event.client.send_message(event.chat_id, f"Error : {transaction['error']}")
+                   
     elif addy == "upi":
         addy_buttons = addy_button("upi")
         if query_user_id in upi_store:

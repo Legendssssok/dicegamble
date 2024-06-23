@@ -44,7 +44,7 @@ usdt_store = {}
 btc_store = {}
 
 
-async def game(user_id):
+def game(user_id):
     games = [
         [
             Button.inline(get_string("game_1", user_id), data="playagainstf"),

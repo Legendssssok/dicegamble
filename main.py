@@ -7,6 +7,7 @@ import time
 import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
+
 from database.languages import set_user_lang
 from pyCoinPayments import CryptoPayments
 from strings import *
@@ -42,6 +43,7 @@ usdt_store = {}
 
 btc_store = {}
 
+
 async def game(user_id):
     games = [
         [
@@ -57,6 +59,7 @@ async def game(user_id):
         ],
     ]
     return games
+
 
 back_button = [[Button.inline("⬅️ Back", data="home")]]
 
@@ -85,15 +88,22 @@ Your balance: **${str(now_balance)[:10]}**""",
 
 # ========== Settings =========
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"settings")))
 async def settings(event):
-    buttons = [[Button.inline(lang['name'], f'set_lang_{code}') for code, lang in get_languages().items()]]
+    buttons = [
+        [
+            Button.inline(lang["name"], f"set_lang_{code}")
+            for code, lang in get_languages().items()
+        ]
+    ]
     await event.respond(get_string("start", event.sender_id), buttons=buttons)
 
-@client.on(events.CallbackQuery(pattern=b'set_lang_'))
+
+@client.on(events.CallbackQuery(pattern=b"set_lang_"))
 async def callack(event):
     user_id = event.sender_id
-    lang_code = event.data.decode('utf-8').split('_')[-1]
+    lang_code = event.data.decode("utf-8").split("_")[-1]
     set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))
@@ -102,15 +112,16 @@ async def callack(event):
 
 async def show_main_menu(event):
     user_id = event.sender_id
-    buttons = [[Button.inline(get_string("hello", user_id), b'hello')]]
+    buttons = [[Button.inline(get_string("hello", user_id), b"hello")]]
     await event.respond(get_string("menu", user_id), buttons=buttons)
 
-@client.on(events.CallbackQuery(pattern=b'hello'))
+
+@client.on(events.CallbackQuery(pattern=b"hello"))
 async def callback(event):
     user_id = event.sender_id
     await event.respond(get_string("hello", user_id))
 
-    
+
 # ======= Dice ========#
 
 

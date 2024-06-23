@@ -1061,8 +1061,6 @@ async def check_crypto_payments():
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
 scheduler.add_job(check_crypto_payments, "interval", minutes=5)
 
-scheduler.start()
-
 
 # ==================== Start Client ==================#
 

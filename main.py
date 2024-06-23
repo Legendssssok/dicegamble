@@ -633,7 +633,9 @@ async def refresh(event):
     query_user_id = event.query.user_id
     if addy == "litecoin":
         if query_user_id not in ltc_store:
-            del_msg = await event.edit("Payment was received successfully & Added to your balance")
+            del_msg = await event.edit(
+                "Payment was received successfully & Added to your balance"
+            )
             await asyncio.sleep(5)
             await del_msg.delete()
             return
@@ -705,7 +707,9 @@ To top up your balance, transfer the desired amount to this LTC address.
             ltc_store.pop(query_user_id)
     elif addy == "upi":
         if query_user_id not in upi_store:
-            del_msg = await event.edit("Payment was received successfully & Added to your balance")
+            del_msg = await event.edit(
+                "Payment was received successfully & Added to your balance"
+            )
             await asyncio.sleep(5)
             await del_msg.delete()
             return

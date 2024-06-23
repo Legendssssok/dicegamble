@@ -7,9 +7,9 @@ import time
 import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
-
+from database.languages import set_user_lang
 from pyCoinPayments import CryptoPayments
-from strings import get_string, get_languages
+from strings import *
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
@@ -94,7 +94,7 @@ async def settings(event):
 async def callack(event):
     user_id = event.sender_id
     lang_code = event.data.decode('utf-8').split('_')[-1]
-    legend_db.set_user_lang(user_id, lang_code)
+    set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))
     await show_main_menu(event)

@@ -2,10 +2,8 @@ import os
 import sys
 from glob import glob
 from typing import Any, Dict, List, Union
-
-from database.all_db import legend_db
-from database.languages import *
 from loggers import LOGS
+from database.all_db import legend_db
 
 from .translate import translate
 
@@ -23,7 +21,6 @@ class ULTConfig:
 ULTConfig.lang = legend_db.get_key("language") or os.getenv("LANGUAGE", "en")
 
 languages = {}
-
 PATH = "strings/strings/{}.yml"
 
 
@@ -73,10 +70,10 @@ def get_string(key: str, _res: bool = True) -> Any:
         return languages["en"].get(key) or f"Failed to load language string '{key}'"
 
 
-def get_help(key, user_id):
-    doc = get_string(f"help_{key}", user_id, _res=False)
+def get_help(key):
+    doc = get_string(f"help_{key}", _res=False)
     if doc:
-        return get_string("cmda", user_id) + doc
+        return get_string("cmda") + doc
 
 
 def get_languages() -> Dict[str, Union[str, List[str]]]:

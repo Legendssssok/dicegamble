@@ -1066,11 +1066,6 @@ scheduler.start()
 
 # ==================== Start Client ==================#
 
-scheduler.add_job(check_upi_payments, "interval", minutes=5)
-scheduler.add_job(check_crypto_payments, "interval", minutes=5)
-
-scheduler.start()
-
 
 client.start()
 client.run_until_disconnected()

@@ -1,0 +1,8 @@
+name: English
+natively: English
+
+authors:
+  - LegendDevs
+
+#Dice Bot
+game_1 = "🎲 Play against friend"

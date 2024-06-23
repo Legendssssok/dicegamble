@@ -6,3 +6,11 @@ authors:
 
 #Dice Bot
 game_1: "🎲 Play against friend"
+
+
+#Common
+back = "⬅️ Back"
+
+#settings
+choose_language: "⚙ Settings\n\nHere you can change the bot's language" 
+language_set: "Sucessfully your language has been changed"

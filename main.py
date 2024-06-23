@@ -14,7 +14,7 @@ from strings import *
 
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
-TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
+TOKEN = "7213709392:AAGXvbg9v_CqtWCrg270pBHT2-qXe2DWWNw"
 
 
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)

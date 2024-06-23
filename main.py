@@ -8,6 +8,7 @@ import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
+from strings import get_string
 from pyCoinPayments import CryptoPayments
 
 API_ID = 11573285
@@ -44,7 +45,7 @@ btc_store = {}
 
 game = [
     [
-        Button.inline("🎲 Play against friend", data="playagainstf"),
+        Button.inline(get_string("game_1"), data="playagainstf"),
         Button.inline("🎲 Play against bot", data="playagainstb"),
     ],
     [

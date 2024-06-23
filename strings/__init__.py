@@ -4,6 +4,7 @@ from glob import glob
 from typing import Any, Dict, List, Union
 
 from database.all_db import legend_db
+from database.languages import *
 from loggers import LOGS
 
 from .translate import translate
@@ -43,12 +44,13 @@ def load(file):
 load(PATH.format(ULTConfig.lang))
 
 
-def get_string(key: str, _res: bool = True) -> Any:
-    lang = ULTConfig.lang or "en"
+def get_string(key: str, user_id: int, _res: bool = True) -> Any:
+    lang = get_user_lang(user_id) or "en"
     try:
         return languages[lang][key]
     except KeyError:
         try:
+            print("Hello")
             en_ = languages["en"][key]
             tr = translate(en_, lang_tgt=lang).replace("\\ N", "\n")
             if en_.count("{}") != tr.count("{}"):

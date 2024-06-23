@@ -579,18 +579,19 @@ async def house_bal(event):
     await event.reply(
         f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )
-    
+
+
 @client.on(events.NewMessage(pattern="/addmybal"))
 async def add_bal(event):
     amount = event.text.split(" ")[1]
-    my_bot = await client.get_me()
+    await client.get_me()
     old_balance = players_balance.get(event.sender_id, 0)
     now_balance = float(old_balance) + float(amount)
     players_balance[event.sender_id] = now_balance
     await event.reply(
         f"💰** My Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )
-    
+
 
 @client.on(events.NewMessage(pattern="/bal"))
 async def balance_func(event):
@@ -1634,6 +1635,7 @@ async def check_ltc_payments():
                     f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
                 ltc_store.pop(query_user_id)
+
 
 async def check_eth_payments():
     for user_id, payment_details in list(eth_store.items()):

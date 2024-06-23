@@ -861,7 +861,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             )
             btc_store.pop(query_user_id)
     elif addy == "usdt":
-        if query_user_id not in btc_store:
+        if query_user_id not in usdt_store:
             del_msg = await event.edit(
                 "Payment was received successfully & was added before to your balance or may be the time exceed."
             )

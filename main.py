@@ -39,6 +39,9 @@ eth_store = {}
 
 usdt_store = {}
 
+btc_store = {}
+
+monero_store = {}
 game = [
     [
         Button.inline("🎲 Play against friend", data="playagainstf"),
@@ -785,9 +788,79 @@ To top up your balance, transfer the desired amount to this ETH address.
             now_balance = str(conversion_rate * float(net_fund))[:10]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
             await event.reply(
-                f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
+                f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
             eth_store.pop(query_user_id)
+    elif addy == "bitcoin":
+        if query_user_id not in btc_store:
+            del_msg = await event.edit(
+                "Payment was received successfully & was added before to your balance or may be the time exceed."
+            )
+            await asyncio.sleep(10)
+            await del_msg.delete()
+            return
+        addy_buttons = addy_button("etherum")
+        (
+            transaction_amount,
+            transaction_address,
+            transaction_timeout,
+            transaction_checkout_url,
+            transaction_qrcode_url,
+            transaction_id,
+            main_time,
+        ) = btc_store[query_user_id]
+        post_params1 = {
+            "txid": transaction_id,
+        }
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            status = transactionInfo["status_text"]
+            if status != "Complete":
+                time_since_last_message = time.time() - main_time
+                if time_since_last_message > int(transaction_timeout):
+                    eth_store.pop(query_user_id)
+                    return await event.edit(
+                        f"Link get expired exceed over time, click again to generate",
+                        buttons=addy_back_buttons,
+                    )
+                remaining_time = int(transaction_timeout) - time_since_last_message
+                hours = remaining_time // 3600
+                remaining_seconds = remaining_time % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.edit(
+                    f"""**💳 Bitcoin deposit**
+
+To top up your balance, transfer the desired amount to this ETH address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour 30 min.
+2. One address accepts only one payment.
+
+**BTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                    buttons=addy_buttons,
+                    link_preview=False,
+                )
+                return
+            net_fund = transactionInfo["netf"]
+            params = {"cmd": "rates", "accepted": 1}
+            rate = crypto_client.rates(params)
+            from_rate = rate["USDT"]["rate_btc"]
+            to_rate = rate["BTC"]["rate_btc"]
+            conversion_rate = float(to_rate) / float(from_rate)
+            old_balance = players_balance.get(query_user_id, 0)
+            now_balance = str(conversion_rate * float(net_fund))[:10]
+            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            await event.reply(
+                f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
+            )
+            btc_store.pop(query_user_id)
     elif addy == "upi":
         if query_user_id not in upi_store:
             del_msg = await event.edit(
@@ -999,7 +1072,7 @@ To top up your balance, transfer the desired amount to this ETH address.
         await event.delete()
         async with client.conversation(event.chat_id) as x:
             await x.send_message(
-                "**To top up your balance**,\nEnter the desired $ amount."
+                "**To top up your balance**,\n\nEnter the desired $ amount.\n\n**Please Note**: Minimum deposit $30"
             )
             old_amount = await x.get_response(timeout=1200)
             create_transaction_params = {
@@ -1048,6 +1121,107 @@ To top up your balance, transfer the desired amount to this LTC address.
                     transaction_id,
                     time.time(),
                 ]
+            else:
+                await event.client.send_message(event.chat_id, f"Error : {transaction['error']")
+    elif addy == "bitcoin":
+        addy_buttons = addy_button("bitcoin")
+        if query_user_id in btc_store:
+            (
+                transaction_amount,
+                transaction_address,
+                transaction_timeout,
+                transaction_checkout_url,
+                transaction_qrcode_url,
+                transaction_id,
+                main_time,
+            ) = btc_store[query_user_id]
+            time_since_last_message = time.time() - main_time
+            if time_since_last_message > int(transaction_timeout):
+                btc_store.pop(query_user_id)
+                return await event.edit(
+                    f"Link get expired exceed over time, click again to generate",
+                    buttons=addy_buttons,
+                )
+            remaining_time = int(transaction_timeout) - time_since_last_message
+            hours = remaining_time // 3600
+            remaining_seconds = remaining_time % 3600
+            minutes = remaining_seconds // 60
+            seconds = remaining_seconds % 60
+            await event.edit(
+                f"""**💳 Bitcoin deposit**
+
+To top up your balance, transfer the desired amount to this ETH address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+
+**BTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                buttons=addy_buttons,
+                link_preview=False,
+            )
+            return
+        await event.delete()
+        async with client.conversation(event.chat_id) as x:
+            await x.send_message(
+                "**To top up your balance**,\n\nEnter the desired $ amount.\n\n**Please Note**: Minimum deposit $30"
+            )
+            old_amount = await x.get_response(timeout=1200)
+            create_transaction_params = {
+                "amount": int(old_amount.text),
+                "currency1": "USD",
+                "currency2": "BTC",
+            }
+            transaction = crypto_client.createTransaction(create_transaction_params)
+            if transaction["error"] == "ok":
+                transaction_amount = transaction["amount"]
+                transaction_address = transaction["address"]
+                transaction_timeout = transaction["timeout"] - 60
+                transaction_checkout_url = transaction["checkout_url"]
+                transaction_qrcode_url = transaction["qrcode_url"]
+                transaction_id = transaction["txn_id"]
+                hours = transaction_timeout // 3600
+                remaining_seconds = transaction_timeout % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.client.send_message(
+                    event.chat_id,
+                    f"""**💳 Bitcoin deposit**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+
+**BTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                    buttons=addy_buttons,
+                    link_preview=False,
+                )
+                btc_store[query_user_id] = [
+                    transaction_amount,
+                    transaction_address,
+                    transaction_timeout,
+                    transaction_checkout_url,
+                    transaction_qrcode_url,
+                    transaction_id,
+                    time.time(),
+                ]
+            else:
+                await event.client.send_message(event.chat_id, f"Error : {transaction['error']")
+    elif addy == "               
     elif addy == "upi":
         addy_buttons = addy_button("upi")
         if query_user_id in upi_store:

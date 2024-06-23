@@ -95,9 +95,12 @@ async def settings(event):
         [
             Button.inline(lang["name"], f"set_lang_{code}")
             for code, lang in get_languages().items()
-        ]
+        ],
+        [
+            Button.inline(get_string("back", event.sender_id), data="home"),
+        ],
     ]
-    await event.respond(get_string("start", event.sender_id), buttons=buttons)
+    await event.respond(get_string("choose_language", event.sender_id), buttons=buttons)
 
 
 @client.on(events.CallbackQuery(pattern=b"set_lang_"))
@@ -111,15 +114,16 @@ async def callack(event):
 
 
 async def show_main_menu(event):
-    user_id = event.sender_id
-    buttons = [[Button.inline(get_string("hello", user_id), b"hello")]]
-    await event.respond(get_string("menu", user_id), buttons=buttons)
-
-
-@client.on(events.CallbackQuery(pattern=b"hello"))
-async def callback(event):
-    user_id = event.sender_id
-    await event.respond(get_string("hello", user_id))
+    buttons = [
+        [
+            Button.inline(lang["name"], f"set_lang_{code}")
+            for code, lang in get_languages().items()
+        ],
+        [
+            Button.inline(get_string("back", event.sender_id), data="home"),
+        ],
+    ]
+    await event.respond(get_string("choose_language", event.sender_id), buttons=buttons)
 
 
 # ======= Dice ========#
@@ -415,13 +419,14 @@ Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
 async def home(event):
+    games = game(event.sender_id)
     if event.is_private:
         now_balance = players_balance.get(event.sender_id, 0)
         await event.edit(
             f"""**🏠 Menu**
 
 Your balances: **${now_balance}**""",
-            buttons=game,
+            buttons=games,
         )
 
 

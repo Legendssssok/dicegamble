@@ -51,6 +51,9 @@ game = [
         Button.inline("💳 Deposit", data="deposit"),
         Button.inline("💸 Withdraw", data="withdraw"),
     ],
+    [
+        Button.inline("⚙ Settings", data="settings"),
+    ],
 ]
 
 back_button = [[Button.inline("⬅️ Back", data="home")]]

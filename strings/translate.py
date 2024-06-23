@@ -1,20 +1,5 @@
-import request
-
 import json
-
-
 import random
-
-import json
-import math
-import os
-import random
-import re
-import secrets
-import ssl
-from io import BytesIO
-from json.decoder import JSONDecodeError
-from traceback import format_exc
 
 
 def _package_rpc(text, lang_src="auto", lang_tgt="auto"):
@@ -48,7 +33,6 @@ def translate(*args, **kwargs):
     for i in subind:
         response += i[0]
     return response
-
 
 
 def safe_load(file, *args, **kwargs):

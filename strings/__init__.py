@@ -12,8 +12,7 @@ from .translate import translate
 try:
     from yaml import safe_load
 except ModuleNotFoundError:
-    LOGS.error("Please install PyYAML: pip install PyYAML")
-    sys.exit(1)
+    from .translate import safe_load
 
 
 class ULTConfig:
@@ -21,7 +20,7 @@ class ULTConfig:
     thumb = "resources/extras/ultroid.jpg"
 
 
-ULTConfig.lang = legend_db.get_key("language") or os.getenv("LANGUAGE", "en")
+ULTConfig.lang = all_user_lang() or os.getenv("LANGUAGE", "en")
 
 languages = {}
 PATH = "strings/strings/{}.yml"

@@ -1122,7 +1122,9 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
             else:
-                await event.client.send_message(event.chat_id, f"Error : {transaction['error']}")
+                await event.client.send_message(
+                    event.chat_id, f"Error : {transaction['error']}"
+                )
     elif addy == "bitcoin":
         addy_buttons = addy_button("bitcoin")
         if query_user_id in btc_store:
@@ -1220,8 +1222,10 @@ To top up your balance, transfer the desired amount to this LTC address.
                     time.time(),
                 ]
             else:
-                await event.client.send_message(event.chat_id, f"Error : {transaction['error']}")
-                   
+                await event.client.send_message(
+                    event.chat_id, f"Error : {transaction['error']}"
+                )
+
     elif addy == "upi":
         addy_buttons = addy_button("upi")
         if query_user_id in upi_store:

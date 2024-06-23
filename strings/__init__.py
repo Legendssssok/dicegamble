@@ -45,12 +45,11 @@ def load(file):
 load(PATH.format(ULTConfig.lang))
 
 
-def get_string(key: str, user_id: int, _res: bool = True) -> Any:
-    lang = get_user_lang(user_id) or "en"
+def get_string(key: str, _res: bool = True) -> Any:
+    lang = ULTConfig.lang or "en"
     try:
         return languages[lang][key]
     except KeyError:
-        print("Hello")
         try:
             en_ = languages["en"][key]
             tr = translate(en_, lang_tgt=lang).replace("\ N", "\n")
@@ -71,9 +70,7 @@ def get_string(key: str, user_id: int, _res: bool = True) -> Any:
             LOGS.exception(er)
         if not _res:
             return None
-        print("lol")
         return languages["en"].get(key) or f"Failed to load language string '{key}'"
-
 
 def get_help(key, user_id):
     doc = get_string(f"help_{key}", user_id, _res=False)

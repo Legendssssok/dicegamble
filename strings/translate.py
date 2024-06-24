@@ -1,8 +1,8 @@
 import json
 import random
+from urllib.parse import quote
 
 import requests
-from urllib.parse import quote, unquote
 
 
 def _package_rpc(text, lang_src="auto", lang_tgt="auto"):

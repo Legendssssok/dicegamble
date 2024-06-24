@@ -828,7 +828,7 @@ def with_button(method):
             Button.inline("🔄 Refresh", data=f"with_refresh_{method}"),
         ],
     ]
-    return with_buttons   
+    return with_buttons
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_refresh_")))
@@ -843,8 +843,8 @@ async def with_refresh(event):
         with_buttons = with_button("litecoin")
         transaction_amount, transaction_id = with_ltc_store[query_user_id]
         post_params = {
-            'cmd': 'get_withdrawal_info',
-            'id': transaction_id,
+            "cmd": "get_withdrawal_info",
+            "id": transaction_id,
         }
         transaction_with_Info = crypto_client.getWithdrawalInfo(post_params)
         if transaction_with_Info["error"] == "ok":
@@ -859,19 +859,19 @@ async def with_refresh(event):
 
 **Transaction ID** : `{transaction_id}`
 **Transaction Amount** : {transaction_amount}""",
-                buttons=with_buttons,
-                link_preview=False,
+                    buttons=with_buttons,
+                    link_preview=False,
                 )
-            coin = transaction_with_Info["coin"]
+            transaction_with_Info["coin"]
             net_fund = transaction_with_Info["amountf"]
-            send_address = transaction_with_Info["send_address"]
+            transaction_with_Info["send_address"]
             players_balance[query_user_id] = float(old_balance) + float(now_balance)
             await event.reply(
                 f"Payment withdrawal Confirmed! • LTC: {net_fund}, Left Balance: **{players_balance[query_user_id]}**"
             )
             with_ltc_store.pop(query_user_id)
-            
-        
+
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_")))
 async def with_addy(event):
     query = event.data.decode("ascii").lower()
@@ -899,9 +899,7 @@ async def with_addy(event):
             return
         await event.delete()
         async with client.conversation(event.chat_id) as x:
-            await x.send_message(
-                "**Please send your Litecoin wallet address**"
-            )
+            await x.send_message("**Please send your Litecoin wallet address**")
             address = await x.get_response(timeout=1200)
             await x.send_message(
                 "Send me the desired withdrawal amount in LTC to the chat"
@@ -923,8 +921,8 @@ async def with_addy(event):
             }
             transaction = crypto_client.createWithdrawal(create_with_transaction_params)
             if transaction["error"] == "ok":
-                transaction_id = transaction['id']
-                transaction_amount = transaction['amount']
+                transaction_id = transaction["id"]
+                transaction_amount = transaction["amount"]
                 await event.client.send_message(
                     event.chat_id,
                     f"""**💳 Litecoin withdrawal**

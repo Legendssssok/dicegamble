@@ -86,7 +86,7 @@ async def home(event):
     if event.is_private:
         now_balance = players_balance.get(event.sender_id, 0)
         await event.edit(
-            get_string("start_greeting2", event.sender_id).format(
+            get_string("start_greeting2", event.sender_id, "**🏠 Menu**\n\nYour balance: **${}**").format(
                 str(now_balance)[:10]
             ),
             buttons=games,
@@ -114,7 +114,10 @@ async def playagainstb(event):
     if event.is_private:
         back_buttons = back_button(event.sender_id)
         return await event.edit(
-            """**🎲 Play against bot**
+            get_string(
+                "start_greeting4",
+                event.sender_id,
+                """**🎲 Play against bot**
 
 If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_buttons,
@@ -177,49 +180,47 @@ async def dice(event):
         back_buttons = back_button(event.sender_id)
         return await event.client.send_message(
             event.chat_id,
-            """**🎲 Play against friend**
+            get_string("dice_1", event.sender_id, """**🎲 Play against friend**
 
-If you want to play with your friend, you can do it in our group - @.""",
+If you want to play with your friend, you can do it in our group - @."""),
             buttons=back_buttons,
         )
     ok = game_mode()
     if event.sender_id in ok:
-        return await event.reply("Your previous game is yet not finished")
+        return await event.reply(get_string("dice_2", event.sender_id, "Your previous game is yet not finished"))
     text = event.text.split(" ")
     try:
         bet = float(text[1])
     except:
         return await event.reply(
-            """🎲 Play Dice
+            get_string("dice_3", event.sender_id, """🎲 Play Dice
 
 To play, type the command /dice with the desired bet.
 
 Examples:
-/dice 5.50 - to play for $5.50"""
-        )
+/dice 5.50 - to play for $5.50"""))
     now_balance = players_balance.get(event.sender_id, 0)
     if now_balance <= bet:
         return await event.reply(
-            f"❌ Not enough balance\n\nYour balance: ${now_balance}"
-        )
+            get_string("dice_4", event.sender_id, f"❌ Not enough balance\n\nYour balance: ${}").format(now_balance))
     await event.client.send_message(
         event.chat_id,
-        f"🎲 Choose the game mode",
+        get_string("dice_5", event.sender_id, "🎲 Choose the game mode"),
         buttons=[
             [
                 Button.inline(
-                    "Normal Mode", data=f"normalmode_{event.sender_id}_{bet}"
+                    get_string("dice_6", event.sender_id, "Normal Mode"), data=f"normalmode_{event.sender_id}_{bet}"
                 ),
             ],
             [
-                Button.inline("Double Roll", data="doubleroll"),
+                Button.inline(get_string("dice_7", event.sender_id, "Double Roll"), data="doubleroll"),
             ],
             [
-                Button.inline("Crazy Mode", data="crazymode"),
+                Button.inline(get_string("dice_8", event.sender_id, "Crazy Mode"), data="crazymode"),
             ],
             [
-                Button.inline("ℹ️ Guide", data=f"diceguide_{event.sender_id}_{bet}"),
-                Button.inline("❌ Cancel", data=f"cancel_{event.sender_id}"),
+                Button.inline(get_string("dice_9", event.sender_id, "ℹ️ Guide"), data=f"diceguide_{event.sender_id}_{bet}"),
+                Button.inline(get_string("dice_10", event.sender_id, "❌ Cancel"), data=f"cancel_{event.sender_id}"),
             ],
         ],
     )

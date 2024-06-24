@@ -16,7 +16,6 @@ home_back: "⬅️ Back"
 
 #start greetings
 start_greeting: "**👋 Greetings!**\n\nPlay dice with your friend or just with the bot!\n\nRules are simple: first to reach needed points wins."
-start_greeting2: "**🏠 Menu**\n\nYour balance: **${}**"
 
 #Common
 back: "⬅️ Back"

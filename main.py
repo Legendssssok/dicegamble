@@ -72,14 +72,23 @@ async def start(event):
     if event.is_private:
         games = game(event.sender_id)
         now_balance = players_balance.get(event.sender_id, 0)
-        ur_currency = get_user_curr(event.sender_id) or LTC
+        ur_currency = get_user_curr(event.sender_id) or "LTC"
+        if ur_currency == "INR":
+            currency_balance = now_balance * 87
+        else:
+            params = {"cmd": "rates", "accepted": 1}
+            rate = crypto_client.rates(params)
+            from_rate = rate["USDT"]["rate_btc"]
+            to_rate = rate[ur_currency]["rate_btc"]
+            conversion_rate = float(to_rate) / float(from_rate)
+            currency_balance = str(conversion_rate * now_balance)[:10]
         await event.client.send_message(
             event.chat_id,
             get_string(
                 "start_greeting2",
                 event.sender_id,
                 "**🏠 Menu**\n\nYour balance: **${}** ({} {})",
-            ).format(str(now_balance)[:10], ur_currency, ur_currency),
+            ).format(str(now_balance)[:10], currency_balance, ur_currency),
             buttons=games,
         )
 
@@ -196,6 +205,7 @@ def currency_button(user_id):
             Button.inline(get_string("back", user_id), data="settings"),
         ],
     ]
+    return button
 
 
 @client.on(events.CallbackQuery(pattern=b"change_currency"))

@@ -800,8 +800,8 @@ async def balance_func(event):
 def withdrawal_button(user_id):
     withdrawal_buttons = [
         [
-            Button.inline("Litecoin", data="withdraw_litecoin"),
-            Button.inline("UPI", data="withdaw_upi"),
+            Button.inline("Litecoin", data="with_litecoin"),
+            Button.inline("UPI", data="with_upi"),
         ],
         [
             Button.inline(get_string("back", user_id), data="home"),
@@ -810,13 +810,114 @@ def withdrawal_button(user_id):
     return withdrawal_buttons
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"withdrawal")))
+@client.on(events.callbackquery.CallbackQuery(data=(b"withdraw")))
 async def deposit_func(event):
     withdrawal_buttons = withdrawal_button(event.sender_id)
     await event.edit(
         f"**💳 Withdrawal**\n\nChoose your preferred withdrawal method:",
         buttons=withdrawal_buttons,
     )
+
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_")))
+async def deposits_addy(event):
+    query = event.data.decode("ascii").lower()
+    addy = query.split("_")[1]
+    query_user_id = event.query.user_id
+    if addy = "litecoin":
+        addy_buttons = with_button("litecoin")
+        if query_user_id in with_ltc_store:
+            (
+                transaction_amount,
+                transaction_address,
+                transaction_timeout,
+                transaction_checkout_url,
+                transaction_qrcode_url,
+                transaction_id,
+                main_time,
+            ) = with_ltc_store[query_user_id]
+            await event.edit(
+                f"""**💳 Litecoin withdrawal**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
+4. After Payment Click On Refresh
+
+
+**LTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                buttons=addy_buttons,
+                link_preview=False,
+            )
+            return
+        await event.delete()
+        async with client.conversation(event.chat_id) as x:
+            await x.send_message(
+                "**Please send your Litecoin wallet address**"
+            )
+            address = await x.get_response(timeout=1200)
+            await x.send_message(
+                "Send me the desired withdrawal amount in LTC to the chat"
+            )
+            with_amount = await x.get_response(timeout=1200)
+            create_transaction_params = {
+                "amount": int(old_amount.text),
+                "currency1": "USD",
+                "currency2": "LTC",
+            }
+            transaction = crypto_client.createTransaction(create_transaction_params)
+            if transaction["error"] == "ok":
+                transaction_amount = transaction["amount"]
+                transaction_address = transaction["address"]
+                transaction_timeout = transaction["timeout"] - 60
+                transaction_checkout_url = transaction["checkout_url"]
+                transaction_qrcode_url = transaction["qrcode_url"]
+                transaction_id = transaction["txn_id"]
+                hours = transaction_timeout // 3600
+                remaining_seconds = transaction_timeout % 3600
+                minutes = remaining_seconds // 60
+                seconds = remaining_seconds % 60
+                await event.client.send_message(
+                    event.chat_id,
+                    f"""**💳 Litecoin deposit**
+
+To top up your balance, transfer the desired amount to this LTC address.
+
+**Please note:**
+1. The deposit address is temporary and is only issued for 1 hour.
+2. One address accepts only one payment.
+3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
+4. After Payment Click On Refresh
+
+
+**LTC address** : `{transaction_address}`
+**Transaction Amount**: {transaction_amount}
+**CheckOut URL** : {transaction_checkout_url}
+**Qr Code URL**: {transaction_qrcode_url}
+**Transaction ID** : {transaction_id}
+
+**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
+                    buttons=addy_buttons,
+                    link_preview=False,
+                )
+                ltc_store[query_user_id] = [
+                    transaction_amount,
+                    transaction_address,
+                    transaction_timeout,
+                    transaction_checkout_url,
+                    transaction_qrcode_url,
+                    transaction_id,
+                    time.time(),
+                ]
 
 
 # =============== Deposit history ============== #

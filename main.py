@@ -8,10 +8,11 @@ import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
+from database.currency_store import *
 from database.languages import set_user_lang
 from pyCoinPayments import CryptoPayments
 from strings import *
-from database.currency_store import *
+
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
 TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
@@ -144,7 +145,14 @@ async def settings(event):
 
     # Group buttons into rows of 2
     buttons = [lang_buttons[i : i + 2] for i in range(0, len(lang_buttons), 2)]
-    buttons.append([Button.inline(get_string("change_currency", user_id, "Change your currency"), data="change_currency")])
+    buttons.append(
+        [
+            Button.inline(
+                get_string("change_currency", user_id, "Change your currency"),
+                data="change_currency",
+            )
+        ]
+    )
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
 
@@ -172,6 +180,7 @@ async def show_main_menu(event):
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
 
+
 def currency_button(user_id):
     button = [
         [
@@ -189,22 +198,24 @@ def currency_button(user_id):
     ]
 
 
-
 @client.on(events.CallbackQuery(pattern=b"change_currency"))
 async def change_curenc(event):
     user_id = event.sender_id
     button = currency_button(user_id)
     await event.edit(
         get_string("choose_currency", user_id, "Choose your Currency Address"),
-        buttons = button,
+        buttons=button,
     )
-    
+
+
 @client.on(events.CallbackQuery(pattern=b"currency_"))
 async def callack(event):
     user_id = event.sender_id
     curr_code = event.data.decode("utf-8").split("_")[-1]
     set_user_curr(user_id, curr_code)
-    await event.edit(get_string("curr_set", user_id, "Successfully changed your currency"))
+    await event.edit(
+        get_string("curr_set", user_id, "Successfully changed your currency")
+    )
     await show_next_curr_menu(event)
 
 
@@ -213,9 +224,10 @@ async def show_next_curr_menu(event):
     button = currency_button(user_id)
     await event.edit(
         get_string("choose_currency", user_id, "Choose your Currency Address"),
-        buttons = button,
+        buttons=button,
     )
-    
+
+
 # ======= Dice ========#
 
 

@@ -80,7 +80,7 @@ async def start(event):
             rate = crypto_client.rates(params)
             from_rate = rate["USDT"]["rate_btc"]
             to_rate = rate[ur_currency]["rate_btc"]
-            conversion_rate = float(to_rate) / float(from_rate)
+            conversion_rate = float(from_rate) / float(to_rate)
             currency_balance = str(conversion_rate * now_balance)[:10]
         await event.client.send_message(
             event.chat_id,
@@ -106,10 +106,9 @@ async def home(event):
             rate = crypto_client.rates(params)
             from_rate = rate["USDT"]["rate_btc"]
             to_rate = rate[ur_currency]["rate_btc"]
-            conversion_rate = float(to_rate) / float(from_rate)
+            conversion_rate = float(from_rate) / float(to_rate)
             currency_balance = str(conversion_rate * now_balance)[:10]
-        await event.client.send_message(
-            event.chat_id,
+        await event.edit(
             get_string(
                 "start_greeting2",
                 event.sender_id,

@@ -2081,6 +2081,45 @@ async def check_usdt_payments():
                 )
                 usdt_store.pop(query_user_id)
 
+"""
+async def check_ltc_withdraw():
+    for user_id, payment_details in list(usdt_store.items()):
+        (
+            transaction_amount,
+            transaction_id,
+        ) = payment_details
+        post_params = {
+            "cmd": "get_withdrawal_info",
+            "id": transaction_id,
+        }
+        transaction_with_Info = crypto_client.getWithdrawalInfo(post_params)
+        if transaction_with_Info["error"] == "ok":
+            status = transaction_with_Info["status_text"]
+            if status != "Complete":
+        post_params1 = {"txid": transaction_id}
+        transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        if transactionInfo["error"] == "ok":
+            players_balance = get_players_balance()
+            status = transactionInfo["status_text"]
+            if status == "Complete":
+                transactionInfo["receivedf"]
+                net_fund = transactionInfo["netf"]
+                params = {"cmd": "rates", "accepted": 1}
+                rate = crypto_client.rates(params)
+                from_rate = rate["USDT"]["rate_btc"]
+                to_rate = rate["USDT"]["rate_btc"]
+                conversion_rate = float(to_rate) / float(from_rate)
+                old_balance = players_balance.get(user_id, 0)
+                now_balance = str(conversion_rate * float(net_fund))[:10]
+                add_players_balance(user_id, float(old_balance) + float(now_balance))
+                await client.send_message(
+                    user_id,
+                    f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                )
+                usdt_store.pop(query_user_id)
+
+"""
+
 
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
 scheduler.add_job(check_ltc_payments, "interval", minutes=5)

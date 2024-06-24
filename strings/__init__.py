@@ -52,11 +52,9 @@ def get_string(key: str, user_id: int, _res: bool = True) -> Any:
         try:
             en_ = languages["en"][key]
             tr = translate(en_, lang_tgt=lang).replace("\\ N", "\n")
-            print(f"Lang {en_}, {tr}")
             if en_.count("{}") != tr.count("{}"):
                 tr = en_
             f_ok = languages.get(lang)
-            print(f_ok)
             if f_ok:
                 languages[lang][key] = tr
             else:

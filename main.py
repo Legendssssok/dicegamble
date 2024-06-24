@@ -71,13 +71,14 @@ async def start(event):
     if event.is_private:
         games = game(event.sender_id)
         now_balance = players_balance.get(event.sender_id, 0)
+        ur_currency = get_user_curr(event.sender_id) or LTC
         await event.client.send_message(
             event.chat_id,
             get_string(
                 "start_greeting2",
                 event.sender_id,
-                "**🏠 Menu**\n\nYour balance: **${}**",
-            ).format(str(now_balance)[:10]),
+                "**🏠 Menu**\n\nYour balance: **${}** ({} {})",
+            ).format(str(now_balance)[:10], ur_currency, ur_currency),
             buttons=games,
         )
 
@@ -143,6 +144,7 @@ async def settings(event):
 
     # Group buttons into rows of 2
     buttons = [lang_buttons[i : i + 2] for i in range(0, len(lang_buttons), 2)]
+    buttons.append([Button.inline(get_string("change_currency", user_id, "Change your currency"), data="change_currency")])
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
 
@@ -151,7 +153,6 @@ async def settings(event):
 async def callack(event):
     user_id = event.sender_id
     lang_code = event.data.decode("utf-8").split("_")[-1]
-    print(lang_code)
     set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))
@@ -171,7 +172,50 @@ async def show_main_menu(event):
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
 
+def currency_button(user_id):
+    button = [
+        [
+            (Button.inline("Litecoin", data="currency_LTC"),
+            (Button.inline("Etherum", data="currency_ETH"),
+        ],
+        [
+            (Button.inline("Bitcoin", data="currency_BTC"),
+            (Button.inline("Usdt", data="currency_USD"),
+        ],
+        [
+            (Button.inline("INR", data="currency_INR"),
+            (Button.inline(get_string("back", user_id), data="settings"),
+        ],
+    ]
 
+
+
+@client.on(events.CallbackQuery(pattern=b"change_currency"))
+async def change_curenc(event):
+    user_id = event.sender_id
+    button = currency_button(user_id)
+    await event.edit(
+        get_string("choose_currency", user_id, "Choose your Currency Address"),
+        buttons = button,
+    )
+    
+@client.on(events.CallbackQuery(pattern=b"currency_"))
+async def callack(event):
+    user_id = event.sender_id
+    curr_code = event.data.decode("utf-8").split("_")[-1]
+    set_user_curr(user_id, curr_code)
+    await event.edit(get_string("curr_set", user_id, "Successfully changed your currency"))
+    await show_next_curr_menu(event)
+
+
+async def show_next_curr_menu(event):
+    user_id = event.sender_id
+    button = currency_button(user_id)
+    await event.edit(
+        get_string("choose_currency", user_id, "Choose your Currency Address"),
+        buttons = button,
+    )
+    
 # ======= Dice ========#
 
 

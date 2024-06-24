@@ -98,9 +98,13 @@ async def playagainstf(event):
     if event.is_private:
         back_buttons = back_button(event.sender_id)
         return await event.edit(
-            get_string("start_greeting3", event.sender_id, """**🎲 Play against friend**
+            get_string(
+                "start_greeting3",
+                event.sender_id,
+                """**🎲 Play against friend**
 
-If you want to play with a bot, use the /dice command in our group - @ None"""),
+If you want to play with a bot, use the /dice command in our group - @ None""",
+            ),
             buttons=back_buttons,
         )
 
@@ -115,7 +119,8 @@ async def playagainstb(event):
 If you want to play with a bot, use the /dice command in our group - @ None""",
             buttons=back_buttons,
         )
-        
+
+
 # ========== Settings =========
 
 

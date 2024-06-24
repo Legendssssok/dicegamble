@@ -73,9 +73,11 @@ async def start(event):
         now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
-            get_string("start_greeting2", event.sender_id, "**🏠 Menu**\n\nYour balance: **${}**").format(
-                str(now_balance)[:10]
-            ),
+            get_string(
+                "start_greeting2",
+                event.sender_id,
+                "**🏠 Menu**\n\nYour balance: **${}**",
+            ).format(str(now_balance)[:10]),
             buttons=games,
         )
 

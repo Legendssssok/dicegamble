@@ -604,7 +604,7 @@ async def gameplay(event):
     if gamemode == "botwplayers":
         ok = get_all_score()
         score_player1, score_player2 = ok[event.sender_id]
-        ok = get_count_round
+        ok = get_count_round()
         current_round = ok[event.sender_id]
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value

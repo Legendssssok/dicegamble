@@ -80,6 +80,42 @@ async def start(event):
         )
 
 
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
+async def home(event):
+    games = game(event.sender_id)
+    if event.is_private:
+        now_balance = players_balance.get(event.sender_id, 0)
+        await event.edit(
+            get_string("start_greeting2", event.sender_id).format(
+                str(now_balance)[:10]
+            ),
+            buttons=games,
+        )
+
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstf")))
+async def playagainstf(event):
+    if event.is_private:
+        back_buttons = back_button(event.sender_id)
+        return await event.edit(
+            get_string("start_greeting3", event.sender_id, """**🎲 Play against friend**
+
+If you want to play with a bot, use the /dice command in our group - @ None"""),
+            buttons=back_buttons,
+        )
+
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstb")))
+async def playagainstb(event):
+    if event.is_private:
+        back_buttons = back_button(event.sender_id)
+        return await event.edit(
+            """**🎲 Play against bot**
+
+If you want to play with a bot, use the /dice command in our group - @ None""",
+            buttons=back_buttons,
+        )
+        
 # ========== Settings =========
 
 
@@ -102,7 +138,6 @@ async def settings(event):
 async def callack(event):
     user_id = event.sender_id
     lang_code = event.data.decode("utf-8").split("_")[-1]
-    print(lang_code)
     set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))
@@ -418,41 +453,6 @@ Similar to Normal, but you are rolling 2 dice in a row. The winner of the round 
 Are you rolling low all night? Then this Crazy Mode is for you! In this gamemode its all about rolling low! All dices are inverted - 6 is 1 and 1 is 6. Will you be able to keep from going crazy?""",
         buttons=back_groups(user_id, bet),
     )
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"home")))
-async def home(event):
-    games = game(event.sender_id)
-    if event.is_private:
-        now_balance = players_balance.get(event.sender_id, 0)
-        await event.edit(
-            f"""**🏠 Menu**
-
-Your balances: **${now_balance}**""",
-            buttons=games,
-        )
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstf")))
-async def playagainstf(event):
-    if event.is_private:
-        return await event.edit(
-            """**🎲 Play against friend**
-
-If you want to play with a bot, use the /dice command in our group - @ None""",
-            buttons=back_button,
-        )
-
-
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"playagainstb")))
-async def playagainstb(event):
-    if event.is_private:
-        return await event.edit(
-            """**🎲 Play against bot**
-
-If you want to play with a bot, use the /dice command in our group - @ None""",
-            buttons=back_button,
-        )
 
 
 last_message_times = {}

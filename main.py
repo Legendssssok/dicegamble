@@ -91,22 +91,24 @@ Your balance: **${str(now_balance)[:10]}**""",
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"settings")))
 async def settings(event):
-    buttons = [
-        [
-            Button.inline(lang["name"], f"set_lang_{code}")
-            for code, lang in get_languages().items()
-        ],
-        [
-            Button.inline(get_string("back", event.sender_id), data="home"),
-        ],
+    user_id = event.sender_id
+    languages = get_languages()
+    lang_buttons = [
+        Button.inline(lang["name"], f"set_lang_{code}")
+        for code, lang in languages.items()
     ]
-    await event.respond(get_string("choose_language", event.sender_id), buttons=buttons)
-
+    
+    # Group buttons into rows of 2
+    buttons = [lang_buttons[i:i + 2] for i in range(0, len(lang_buttons), 2)]
+    buttons.append([Button.inline(get_string("back", user_id), data="home")])
+    await event.edit(get_string("choose_language", user_id), buttons=buttons)
+    
 
 @client.on(events.CallbackQuery(pattern=b"set_lang_"))
 async def callack(event):
     user_id = event.sender_id
     lang_code = event.data.decode("utf-8").split("_")[-1]
+    print(lang_code)
     set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))
@@ -114,17 +116,18 @@ async def callack(event):
 
 
 async def show_main_menu(event):
-    buttons = [
-        [
-            Button.inline(lang["name"], f"set_lang_{code}")
-            for code, lang in get_languages().items()
-        ],
-        [
-            Button.inline(get_string("back", event.sender_id), data="home"),
-        ],
+    user_id = event.sender_id
+    languages = get_languages()
+    lang_buttons = [
+        Button.inline(lang["name"], f"set_lang_{code}")
+        for code, lang in languages.items()
     ]
-    await event.respond(get_string("choose_language", event.sender_id), buttons=buttons)
-
+    
+    # Group buttons into rows of 2
+    buttons = [lang_buttons[i:i + 2] for i in range(0, len(lang_buttons), 2)]
+    buttons.append([Button.inline(get_string("back", user_id), data="home")])
+    await event.edit(get_string("choose_language", user_id), buttons=buttons)
+    
 
 # ======= Dice ========#
 

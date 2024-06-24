@@ -44,6 +44,8 @@ usdt_store = {}
 
 btc_store = {}
 
+with_ltc_store = {}
+
 # ======= Game Function======
 
 
@@ -819,43 +821,79 @@ async def deposit_func(event):
     )
 
 
-@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_")))
-async def deposits_addy(event):
+def with_button(method):
+    with_buttons = [
+        [
+            Button.inline("⬅️ Back", data=f"withdraw"),
+            Button.inline("🔄 Refresh", data=f"with_refresh_{method}"),
+        ],
+    ]
+    return with_buttons   
+
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_refresh_")))
+async def with_refresh(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
-    if addy = "litecoin":
-        addy_buttons = with_button("litecoin")
+    if addy == "litecoin":
+        if query_user_id not in with_ltc_store:
+            await event.reply("Your withdrawal is successfully check your wallet")
+            return
+        with_buttons = with_button("litecoin")
+        transaction_amount, transaction_id = with_ltc_store[query_user_id]
+        post_params = {
+            'cmd': 'get_withdrawal_info',
+            'id': transaction_id,
+        }
+        transaction_with_Info = crypto_client.getWithdrawalInfo(post_params)
+        if transaction_with_Info["error"] == "ok":
+            status = transaction_with_Info["status_text"]
+            if status != "Complete":
+                await event.edit(
+                    f"""**💳 Litecoin withdrawal**
+
+**Please note:**
+1. Withdrawal process is turned on it automatically notified you when withdraw complete 
+2. Check status by clicking on Refresh Button
+
+**Transaction ID** : `{transaction_id}`
+**Transaction Amount** : {transaction_amount}""",
+                buttons=with_buttons,
+                link_preview=False,
+                )
+            coin = transaction_with_Info["coin"]
+            net_fund = transaction_with_Info["amountf"]
+            send_address = transaction_with_Info["send_address"]
+            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            await event.reply(
+                f"Payment withdrawal Confirmed! • LTC: {net_fund}, Left Balance: **{players_balance[query_user_id]}**"
+            )
+            with_ltc_store.pop(query_user_id)
+            
+        
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_")))
+async def with_addy(event):
+    query = event.data.decode("ascii").lower()
+    addy = query.split("_")[1]
+    query_user_id = event.query.user_id
+    if addy == "litecoin":
+        with_buttons = with_button("litecoin")
         if query_user_id in with_ltc_store:
             (
                 transaction_amount,
-                transaction_address,
-                transaction_timeout,
-                transaction_checkout_url,
-                transaction_qrcode_url,
                 transaction_id,
-                main_time,
             ) = with_ltc_store[query_user_id]
             await event.edit(
                 f"""**💳 Litecoin withdrawal**
 
-To top up your balance, transfer the desired amount to this LTC address.
-
 **Please note:**
-1. The deposit address is temporary and is only issued for 1 hour.
-2. One address accepts only one payment.
-3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
-4. After Payment Click On Refresh
+1. Withdrawal process is turned on it automatically notified you when withdraw complete 
+2. Check status by clicking on Refresh Button
 
-
-**LTC address** : `{transaction_address}`
-**Transaction Amount**: {transaction_amount}
-**CheckOut URL** : {transaction_checkout_url}
-**Qr Code URL**: {transaction_qrcode_url}
-**Transaction ID** : {transaction_id}
-
-**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
-                buttons=addy_buttons,
+**Transaction ID** : `{transaction_id}`
+**Transaction Amount** : {transaction_amount}""",
+                buttons=with_buttons,
                 link_preview=False,
             )
             return
@@ -869,54 +907,40 @@ To top up your balance, transfer the desired amount to this LTC address.
                 "Send me the desired withdrawal amount in LTC to the chat"
             )
             with_amount = await x.get_response(timeout=1200)
-            create_transaction_params = {
-                "amount": int(old_amount.text),
-                "currency1": "USD",
-                "currency2": "LTC",
+            now_balance = players_balance.get(event.sender_id, 0)
+            params = {"cmd": "rates", "accepted": 1}
+            rate = crypto_client.rates(params)
+            from_rate = rate["USDT"]["rate_btc"]
+            to_rate = rate["LTC"]["rate_btc"]
+            conversion_rate = float(from_rate) / float(to_rate)
+            currency_balance = str(conversion_rate * now_balance)[:10]
+            if currency_balance < int(with_amount.text):
+                return await event.reply("Not enough balance")
+            create_with_transaction_params = {
+                "amount": int(with_amount.text),
+                "currency": "LTC",
+                "address": address.text,
             }
-            transaction = crypto_client.createTransaction(create_transaction_params)
+            transaction = crypto_client.createWithdrawal(create_with_transaction_params)
             if transaction["error"] == "ok":
-                transaction_amount = transaction["amount"]
-                transaction_address = transaction["address"]
-                transaction_timeout = transaction["timeout"] - 60
-                transaction_checkout_url = transaction["checkout_url"]
-                transaction_qrcode_url = transaction["qrcode_url"]
-                transaction_id = transaction["txn_id"]
-                hours = transaction_timeout // 3600
-                remaining_seconds = transaction_timeout % 3600
-                minutes = remaining_seconds // 60
-                seconds = remaining_seconds % 60
+                transaction_id = transaction['id']
+                transaction_amount = transaction['amount']
                 await event.client.send_message(
                     event.chat_id,
-                    f"""**💳 Litecoin deposit**
-
-To top up your balance, transfer the desired amount to this LTC address.
+                    f"""**💳 Litecoin withdrawal**
 
 **Please note:**
-1. The deposit address is temporary and is only issued for 1 hour.
-2. One address accepts only one payment.
-3. Don't create new addy if you have created new addy by clicking on deposit again, don't pay on this addy
-4. After Payment Click On Refresh
+1. Withdrawal process is turned on it automatically notified you when withdraw complete 
+2. Check status by clicking on Refresh Button
 
-
-**LTC address** : `{transaction_address}`
-**Transaction Amount**: {transaction_amount}
-**CheckOut URL** : {transaction_checkout_url}
-**Qr Code URL**: {transaction_qrcode_url}
-**Transaction ID** : {transaction_id}
-
-**Expire In :** {int(hours)}:{int(minutes)}:{int(seconds)}""",
-                    buttons=addy_buttons,
+**Transaction ID** : `{transaction_id}`
+**Transaction Amount** : {transaction_amount}""",
+                    buttons=with_buttons,
                     link_preview=False,
                 )
-                ltc_store[query_user_id] = [
+                with_ltc_store[query_user_id] = [
                     transaction_amount,
-                    transaction_address,
-                    transaction_timeout,
-                    transaction_checkout_url,
-                    transaction_qrcode_url,
                     transaction_id,
-                    time.time(),
                 ]
 
 

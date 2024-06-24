@@ -915,7 +915,7 @@ async def with_addy(event):
             if float(currency_balance) < float(with_amount.text):
                 return await event.reply("Not enough balance")
             create_with_transaction_params = {
-                "amount": int(with_amount.text),
+                "amount": float(with_amount.text),
                 "currency": "LTC",
                 "address": address.text,
             }

@@ -44,7 +44,7 @@ def load(file):
 load(PATH.format(ULTConfig.lang))
 
 
-def get_string(key: str, string: str = False, user_id: int, _res: bool = True) -> Any:
+def get_string(key: str, user_id: int, string: str = False, _res: bool = True) -> Any:
     lang = get_user_lang(user_id) or "en"
     try:
         return languages[lang][key]

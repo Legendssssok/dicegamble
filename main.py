@@ -119,7 +119,7 @@ async def playagainstb(event):
                 event.sender_id,
                 """**🎲 Play against bot**
 
-If you want to play with a bot, use the /dice command in our group - @ None""",
+If you want to play with a bot, use the /dice command in our group - @ None"""),
             buttons=back_buttons,
         )
 

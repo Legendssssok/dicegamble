@@ -43,45 +43,40 @@ usdt_store = {}
 
 btc_store = {}
 
+# ======= Game Function======
 
 def game(user_id):
     games = [
         [
             Button.inline(get_string("game_1", user_id), data="playagainstf"),
-            Button.inline("🎲 Play against bot", data="playagainstb"),
+            Button.inline(get_string("game_2", user_id), data="playagainstb"),
         ],
         [
-            Button.inline("💳 Deposit", data="deposit"),
-            Button.inline("💸 Withdraw", data="withdraw"),
+            Button.inline(get_string("game_3", user_id), data="deposit"),
+            Button.inline(get_string("game_4", user_id), data="withdraw"),
         ],
         [
-            Button.inline("⚙ Settings", data="settings"),
+            Button.inline(get_string("game_5", user_id), data="settings"),
         ],
     ]
     return games
 
-
-back_button = [[Button.inline("⬅️ Back", data="home")]]
+def back_button(user_id):
+    back_buttons = [[Button.inline(get_string("home_back", user_id), data="home")]]
+    return back_buttons
 
 
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
     await event.client.send_message(
         event.chat_id,
-        """**👋 Greetings!**
-
-Play dice with your friend or just with the bot!
-
-Rules are simple: first to reach needed points wins.""",
-    )
+        get_string("start_greeting", event.sender_id))
     if event.is_private:
         games = game(event.sender_id)
         now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
-            f"""**🏠 Menu**
-
-Your balance: **${str(now_balance)[:10]}**""",
+            get_string("start_greeting2", event.sender_id).format(str(now_balance)[:10])
             buttons=games,
         )
 

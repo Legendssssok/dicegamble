@@ -151,6 +151,7 @@ async def settings(event):
 async def callack(event):
     user_id = event.sender_id
     lang_code = event.data.decode("utf-8").split("_")[-1]
+    print(lang_code)
     set_user_lang(user_id, lang_code)
     ULTConfig.lang = lang_code
     await event.edit(get_string("language_set", user_id))

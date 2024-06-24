@@ -912,7 +912,7 @@ async def with_addy(event):
             to_rate = rate["LTC"]["rate_btc"]
             conversion_rate = float(from_rate) / float(to_rate)
             currency_balance = str(conversion_rate * now_balance)[:10]
-            if currency_balance < float(with_amount.text):
+            if float(currency_balance) < float(with_amount.text):
                 return await event.reply("Not enough balance")
             create_with_transaction_params = {
                 "amount": int(with_amount.text),
@@ -940,6 +940,8 @@ async def with_addy(event):
                     transaction_amount,
                     transaction_id,
                 ]
+            else:
+                await event.reply(transaction["error"])
 
 
 # =============== Deposit history ============== #

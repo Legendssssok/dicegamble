@@ -11,7 +11,7 @@ from telethon.tl.types import BotCommand, InputMediaDice
 from database.languages import set_user_lang
 from pyCoinPayments import CryptoPayments
 from strings import *
-
+from database.currency_store import *
 API_ID = 11573285
 API_HASH = "f2cc3fdc32197c8fbaae9d0bf69d2033"
 TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"

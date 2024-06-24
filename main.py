@@ -97,12 +97,12 @@ async def settings(event):
         Button.inline(lang["name"], f"set_lang_{code}")
         for code, lang in languages.items()
     ]
-    
+
     # Group buttons into rows of 2
-    buttons = [lang_buttons[i:i + 2] for i in range(0, len(lang_buttons), 2)]
+    buttons = [lang_buttons[i : i + 2] for i in range(0, len(lang_buttons), 2)]
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
-    
+
 
 @client.on(events.CallbackQuery(pattern=b"set_lang_"))
 async def callack(event):
@@ -122,12 +122,12 @@ async def show_main_menu(event):
         Button.inline(lang["name"], f"set_lang_{code}")
         for code, lang in languages.items()
     ]
-    
+
     # Group buttons into rows of 2
-    buttons = [lang_buttons[i:i + 2] for i in range(0, len(lang_buttons), 2)]
+    buttons = [lang_buttons[i : i + 2] for i in range(0, len(lang_buttons), 2)]
     buttons.append([Button.inline(get_string("back", user_id), data="home")])
     await event.edit(get_string("choose_language", user_id), buttons=buttons)
-    
+
 
 # ======= Dice ========#
 

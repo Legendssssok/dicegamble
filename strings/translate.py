@@ -2,6 +2,7 @@ import json
 import random
 
 import requests
+from urllib.parse import quote, unquote
 
 
 def _package_rpc(text, lang_src="auto", lang_tgt="auto"):

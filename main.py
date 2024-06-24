@@ -5,7 +5,6 @@ import string
 import time
 
 import requests
-from requests.api import get
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 

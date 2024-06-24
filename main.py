@@ -1,4 +1,9 @@
 import asyncio
+
+from requests.api import get
+from database.old_score_db import get_old_score, remove_old_score
+from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
+from database.count_round_db import add_count_round, get_count_round, remove_count_round
 import random
 import re
 import string
@@ -22,15 +27,11 @@ client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
 from database.gamemode import *
 
-score = {}
+from database.score_db import *
 
-count_round = {}
+from database.players_balance_db import add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, get_players_balance, get_players_balance, get_players_balance, 
 
-player_turn = {}
 
-old_score = {}
-
-players_balance = {}
 
 bet_amount = {}
 
@@ -73,6 +74,7 @@ async def start(event):
     )
     if event.is_private:
         games = game(event.sender_id)
+        players_balance = get_players_balance()
         now_balance = players_balance.get(event.sender_id, 0)
         ur_currency = get_user_curr(event.sender_id) or "LTC"
         if ur_currency == "INR":
@@ -99,6 +101,7 @@ async def start(event):
 async def home(event):
     games = game(event.sender_id)
     if event.is_private:
+        players_balance = get_players_balance()
         now_balance = players_balance.get(event.sender_id, 0)
         ur_currency = get_user_curr(event.sender_id) or "LTC"
         if ur_currency == "INR":
@@ -302,6 +305,7 @@ Examples:
 /dice 5.50 - to play for $5.50""",
             )
         )
+    players_balance = get_players_balance()
     now_balance = players_balance.get(event.sender_id, 0)
     if now_balance <= bet:
         return await event.reply(
@@ -463,6 +467,7 @@ If you want to play, click the "Accept Match" button""",
             return
         my_bot = await client.get_me()
         user = await client.get_entity(int(user_id))
+        players_balance = get_players_balance()
         now_balance_bot = players_balance.get(my_bot.id, 0)
         if float(now_balance_bot) <= float(bet):
             return await event.answer(
@@ -470,14 +475,14 @@ If you want to play, click the "Accept Match" button""",
             )
         left_balance_bot = players_balance[my_bot.id] - float(bet)
         bet_amount[my_bot.id] = float(bet)
-        players_balance[my_bot.id] = left_balance_bot
+        add_players_balance(my_bot.id, left_balance_bot)
         left_balance_user = players_balance[user.id] - float(bet)
         bet_amount[user.id] = float(bet)
-        players_balance[user.id] = left_balance_user
+        add_players_balance(user.id, left_balance_user)
         await event.delete()
         add_game_mode(user.id, "botwplayers", int(round))
-        score[user.id] = [0, 0]
-        count_round[user.id] = 1
+        add_score(user.id, 0, 0)
+        add_count_round(user.id, 1)
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Play with Bot**
@@ -493,6 +498,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
             return await event.answer("You cannot accept your own match")
         player1 = await client.get_entity(int(user_id))
         player2 = await client.get_entity(query_user_id)
+        players_balance = get_players_balance()
         now_balance_player2 = players_balance.get(player2.id, 0)
         if float(now_balance_player2) <= float(bet):
             return await event.answer(
@@ -500,17 +506,17 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
             )
         left_balance_player1 = players_balance[player1.id] - float(bet)
         bet_amount[player1.id] = float(bet)
-        players_balance[player1.id] = left_balance_player1
+        add_players_balance(player1.id, left_balance_player1)
         left_balance_player2 = players_balance[player2.id] - float(bet)
         bet_amount[player2.id] = float(bet)
-        players_balance[player2.id] = left_balance_player2
+        add_players_balance(player2.id, left_balance_player2)
         await event.delete()
-        score[player1.id] = [0, 0]
+        add_score(player1.id, 0, 0)
         add_game_mode(int(user_id), "playerwplayer", int(round), query_user_id)
         add_game_mode(query_user_id, "playerwplayer", int(round), int(user_id))
-        count_round[player1.id] = 1
-        player_turn[player1.id] = player1.id
-        player_turn[player2.id] = player1.id
+        add_count_round(player1.id, 1)
+        add_player_turn(player1.id, player1.id)
+        add_player_turn(player2.id, player1,id)
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Player vs Player**
@@ -602,8 +608,10 @@ async def gameplay(event):
     user = await client.get_entity(event.sender_id)
     gamemode, round = ok[event.sender_id][:2]
     if gamemode == "botwplayers":
-        score_player1, score_player2 = score[event.sender_id]
-        current_round = count_round[event.sender_id]
+        ok = get_all_score()
+        score_player1, score_player2 = ok[event.sender_id]
+        ok = get_count_round
+        current_round = ok[event.sender_id]
         last_message_times[event.sender_id] = time.time()
         player1 = event.media.value
         await asyncio.sleep(3)
@@ -613,26 +621,27 @@ async def gameplay(event):
         player2 = bot_player.media.value
         if player1 > player2:
             score_player1 += 1
-            score[event.sender_id] = [score_player1, score_player2]
+            add_score(event.sender_id, score_player1, score_player2)
         elif player1 < player2:
             score_player2 += 1
-            score[event.sender_id] = [score_player1, score_player2]
+            add_score(event.sender_id, score_player1, score_player2)
         else:
             current_round -= 1
         if round == current_round:
+            players_balance = get_players_balance()
             remove_game_mode(event.sender_id)
-            count_round.pop(event.sender_id)
+            remove_count_round(event.sender_id)
             if score_player1 > score_player2:
                 add_balance = players_balance[user.id] + float(
                     bet_amount[user.id] * 1.92
                 )
-                players_balance[user.id] = add_balance
+                add_players_balance(user.id, add_balance)
                 winner = f"🎉 Congratulations! {user.first_name}, You won : ${bet_amount[user.id] * 1.92}"
             elif score_player1 < score_player2:
                 add_balance = players_balance[my_bot.id] + float(
                     bet_amount[my_bot.id] * 1.92
                 )
-                players_balance[my_bot.id] = add_balance
+                add_players_balance(my_bot.id, add_balance)
                 winner = f"🎉 Congratulations! {my_bot.first_name}, Bot Won : ${bet_amount[my_bot.id] * 1.92}"
             await event.client.send_message(
                 event.chat_id,
@@ -653,8 +662,9 @@ async def gameplay(event):
 
 [{user.first_name}](tg://user?id={user.id}), it's your turn!""",
         )
-        count_round[event.sender_id] = current_round + 1
+        add_count_round(event.sender_id, current_round + 1)
     elif gamemode == "playerwplayer":
+        player_turn = get_player_turn()
         if player_turn[event.sender_id] != event.sender_id:
             return await event.reply("It's not your turn")
         last_message_times[event.sender_id] = time.time()
@@ -662,40 +672,44 @@ async def gameplay(event):
         player1_details = await client.get_entity(event.sender_id)
         opponent_id = ok[event.sender_id][2]
         player2 = await client.get_entity(opponent_id)
-        player_turn[event.sender_id] = player2.id
-        player_turn[opponent_id] = player2.id
+        add_player_turn(event.sender_id, player.id)
+        add_player_turn(opponent_id, player.id)
         await asyncio.sleep(3)
+        count_round = get_count_round()
         if count_round.get(player2.id, 1) % 2 == 0:
             current_round = count_round[player2.id]
-            score_player1, score_player2 = score[player2.id]
+            ok = get_all_score()
+            score_player1, score_player2 = ok[player2.id]
+            old_score = get_old_score()
             player1_score = old_score[event.sender_id][0]
             player2_score = player1
             if player1_score > player2_score:
                 score_player1 += 1
-                score[player2.id] = [score_player1, score_player2]
+                add_score(player2.id, score_player1, score_player2)
             elif player1_score < player2_score:
                 score_player2 += 1
-                score[player2.id] = [score_player1, score_player2]
+                add_score(player2.id, score_player1, score_player2)
             else:
                 current_round -= 2
             if round + round == current_round:
                 remove_game_mode(player2.id)
                 remove_game_mode(player1_details.id)
-                count_round.pop(player2.id)
-                player_turn.pop(player2.id)
-                player_turn.pop(player1_details.id)
-                old_score.pop(player1_details.id)
+                remove_count_round(player2.id)
+                remove_player_turn(player2.id)
+                remove_player_turn(player1_details.id)
+                remove_old_score(player1_details.id)
+                players_balance = get_players_balance()
                 if score_player1 > score_player2:
                     add_balance = players_balance[player2.id] + float(
                         bet_amount[player2.id] * 1.92
                     )
-                    players_balance[player2.id] = add_balance
+                    add_players_balance(player2.id, add_balance)
                     winner = f"🎉 Congratulations! {player2.first_name}, You won : ${bet_amount[player2.id] * 1.92}"
                 elif score_player1 < score_player2:
                     add_balance = players_balance[player1_details.id] + float(
                         bet_amount[player1_details.id] * 1.92
                     )
-                    players_balance[player1_details.id] = add_balance
+                    add_players_balance(player1_details.id, add_balance)
                     winner = f"🎉 Congratulations! {player1_details.first_name}, You won : ${bet_amount[player1_details.id] * 1.92}"
                 return await event.client.send_message(
                     event.chat_id,
@@ -715,14 +729,14 @@ async def gameplay(event):
 
 [{player2.first_name}](tg://user?id={player2.id}), it's your turn!"""
             )
-            count_round[player2.id] = current_round + 1
+            add_count_round(player2.id, current_round+1)
         else:
             current_round = count_round[event.sender_id]
-            old_score[player2.id] = [player1]
+            add_old_score(player2.id, player1)
             await event.reply(
                 f"[{player2.first_name}](tg://user?id={player2.id}) your turn"
             )
-            count_round[event.sender_id] = current_round + 1
+            add_count_round(event.sender_id, current_round+1)
 
 
 # ============ balance, deposit, withdrawal =========#
@@ -740,6 +754,7 @@ crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
 @client.on(events.NewMessage(pattern="/housebal"))
 async def house_bal(event):
+    players_balance  = get_players_balance()
     my_bot = await client.get_me()
     now_balance = players_balance.get(my_bot.id, 0)
     await event.reply(
@@ -749,11 +764,12 @@ async def house_bal(event):
 
 @client.on(events.NewMessage(pattern="/addhousebal"))
 async def house_bal(event):
+    players_balance = get_players_balance()
     amount = event.text.split(" ")[1]
     my_bot = await client.get_me()
     old_balance = players_balance.get(my_bot.id, 0)
     now_balance = float(old_balance) + float(amount)
-    players_balance[my_bot.id] = now_balance
+    add_players_balance(my_bot.id, now_balance)
     await event.reply(
         f"💰** House Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )
@@ -761,10 +777,11 @@ async def house_bal(event):
 
 @client.on(events.NewMessage(pattern="/addmybal"))
 async def add_bal(event):
+    players_balance = get_players_balance()
     amount, user_id = event.text.split(" ")[1:3]
     old_balance = players_balance.get(int(user_id), 0)
     now_balance = float(old_balance) + float(amount)
-    players_balance[int(user_id)] = now_balance
+    add_players_balance(int(user_id), now_balance)
     await event.reply(
         f"💰** My Balance**\n\nAvailable balance of the bot: ${now_balance}"
     )
@@ -772,6 +789,7 @@ async def add_bal(event):
 
 @client.on(events.NewMessage(pattern="/bal"))
 async def balance_func(event):
+    players_balance = get_players_balance()
     my_bot = await client.get_me()
     balance = players_balance.get(event.sender_id, 0)
     if event.is_private:
@@ -865,7 +883,7 @@ async def with_refresh(event):
             transaction_with_Info["coin"]
             net_fund = transaction_with_Info["amountf"]
             transaction_with_Info["send_address"]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment withdrawal Confirmed! • LTC: {net_fund}, Left Balance: **{players_balance[query_user_id]}**"
             )
@@ -877,6 +895,7 @@ async def with_addy(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
+    players_balance = get_players_balance()
     if addy == "litecoin":
         with_buttons = with_button("litecoin")
         if query_user_id in with_ltc_store:
@@ -984,6 +1003,7 @@ async def refresh(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
+    players_balance = get_players_balance()
     if addy == "litecoin":
         if query_user_id not in ltc_store:
             del_msg = await event.edit(
@@ -1053,7 +1073,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(conversion_rate * float(net_fund))[:10]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
@@ -1124,7 +1144,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(conversion_rate * float(net_fund))[:10]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
@@ -1194,7 +1214,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(conversion_rate * float(net_fund))[:10]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
@@ -1264,7 +1284,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             conversion_rate = float(to_rate) / float(from_rate)
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(conversion_rate * float(net_fund))[:10]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
@@ -1298,7 +1318,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             after_cut_2_percent = float(actual_amount) - cut_2_percent
             old_balance = players_balance.get(query_user_id, 0)
             now_balance = str(after_cut_2_percent / 87)[:10]
-            players_balance[query_user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(query_user_id, float(old_balance) + float(now_balance))
             await event.reply(
                 f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}"
             )
@@ -1916,13 +1936,14 @@ async def check_upi_payments():
             continue
         status = response_json["status"]
         amount = response_json["amount_paid"]
+        players_balance = get_players_balance()
         if status == "paid":
             actual_amount = str(amount)[:-2]
             cut_2_percent = calculate_2_percent(actual_amount)
             after_cut_2_percent = float(actual_amount) - cut_2_percent
             old_balance = players_balance.get(user_id, 0)
             now_balance = after_cut_2_percent / 87
-            players_balance[user_id] = float(old_balance) + float(now_balance)
+            add_players_balance(user_id, float(old_balance) + float(now_balance))
             # Notify user about the balance update
             await client.send_message(
                 user_id,
@@ -1944,6 +1965,7 @@ async def check_ltc_payments():
         ) = payment_details
         post_params1 = {"txid": transaction_id}
         transactionInfo = crypto_client.getTransactionInfo(post_params1)
+        players_balance = get_players_balance()
         if transactionInfo["error"] == "ok":
             status = transactionInfo["status_text"]
             if status == "Complete":
@@ -1956,7 +1978,7 @@ async def check_ltc_payments():
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
                 now_balance = str(conversion_rate * float(net_fund))[:10]
-                players_balance[user_id] = float(old_balance) + float(now_balance)
+                add_players_balance(user_id, float(old_balance) + float(now_balance))
                 await client.send_message(
                     user_id,
                     f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
@@ -1978,6 +2000,7 @@ async def check_eth_payments():
         post_params1 = {"txid": transaction_id}
         transactionInfo = crypto_client.getTransactionInfo(post_params1)
         if transactionInfo["error"] == "ok":
+            players_balance = get_players_balance()
             status = transactionInfo["status_text"]
             if status == "Complete":
                 transactionInfo["receivedf"]
@@ -1989,7 +2012,7 @@ async def check_eth_payments():
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
                 now_balance = str(conversion_rate * float(net_fund))[:10]
-                players_balance[user_id] = float(old_balance) + float(now_balance)
+                add_players_balance(user_id, float(old_balance) + float(now_balance))
                 await client.send_message(
                     user_id,
                     f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
@@ -2013,6 +2036,7 @@ async def check_btc_payments():
         if transactionInfo["error"] == "ok":
             status = transactionInfo["status_text"]
             if status == "Complete":
+                players_balance = get_players_balance()
                 transactionInfo["receivedf"]
                 net_fund = transactionInfo["netf"]
                 params = {"cmd": "rates", "accepted": 1}
@@ -2022,7 +2046,7 @@ async def check_btc_payments():
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
                 now_balance = str(conversion_rate * float(net_fund))[:10]
-                players_balance[user_id] = float(old_balance) + float(now_balance)
+                add_players_balance(user_id, float(old_balance) + float(now_balance))
                 await client.send_message(
                     user_id,
                     f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
@@ -2044,6 +2068,7 @@ async def check_usdt_payments():
         post_params1 = {"txid": transaction_id}
         transactionInfo = crypto_client.getTransactionInfo(post_params1)
         if transactionInfo["error"] == "ok":
+            players_balance = get_players_balance()
             status = transactionInfo["status_text"]
             if status == "Complete":
                 transactionInfo["receivedf"]
@@ -2055,7 +2080,7 @@ async def check_usdt_payments():
                 conversion_rate = float(to_rate) / float(from_rate)
                 old_balance = players_balance.get(user_id, 0)
                 now_balance = str(conversion_rate * float(net_fund))[:10]
-                players_balance[user_id] = float(old_balance) + float(now_balance)
+                add_players_balance(user_id, float(old_balance) + float(now_balance))
                 await client.send_message(
                     user_id,
                     f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",

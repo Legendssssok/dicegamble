@@ -44,7 +44,7 @@ def load(file):
 load(PATH.format(ULTConfig.lang))
 
 
-def get_string(key: str, user_id: int, _res: bool = True) -> Any:
+def get_string(key: str, string: str = False, user_id: int, _res: bool = True) -> Any:
     lang = get_user_lang(user_id) or "en"
     try:
         return languages[lang][key]
@@ -61,6 +61,17 @@ def get_string(key: str, user_id: int, _res: bool = True) -> Any:
                 languages.update({lang: {key: tr}})
             return tr
         except KeyError:
+            if string:
+                en_ = string
+                tr = translate(en_, lang_tgt=lang).replace("\\ N", "\n")
+                if en_.count("{}") != tr.count("{}"):
+                    tr = en_
+                f_ok = languages.get(lang)
+                if f_ok:
+                    languages[lang][key] = tr
+                else:
+                    languages.update({lang: {key: tr}})
+            return tr
             if not _res:
                 return
             return f"Warning: could not load any string with the key `{key}`"

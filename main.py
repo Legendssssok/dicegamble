@@ -175,16 +175,16 @@ async def show_main_menu(event):
 def currency_button(user_id):
     button = [
         [
-            (Button.inline("Litecoin", data="currency_LTC"),
-            (Button.inline("Etherum", data="currency_ETH"),
+            Button.inline("Litecoin", data="currency_LTC"),
+            Button.inline("Etherum", data="currency_ETH"),
         ],
         [
-            (Button.inline("Bitcoin", data="currency_BTC"),
-            (Button.inline("Usdt", data="currency_USD"),
+            Button.inline("Bitcoin", data="currency_BTC"),
+            Button.inline("Usdt", data="currency_USD"),
         ],
         [
-            (Button.inline("INR", data="currency_INR"),
-            (Button.inline(get_string("back", user_id), data="settings"),
+            Button.inline("INR", data="currency_INR"),
+            Button.inline(get_string("back", user_id), data="settings"),
         ],
     ]
 

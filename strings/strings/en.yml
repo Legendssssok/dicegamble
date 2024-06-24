@@ -6,7 +6,17 @@ authors:
 
 #Dice Bot
 game_1: "🎲 Play against friend"
+game_2: "🎲 Play against bot"
+game_3: "💳 Deposit"
+game_4: "💸 Withdraw"
+game_5: "⚙ Settings"
 
+#back_button
+home_back: "⬅️ Back"
+
+#start greetings
+start_greeting: "**👋 Greetings!**\n\nPlay dice with your friend or just with the bot!\n\nRules are simple: first to reach needed points wins."""
+start_greeting2: f"**🏠 Menu**\n\nYour balance: **${}**"
 
 #Common
 back: "⬅️ Back"

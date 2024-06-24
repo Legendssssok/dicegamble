@@ -2,6 +2,11 @@ name: Chinese
 natively: 简体中文
 
 authors:
-  - stevenliuit
-  - junbaor
+  - LegendDevs
 
+#Dice Bot
+game_1: "🎲 与朋友对战"
+game_2: "🎲 与机器人对战"
+game_3: "💳 存款"
+game_4: "💸 提现"
+game_5: "⚙ 设置"

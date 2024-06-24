@@ -202,7 +202,7 @@ Examples:
     now_balance = players_balance.get(event.sender_id, 0)
     if now_balance <= bet:
         return await event.reply(
-            get_string("dice_4", event.sender_id, f"❌ Not enough balance\n\nYour balance: ${}").format(now_balance))
+            get_string("dice_4", event.sender_id, "❌ Not enough balance\n\nYour balance: ${}").format(now_balance))
     await event.client.send_message(
         event.chat_id,
         get_string("dice_5", event.sender_id, "🎲 Choose the game mode"),

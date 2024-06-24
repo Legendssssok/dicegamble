@@ -45,6 +45,7 @@ btc_store = {}
 
 # ======= Game Function======
 
+
 def game(user_id):
     games = [
         [
@@ -65,14 +66,16 @@ def game(user_id):
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
     await event.client.send_message(
-        event.chat_id,
-        get_string("start_greeting", event.sender_id))
+        event.chat_id, get_string("start_greeting", event.sender_id)
+    )
     if event.is_private:
         games = game(event.sender_id)
         now_balance = players_balance.get(event.sender_id, 0)
         await event.client.send_message(
             event.chat_id,
-            get_string("start_greeting2", event.sender_id).format(str(now_balance)[:10]),
+            get_string("start_greeting2", event.sender_id).format(
+                str(now_balance)[:10]
+            ),
             buttons=games,
         )
 
@@ -126,6 +129,7 @@ async def show_main_menu(event):
 def back_button(user_id):
     back_buttons = [[Button.inline(get_string("home_back", user_id), data="home")]]
     return back_buttons
+
 
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):

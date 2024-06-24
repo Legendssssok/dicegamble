@@ -61,10 +61,6 @@ def game(user_id):
     ]
     return games
 
-def back_button(user_id):
-    back_buttons = [[Button.inline(get_string("home_back", user_id), data="home")]]
-    return back_buttons
-
 
 @client.on(events.NewMessage(pattern="/start"))
 async def start(event):
@@ -127,15 +123,20 @@ async def show_main_menu(event):
 # ======= Dice ========#
 
 
+def back_button(user_id):
+    back_buttons = [[Button.inline(get_string("home_back", user_id), data="home")]]
+    return back_buttons
+
 @client.on(events.NewMessage(pattern="/dice"))
 async def dice(event):
     if event.is_private:
+        back_buttons = back_button(event.sender_id)
         return await event.client.send_message(
             event.chat_id,
             """**🎲 Play against friend**
 
 If you want to play with your friend, you can do it in our group - @.""",
-            buttons=back_button,
+            buttons=back_buttons,
         )
     ok = game_mode()
     if event.sender_id in ok:

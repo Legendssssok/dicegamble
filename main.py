@@ -2081,6 +2081,7 @@ async def check_usdt_payments():
                 )
                 usdt_store.pop(query_user_id)
 
+
 """
 async def check_ltc_withdraw():
     for user_id, payment_details in list(usdt_store.items()):

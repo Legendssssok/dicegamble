@@ -794,6 +794,33 @@ async def balance_func(event):
         )
 
 
+
+
+
+# ================ Withdrawal ===========#
+
+def withdrawal_button(user_id):
+    withdrawal_buttons = [
+        [
+            Button.inline("Litecoin", data="withdraw_litecoin"),
+            Button.inline("UPI", data="withdaw_upi"),
+        ],
+        [
+            Button.inline(get_string("back", user_id), data="home"),
+        ],
+    ]
+    return withdrawal_buttons
+
+@client.on(events.callbackquery.CallbackQuery(data=re.compile(b"withdrawal")))
+async def deposit_func(event):
+    withdrawal_buttons = withdrawal_button(event.sender_id)
+    await event.edit(
+        f"**💳 Withdrawal**\n\nChoose your preferred withdrawal method:",
+        buttons=withdrawal_buttons,
+    )
+
+# =============== Deposit history ============== #
+
 deposit_button = [
     [Button.inline("Litecoin", data="add_litecoin")],
     [Button.inline("Etherum", data="add_etherum")],

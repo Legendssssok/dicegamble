@@ -794,10 +794,8 @@ async def balance_func(event):
         )
 
 
-
-
-
 # ================ Withdrawal ===========#
+
 
 def withdrawal_button(user_id):
     withdrawal_buttons = [
@@ -811,6 +809,7 @@ def withdrawal_button(user_id):
     ]
     return withdrawal_buttons
 
+
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"withdrawal")))
 async def deposit_func(event):
     withdrawal_buttons = withdrawal_button(event.sender_id)
@@ -818,6 +817,7 @@ async def deposit_func(event):
         f"**💳 Withdrawal**\n\nChoose your preferred withdrawal method:",
         buttons=withdrawal_buttons,
     )
+
 
 # =============== Deposit history ============== #
 

@@ -1,20 +1,19 @@
 import asyncio
-
-from requests.api import get
-from database.old_score_db import get_old_score, remove_old_score
-from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
-from database.count_round_db import add_count_round, get_count_round, remove_count_round
 import random
 import re
 import string
 import time
 
 import requests
+from requests.api import get
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
+from database.count_round_db import add_count_round, get_count_round, remove_count_round
 from database.currency_store import *
 from database.languages import set_user_lang
+from database.old_score_db import get_old_score, remove_old_score
+from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
 from pyCoinPayments import CryptoPayments
 from strings import *
 
@@ -26,12 +25,8 @@ TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
 from database.gamemode import *
-
+from database.players_balance_db import add_players_balance, get_players_balance
 from database.score_db import *
-
-from database.players_balance_db import add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, add_players_balance, add_players_balance, get_players_balance, get_players_balance, get_players_balance, get_players_balance, 
-
-
 
 bet_amount = {}
 
@@ -516,7 +511,7 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
         add_game_mode(query_user_id, "playerwplayer", int(round), int(user_id))
         add_count_round(player1.id, 1)
         add_player_turn(player1.id, player1.id)
-        add_player_turn(player2.id, player1,id)
+        add_player_turn(player2.id, player1, id)
         await event.client.send_message(
             event.chat_id,
             f"""**🎲 Player vs Player**
@@ -729,14 +724,14 @@ async def gameplay(event):
 
 [{player2.first_name}](tg://user?id={player2.id}), it's your turn!"""
             )
-            add_count_round(player2.id, current_round+1)
+            add_count_round(player2.id, current_round + 1)
         else:
             current_round = count_round[event.sender_id]
             add_old_score(player2.id, player1)
             await event.reply(
                 f"[{player2.first_name}](tg://user?id={player2.id}) your turn"
             )
-            add_count_round(event.sender_id, current_round+1)
+            add_count_round(event.sender_id, current_round + 1)
 
 
 # ============ balance, deposit, withdrawal =========#
@@ -754,7 +749,7 @@ crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
 @client.on(events.NewMessage(pattern="/housebal"))
 async def house_bal(event):
-    players_balance  = get_players_balance()
+    players_balance = get_players_balance()
     my_bot = await client.get_me()
     now_balance = players_balance.get(my_bot.id, 0)
     await event.reply(

@@ -30,7 +30,7 @@ def translate(*args, **kwargs):
     ).text
     response = ""
     data = json.loads(json.loads(x[4:])[0][2])[1][0][0]
-    subind = data[-2]
+    subind = data[-5]
     if not subind:
         subind = data[-1]
     for i in subind:

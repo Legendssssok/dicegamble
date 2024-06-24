@@ -225,7 +225,9 @@ async def change_curenc(event):
     ur_currency = get_user_curr(event.sender_id) or "LTC"
     button = currency_button(user_id)
     await event.edit(
-        get_string("choose_currency", user_id, "Currency : {}\n\nChoose your Currency Address").format(ur_currency),
+        get_string(
+            "choose_currency", user_id, "Currency : {}\n\nChoose your Currency Address"
+        ).format(ur_currency),
         buttons=button,
     )
 
@@ -246,7 +248,9 @@ async def show_next_curr_menu(event):
     ur_currency = get_user_curr(event.sender_id) or "LTC"
     button = currency_button(user_id)
     await event.edit(
-        get_string("choose_currency", user_id, "Currency : {}\n\nChoose your Currency Address").format(ur_currency),
+        get_string(
+            "choose_currency", user_id, "Currency : {}\n\nChoose your Currency Address"
+        ).format(ur_currency),
         buttons=button,
     )
 

@@ -1541,7 +1541,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     link_preview=False,
                 )
                 add_eth_store(
-                    query_user_id
+                    query_user_id,
                     transaction_amount,
                     transaction_address,
                     transaction_timeout,

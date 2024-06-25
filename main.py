@@ -1142,7 +1142,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            remove_eth_store | (query_user_id)
+            remove_eth_store(query_user_id)
     elif addy == "bitcoin":
         btc_store = get_btc_store()
         if query_user_id not in btc_store:

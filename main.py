@@ -1865,7 +1865,9 @@ To top up your balance, transfer the desired amount to this link.
             buttons=addy_buttons,
             link_preview=False,
         )
-        add_upi_store(query_user_id, res_id, res_amount, res_name, res_email, res_short_url)
+        add_upi_store(
+            query_user_id, res_id, res_amount, res_name, res_email, res_short_url
+        )
 
 
 def generate_random_string(length):

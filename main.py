@@ -12,7 +12,7 @@ from database.bet_amount_db import add_bet_amount, get_bet_amount
 from database.btc_store_db import add_btc_store, get_btc_store, remove_btc_store
 from database.count_round_db import add_count_round, get_count_round, remove_count_round
 from database.currency_store import *
-from database.eth_store_db import get_eth_store, remove_eth_store, add_eth_store
+from database.eth_store_db import add_eth_store, get_eth_store, remove_eth_store
 from database.gamemode import *
 from database.languages import set_user_lang
 from database.ltc_store_db import add_ltc_store, get_ltc_store, remove_ltc_store

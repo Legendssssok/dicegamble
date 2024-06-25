@@ -1,11 +1,4 @@
 import asyncio
-from database.with_ltc_store_db import add_with_ltc_store, get_with_ltc_store, remove_with_ltc_store
-
-from requests.api import get
-from database.usdt_store_db import add_usdt_store, get_usdt_store, remove_usdt_store
-from database.eth_store_db import get_eth_store, remove_eth_store
-from database.btc_store_db import add_btc_store, get_btc_store, remove_btc_store
-from database.upi_store_db import get_upi_store, remove_upi_store
 import random
 import re
 import string
@@ -15,18 +8,25 @@ import requests
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
+from database.bet_amount_db import add_bet_amount, get_bet_amount
+from database.btc_store_db import add_btc_store, get_btc_store, remove_btc_store
 from database.count_round_db import add_count_round, get_count_round, remove_count_round
 from database.currency_store import *
+from database.eth_store_db import get_eth_store, remove_eth_store
+from database.gamemode import *
 from database.languages import set_user_lang
+from database.ltc_store_db import get_ltc_store, remove_ltc_store
 from database.old_score_db import get_old_score, remove_old_score
 from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
-from database.gamemode import *
 from database.players_balance_db import add_players_balance, get_players_balance
 from database.score_db import *
-
-from database.bet_amount_db import add_bet_amount, get_bet_amount
-from database.ltc_store_db import get_ltc_store, remove_ltc_store
-
+from database.upi_store_db import get_upi_store, remove_upi_store
+from database.usdt_store_db import add_usdt_store, get_usdt_store, remove_usdt_store
+from database.with_ltc_store_db import (
+    add_with_ltc_store,
+    get_with_ltc_store,
+    remove_with_ltc_store,
+)
 from pyCoinPayments import CryptoPayments
 from strings import *
 
@@ -36,7 +36,6 @@ TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
 
 
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
-
 
 
 # ======= Game Function======
@@ -1143,7 +1142,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            remove_eth_store|(query_user_id)
+            remove_eth_store | (query_user_id)
     elif addy == "bitcoin":
         btc_store = get_btc_store()
         if query_user_id not in btc_store:
@@ -1443,7 +1442,8 @@ To top up your balance, transfer the desired amount to this LTC address.
                     buttons=addy_buttons,
                     link_preview=False,
                 )
-                add_ltc_store(query_user_id,
+                add_ltc_store(
+                    query_user_id,
                     transaction_amount,
                     transaction_address,
                     transaction_timeout,
@@ -1641,14 +1641,23 @@ To top up your balance, transfer the desired amount to this LTC address.
                     buttons=addy_buttons,
                     link_preview=False,
                 )
-                add_btc_store(query_user_id,  transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url, transaction_id, time.time())
+                add_btc_store(
+                    query_user_id,
+                    transaction_amount,
+                    transaction_address,
+                    transaction_timeout,
+                    transaction_checkout_url,
+                    transaction_qrcode_url,
+                    transaction_id,
+                    time.time(),
+                )
             else:
                 await event.client.send_message(
                     event.chat_id, f"Error : {transaction['error']}"
                 )
     elif addy == "usdt":
         addy_buttons = addy_button("usdt")
-        usdt_store= get_usdt_store()
+        usdt_store = get_usdt_store()
         if query_user_id in usdt_store:
             (
                 transaction_amount,
@@ -1735,7 +1744,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     link_preview=False,
                 )
                 add_usdt_store(
-                    query_user_id, 
+                    query_user_id,
                     transaction_amount,
                     transaction_address,
                     transaction_timeout,
@@ -1855,7 +1864,9 @@ To top up your balance, transfer the desired amount to this link.
             buttons=addy_buttons,
             link_preview=False,
         )
-        add_upi_store[query_user_id, res_id,
+        add_upi_store[
+            query_user_id,
+            res_id,
             res_amount,
             res_name,
             res_email,
@@ -2051,7 +2062,6 @@ async def check_btc_payments():
                     f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
                 remove_btc_store(user_id)
-                
 
 
 async def check_usdt_payments():
@@ -2109,7 +2119,6 @@ async def check_ltc_withdraw():
                     f"Withdrawal Confirmed! ,Left Balance: {players_balance[query_user_id]}",
                 )
                 remove_with_ltc_store(user_id)
-
 
 
 scheduler.add_job(check_upi_payments, "interval", minutes=5)

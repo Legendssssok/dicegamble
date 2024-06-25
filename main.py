@@ -1,4 +1,11 @@
 import asyncio
+from database.with_ltc_store_db import add_with_ltc_store, get_with_ltc_store, remove_with_ltc_store
+
+from requests.api import get
+from database.usdt_store_db import add_usdt_store, get_usdt_store, remove_usdt_store
+from database.eth_store_db import get_eth_store, remove_eth_store
+from database.btc_store_db import add_btc_store, get_btc_store, remove_btc_store
+from database.upi_store_db import get_upi_store, remove_upi_store
 import random
 import re
 import string
@@ -13,6 +20,13 @@ from database.currency_store import *
 from database.languages import set_user_lang
 from database.old_score_db import get_old_score, remove_old_score
 from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
+from database.gamemode import *
+from database.players_balance_db import add_players_balance, get_players_balance
+from database.score_db import *
+
+from database.bet_amount_db import add_bet_amount, get_bet_amount
+from database.ltc_store_db import get_ltc_store, remove_ltc_store
+
 from pyCoinPayments import CryptoPayments
 from strings import *
 
@@ -23,23 +37,7 @@ TOKEN = "7044988201:AAF27mG1b7pVdJED1P73vgqDm-vPbRcFNLw"
 
 client = TelegramClient("LegendBoy", API_ID, API_HASH).start(bot_token=TOKEN)
 
-from database.gamemode import *
-from database.players_balance_db import add_players_balance, get_players_balance
-from database.score_db import *
 
-bet_amount = {}
-
-ltc_store = {}
-
-upi_store = {}
-
-eth_store = {}
-
-usdt_store = {}
-
-btc_store = {}
-
-with_ltc_store = {}
 
 # ======= Game Function======
 
@@ -468,10 +466,10 @@ If you want to play, click the "Accept Match" button""",
                 f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance_bot}"
             )
         left_balance_bot = players_balance[my_bot.id] - float(bet)
-        bet_amount[my_bot.id] = float(bet)
+        add_bet_amount(my_bot.id, float(bet))
         add_players_balance(my_bot.id, left_balance_bot)
         left_balance_user = players_balance[user.id] - float(bet)
-        bet_amount[user.id] = float(bet)
+        add_bet_amount(user.id, float(bet))
         add_players_balance(user.id, left_balance_user)
         await event.delete()
         add_game_mode(user.id, "botwplayers", int(round))
@@ -499,10 +497,10 @@ Player 2: [{my_bot.first_name}](tg://user?id={my_bot.id})
                 f"❌ Not enough balance. Your balance : ${now_balance_player2}"
             )
         left_balance_player1 = players_balance[player1.id] - float(bet)
-        bet_amount[player1.id] = float(bet)
+        add_bet_amount(player1.id, float(bet))
         add_players_balance(player1.id, left_balance_player1)
         left_balance_player2 = players_balance[player2.id] - float(bet)
-        bet_amount[player2.id] = float(bet)
+        add_bet_amount(player2.id, float(bet))
         add_players_balance(player2.id, left_balance_player2)
         await event.delete()
         add_score(player1.id, 0, 0)
@@ -622,6 +620,7 @@ async def gameplay(event):
         else:
             current_round -= 1
         if round == current_round:
+            bet_amount = get_bet_amount()
             players_balance = get_players_balance()
             remove_game_mode(event.sender_id)
             remove_count_round(event.sender_id)
@@ -694,6 +693,7 @@ async def gameplay(event):
                 remove_old_score(player1_details.id)
                 players_balance = get_players_balance()
                 if score_player1 > score_player2:
+                    bet_amount = get_bet_amount()
                     add_balance = players_balance[player2.id] + float(
                         bet_amount[player2.id] * 1.92
                     )
@@ -848,6 +848,7 @@ async def with_refresh(event):
     query = event.data.decode("ascii").lower()
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
+    with_ltc_store = get_with_ltc_store()
     if addy == "litecoin":
         if query_user_id not in with_ltc_store:
             await event.reply("Your withdrawal is successfully check your wallet")
@@ -881,7 +882,7 @@ async def with_refresh(event):
             await event.reply(
                 f"Payment withdrawal Confirmed! • LTC: {net_fund}, Left Balance: **{players_balance[query_user_id]}**"
             )
-            with_ltc_store.pop(query_user_id)
+            remove_with_ltc_store(query_user_id)
 
 
 @client.on(events.callbackquery.CallbackQuery(data=re.compile(b"with_")))
@@ -891,6 +892,7 @@ async def with_addy(event):
     query_user_id = event.query.user_id
     players_balance = get_players_balance()
     if addy == "litecoin":
+        with_ltc_store = get_with_ltc_store()
         with_buttons = with_button("litecoin")
         if query_user_id in with_ltc_store:
             (
@@ -949,10 +951,7 @@ async def with_addy(event):
                     buttons=with_buttons,
                     link_preview=False,
                 )
-                with_ltc_store[query_user_id] = [
-                    transaction_amount,
-                    transaction_id,
-                ]
+                add_with_ltc_store(query_user_id, transaction_amount, transaction_id)
             else:
                 await event.reply(transaction["error"])
 
@@ -999,6 +998,7 @@ async def refresh(event):
     query_user_id = event.query.user_id
     players_balance = get_players_balance()
     if addy == "litecoin":
+        ltc_store = get_ltc_store()
         if query_user_id not in ltc_store:
             del_msg = await event.edit(
                 "Payment was received successfully & was added before to your balance or may be the time exceed."
@@ -1025,7 +1025,7 @@ async def refresh(event):
             if status != "Complete":
                 time_since_last_message = time.time() - main_time
                 if time_since_last_message > int(transaction_timeout):
-                    ltc_store.pop(query_user_id)
+                    remove_ltc_store(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
                         buttons=addy_back_buttons,
@@ -1071,8 +1071,9 @@ To top up your balance, transfer the desired amount to this LTC address.
             await event.reply(
                 f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            ltc_store.pop(query_user_id)
+            remove_ltc_store(query_user_id)
     elif addy == "etherum":
+        eth_store = get_eth_store()
         if query_user_id not in eth_store:
             del_msg = await event.edit(
                 "Payment was received successfully & was added before to your balance or may be the time exceed."
@@ -1099,7 +1100,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             if status != "Complete":
                 time_since_last_message = time.time() - main_time
                 if time_since_last_message > int(transaction_timeout):
-                    eth_store.pop(query_user_id)
+                    remove_eth_store(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
                         buttons=addy_back_buttons,
@@ -1142,8 +1143,9 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            eth_store.pop(query_user_id)
+            remove_eth_store|(query_user_id)
     elif addy == "bitcoin":
+        btc_store = get_btc_store()
         if query_user_id not in btc_store:
             del_msg = await event.edit(
                 "Payment was received successfully & was added before to your balance or may be the time exceed."
@@ -1170,7 +1172,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             if status != "Complete":
                 time_since_last_message = time.time() - main_time
                 if time_since_last_message > int(transaction_timeout):
-                    btc_store.pop(query_user_id)
+                    remove_btc_store(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
                         buttons=addy_back_buttons,
@@ -1212,8 +1214,9 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            btc_store.pop(query_user_id)
+            remove_btc_store(query_user_id)
     elif addy == "usdt":
+        usdt_store = get_usdt_store()
         if query_user_id not in usdt_store:
             del_msg = await event.edit(
                 "Payment was received successfully & was added before to your balance or may be the time exceed."
@@ -1240,7 +1243,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             if status != "Complete":
                 time_since_last_message = time.time() - main_time
                 if time_since_last_message > int(transaction_timeout):
-                    usdt_store.pop(query_user_id)
+                    remove_usdt_store(query_user_id)
                     return await event.edit(
                         f"Link get expired exceed over time, click again to generate",
                         buttons=addy_back_buttons,
@@ -1282,8 +1285,9 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: **{players_balance[query_user_id]}**"
             )
-            usdt_store.pop(query_user_id)
+            remove_usdt_store(query_user_id)
     elif addy == "upi":
+        upi_store = get_upi_store
         if query_user_id not in upi_store:
             del_msg = await event.edit(
                 "Payment was received successfully & Added to your balance"
@@ -1316,7 +1320,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             await event.reply(
                 f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[query_user_id]}"
             )
-            upi_store.pop(query_user_id)
+            remove_upi_store(query_user_id)
         else:
             await event.edit(
                 f"""**💳 UPI deposit**
@@ -1346,6 +1350,7 @@ async def deposits_addy(event):
     addy = query.split("_")[1]
     query_user_id = event.query.user_id
     if addy == "litecoin":
+        ltc_store = get_ltc_store()
         addy_buttons = addy_button("litecoin")
         if query_user_id in ltc_store:
             (
@@ -1359,7 +1364,7 @@ async def deposits_addy(event):
             ) = ltc_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
-                ltc_store.pop(query_user_id)
+                remove_ltc_store(query_user_id)
                 return await event.edit(
                     f"Link get expired exceed over time, click again to generate",
                     buttons=addy_buttons,
@@ -1438,7 +1443,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     buttons=addy_buttons,
                     link_preview=False,
                 )
-                ltc_store[query_user_id] = [
+                add_ltc_store(query_user_id,
                     transaction_amount,
                     transaction_address,
                     transaction_timeout,
@@ -1446,8 +1451,9 @@ To top up your balance, transfer the desired amount to this LTC address.
                     transaction_qrcode_url,
                     transaction_id,
                     time.time(),
-                ]
+                )
     elif addy == "etherum":
+        eth_store = get_eth_store()
         addy_buttons = addy_button("etherum")
         if query_user_id in eth_store:
             (
@@ -1461,7 +1467,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             ) = eth_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
-                eth_store.pop(query_user_id)
+                remove_eth_store(query_user_id)
                 return await event.edit(
                     f"Link get expired exceed over time, click again to generate",
                     buttons=addy_buttons,
@@ -1548,6 +1554,7 @@ To top up your balance, transfer the desired amount to this LTC address.
                     event.chat_id, f"Error : {transaction['error']}"
                 )
     elif addy == "bitcoin":
+        btc_store = get_btc_store()
         addy_buttons = addy_button("bitcoin")
         if query_user_id in btc_store:
             (
@@ -1561,7 +1568,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             ) = btc_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
-                btc_store.pop(query_user_id)
+                remove_btc_store(query_user_id)
                 return await event.edit(
                     f"Link get expired exceed over time, click again to generate",
                     buttons=addy_buttons,
@@ -1634,21 +1641,14 @@ To top up your balance, transfer the desired amount to this LTC address.
                     buttons=addy_buttons,
                     link_preview=False,
                 )
-                btc_store[query_user_id] = [
-                    transaction_amount,
-                    transaction_address,
-                    transaction_timeout,
-                    transaction_checkout_url,
-                    transaction_qrcode_url,
-                    transaction_id,
-                    time.time(),
-                ]
+                add_btc_store(query_user_id,  transaction_amount, transaction_address, transaction_timeout, transaction_checkout_url, transaction_qrcode_url, transaction_id, time.time())
             else:
                 await event.client.send_message(
                     event.chat_id, f"Error : {transaction['error']}"
                 )
     elif addy == "usdt":
         addy_buttons = addy_button("usdt")
+        usdt_store= get_usdt_store()
         if query_user_id in usdt_store:
             (
                 transaction_amount,
@@ -1661,7 +1661,7 @@ To top up your balance, transfer the desired amount to this LTC address.
             ) = usdt_store[query_user_id]
             time_since_last_message = time.time() - main_time
             if time_since_last_message > int(transaction_timeout):
-                usdt_store.pop(query_user_id)
+                remove_usdt_store(query_user_id)
                 return await event.edit(
                     f"Link get expired exceed over time, click again to generate",
                     buttons=addy_buttons,
@@ -1734,7 +1734,8 @@ To top up your balance, transfer the desired amount to this LTC address.
                     buttons=addy_buttons,
                     link_preview=False,
                 )
-                usdt_store[query_user_id] = [
+                add_usdt_store(
+                    query_user_id, 
                     transaction_amount,
                     transaction_address,
                     transaction_timeout,
@@ -1742,13 +1743,14 @@ To top up your balance, transfer the desired amount to this LTC address.
                     transaction_qrcode_url,
                     transaction_id,
                     time.time(),
-                ]
+                )
             else:
                 await event.client.send_message(
                     event.chat_id, f"Error : {transaction['error']}"
                 )
     elif addy == "upi":
         addy_buttons = addy_button("upi")
+        upi_store = get_upi_store()
         if query_user_id in upi_store:
             (res_id, res_amount, res_name, res_email, res_short_url) = upi_store[
                 query_user_id
@@ -1853,8 +1855,7 @@ To top up your balance, transfer the desired amount to this link.
             buttons=addy_buttons,
             link_preview=False,
         )
-        upi_store[query_user_id] = [
-            res_id,
+        add_upi_store[query_user_id, res_id,
             res_amount,
             res_name,
             res_email,
@@ -1916,6 +1917,7 @@ scheduler = AsyncIOScheduler()
 
 
 async def check_upi_payments():
+    upi_store = get_upi_store()
     for user_id, payment_details in list(upi_store.items()):
         res_id, res_amount, res_name, res_email, res_short_url = payment_details
         url = f"https://api.razorpay.com/v1/payment_links/{res_id}"
@@ -1943,10 +1945,11 @@ async def check_upi_payments():
                 user_id,
                 f"Payment confirmed! Amount ${now_balance}\n\nYour Balance {players_balance[user_id]}",
             )
-            upi_store.pop(user_id)
+            remove_upi_store(user_id)
 
 
 async def check_ltc_payments():
+    ltc_store = get_ltc_store()
     for user_id, payment_details in list(ltc_store.items()):
         (
             transaction_amount,
@@ -1977,10 +1980,11 @@ async def check_ltc_payments():
                     user_id,
                     f"Payment Confirmed! • LTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
-                ltc_store.pop(query_user_id)
+                ltc_store.pop(user_id)
 
 
 async def check_eth_payments():
+    eth_store = get_eth_store()
     for user_id, payment_details in list(eth_store.items()):
         (
             transaction_amount,
@@ -2011,10 +2015,11 @@ async def check_eth_payments():
                     user_id,
                     f"Payment Confirmed! • ETH: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
-                eth_store.pop(query_user_id)
+                remove_eth_store(usery_id)
 
 
 async def check_btc_payments():
+    btc_store = get_btc_store()
     for user_id, payment_details in list(btc_store.items()):
         (
             transaction_amount,
@@ -2045,10 +2050,12 @@ async def check_btc_payments():
                     user_id,
                     f"Payment Confirmed! • BTC: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
-                btc_store.pop(query_user_id)
+                remove_btc_store(user_id)
+                
 
 
 async def check_usdt_payments():
+    usdt_store = get_usdt_store()
     for user_id, payment_details in list(usdt_store.items()):
         (
             transaction_amount,
@@ -2079,12 +2086,12 @@ async def check_usdt_payments():
                     user_id,
                     f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
                 )
-                usdt_store.pop(query_user_id)
+                remove_usdt_store(user_id)
 
 
-"""
 async def check_ltc_withdraw():
-    for user_id, payment_details in list(usdt_store.items()):
+    with_ltc_store = get_with_ltc_store()
+    for user_id, payment_details in list(with_ltc_store.items()):
         (
             transaction_amount,
             transaction_id,
@@ -2096,30 +2103,13 @@ async def check_ltc_withdraw():
         transaction_with_Info = crypto_client.getWithdrawalInfo(post_params)
         if transaction_with_Info["error"] == "ok":
             status = transaction_with_Info["status_text"]
-            if status != "Complete":
-        post_params1 = {"txid": transaction_id}
-        transactionInfo = crypto_client.getTransactionInfo(post_params1)
-        if transactionInfo["error"] == "ok":
-            players_balance = get_players_balance()
-            status = transactionInfo["status_text"]
             if status == "Complete":
-                transactionInfo["receivedf"]
-                net_fund = transactionInfo["netf"]
-                params = {"cmd": "rates", "accepted": 1}
-                rate = crypto_client.rates(params)
-                from_rate = rate["USDT"]["rate_btc"]
-                to_rate = rate["USDT"]["rate_btc"]
-                conversion_rate = float(to_rate) / float(from_rate)
-                old_balance = players_balance.get(user_id, 0)
-                now_balance = str(conversion_rate * float(net_fund))[:10]
-                add_players_balance(user_id, float(old_balance) + float(now_balance))
                 await client.send_message(
                     user_id,
-                    f"Payment Confirmed! • USDT: {net_fund}, Added Balance : ${now_balance}, Balance: {players_balance[query_user_id]}",
+                    f"Withdrawal Confirmed! ,Left Balance: {players_balance[query_user_id]}",
                 )
-                usdt_store.pop(query_user_id)
+                remove_with_ltc_store(user_id)
 
-"""
 
 
 scheduler.add_job(check_upi_payments, "interval", minutes=5)
@@ -2127,6 +2117,7 @@ scheduler.add_job(check_ltc_payments, "interval", minutes=5)
 scheduler.add_job(check_eth_payments, "interval", minutes=5)
 scheduler.add_job(check_btc_payments, "interval", minutes=5)
 scheduler.add_job(check_usdt_payments, "interval", minutes=5)
+scheduler.add_job(check_ltc_withdraw, "interval", minutes=5)
 scheduler.start()
 
 # ==================== Start Client ==================#

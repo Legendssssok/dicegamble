@@ -1286,7 +1286,7 @@ To top up your balance, transfer the desired amount to this ETH address.
             )
             remove_usdt_store(query_user_id)
     elif addy == "upi":
-        upi_store = get_upi_store
+        upi_store = get_upi_store()
         if query_user_id not in upi_store:
             del_msg = await event.edit(
                 "Payment was received successfully & Added to your balance"

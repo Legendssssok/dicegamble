@@ -12,15 +12,15 @@ from database.bet_amount_db import add_bet_amount, get_bet_amount
 from database.btc_store_db import add_btc_store, get_btc_store, remove_btc_store
 from database.count_round_db import add_count_round, get_count_round, remove_count_round
 from database.currency_store import *
-from database.eth_store_db import get_eth_store, remove_eth_store, add_eth_stoee
+from database.eth_store_db import get_eth_store, remove_eth_store
 from database.gamemode import *
 from database.languages import set_user_lang
-from database.ltc_store_db import get_ltc_store, remove_ltc_store, add_ltc_store
+from database.ltc_store_db import add_ltc_store, get_ltc_store, remove_ltc_store
 from database.old_score_db import get_old_score, remove_old_score
 from database.player_turn_db import add_player_turn, get_player_turn, remove_player_turn
 from database.players_balance_db import add_players_balance, get_players_balance
 from database.score_db import *
-from database.upi_store_db import get_upi_store, remove_upi_store, add_upi_store
+from database.upi_store_db import add_upi_store, get_upi_store, remove_upi_store
 from database.usdt_store_db import add_usdt_store, get_usdt_store, remove_usdt_store
 from database.with_ltc_store_db import (
     add_with_ltc_store,

@@ -5,7 +5,6 @@ import string
 import time
 
 import requests
-from helpers.function import conversion
 from telethon import Button, TelegramClient, events, functions, types
 from telethon.tl.types import BotCommand, InputMediaDice
 
@@ -28,6 +27,7 @@ from database.with_ltc_store_db import (
     get_with_ltc_store,
     remove_with_ltc_store,
 )
+from helpers.function import conversion
 from strings import *
 
 API_ID = 11573285

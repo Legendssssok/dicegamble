@@ -1,10 +1,4 @@
-
-
-from hashlib import new
-from telethon import crypto
-
 from pyCoinPayments import CryptoPayments
-
 
 api_key = "rzp_live_OH4h4RtCPQFnLG"
 api_secret = "CPEWuysDiY69CIdZeDwazbdi"
@@ -15,7 +9,8 @@ IPN_URL = "https://google.com/ipn"
 
 crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
-def conversion(convert_1, convert_2, amount): 
+
+def conversion(convert_1, convert_2, amount):
     params = {"cmd": "rates", "accepted": 1}
     rate = crypto_client.rates(params)
     from_rate = rate[convert_1]["rate_btc"]
@@ -23,4 +18,3 @@ def conversion(convert_1, convert_2, amount):
     conversion_rate = float(from_rate) / float(to_rate)
     new_currency_balance = str(conversion_rate * float(amount))[:10]
     return float(new_currency_balance)
-

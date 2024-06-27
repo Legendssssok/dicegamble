@@ -214,6 +214,20 @@ class CryptoPayments:
         )
         return self.Request("post", **params)
 
+    def convert_limit_Coins(self, params=None):
+        """Convert your balances from one currency to another
+        https://www.coinpayments.net/apidoc-convert
+        """
+        params.update(
+            {
+                "cmd": "convert_limits",
+                "key": self.publicKey,
+                "version": self.version,
+                "format": self.format,
+            }
+        )
+        return self.Request("post", **params)
+
     def getWithdrawalHistory(self, params=None):
         """Get list of recent withdrawals (1-100max)
         https://www.coinpayments.net/apidoc-get-withdrawal-history

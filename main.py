@@ -456,7 +456,7 @@ If you want to play, click the "Accept Match" button""",
         players_balance = get_players_balance()
         now_balance_bot = players_balance.get(my_bot.id, 0)  # balance in ltc
         bet_amount_in_ltc = conversion("USDT", "LTC", float(bet))
-        if float(now_balance_bot) <= float(bet):
+        if float(now_balance_bot) <= float(bet_amount_in_ltc):
             return await event.answer(
                 f"Sorry, ❌ Not enough balance.🏠 Home balance: ${now_balance_bot}"
             )

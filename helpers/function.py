@@ -1,10 +1,6 @@
-
-
-from hashlib import new
-from telethon import crypto
+from decimal import Decimal, getcontext
 
 from pyCoinPayments import CryptoPayments
-from decimal import Decimal, getcontext
 
 getcontext().prec = 8
 
@@ -17,7 +13,8 @@ IPN_URL = "https://google.com/ipn"
 
 crypto_client = CryptoPayments(API_KEY, API_SECRET, IPN_URL)
 
-def conversion(convert_1, convert_2, amount): 
+
+def conversion(convert_1, convert_2, amount):
     params = {"cmd": "rates", "accepted": 1}
     rate = crypto_client.rates(params)
     from_rate = rate[convert_1]["rate_btc"]
@@ -25,4 +22,3 @@ def conversion(convert_1, convert_2, amount):
     conversion_rate = Decimal(from_rate) / Decimal(to_rate)
     new_currency_balance = conversion_rate * Decimal(float(amount))
     return float(new_currency_balance)
-
